@@ -1,0 +1,9 @@
+LICENSE
+README.md
+setup.py
+forsikring/date_to_model.py
+forsikring.egg-info/PKG-INFO
+forsikring.egg-info/SOURCES.txt
+forsikring.egg-info/dependency_links.txt
+forsikring.egg-info/requires.txt
+forsikring.egg-info/top_level.txt
