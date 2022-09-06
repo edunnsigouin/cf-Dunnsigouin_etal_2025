@@ -14,27 +14,37 @@ from ecmwfapi                    import *
 import os,sys
 import pandas                    as pd
 from datetime                    import datetime
-import forsikring.date_to_model  as d2m
+from forsikring                  import date_to_model  as d2m
+from forsikring                  import config
 
 # input -----------------------------------
+product = 'hindcast' # hindcast/forecast
 dclass  = 'od' # operational archive/expert access data
 expver  = 1    # operational version (not sure what this is)
 stream  = 'enfh' # enfh=ensemble hindcast,enfo=ensemble forecast
 time    = '00:00:00' # time of day for start of forecast
 grid    = '0.5/0.5' # degree lat/lon resolution
 area    = '89/-45/20/50' #lat-lon limits for download
-param   = '228.128' # total precip=228.128,
+var     = 'tp'
 levtype = 'sfc' # surface variable 
 step    = '0/to/1104/by/6' #  46 days at given time resolution
 dformat = 'netcdf'
 # -----------------------------------------
 
-# define ensemble number    
-if stream == 'enfh':
+# download stuff
+server = ECMWFService("mars")
+
+# define stuff
+if product == 'hindcast':
     number = '1/to/10'
-elif stream == 'enfo':
+    stream = 'enfh'
+elif product == 'forecast':
     number = '1/to/50'
-    
+    stream = 'enfo'
+
+if var == 'tp':
+    param = '228.128'
+
 # populate dictionary
 dic = {
     'class': dclass,
@@ -48,172 +58,32 @@ dic = {
     'step':step,
     'format':dformat,
     'number':number,
-    'date':'',
-    'hdate':''
+    'type':'',
+    'date':''
 }    
 
-# When is the best time to choose start dates?
-# is there a list of model version history?
-# need to ask Silje
-# define start dates
 # generate set of continuous monday and thursday dates  
-dates_monday   = pd.date_range("20200123", periods=52, freq="7D") # forecasts start Thursday
-dates_thursday = pd.date_range("20200127", periods=52, freq="7D") # forecasts start Monday
+dates_monday   = pd.date_range("20210104", periods=52, freq="7D") # forecasts start Thursday
+dates_thursday = pd.date_range("20210107", periods=52, freq="7D") # forecasts start Monday
 dates_fcycle   = dates_monday.union(dates_thursday)
 
-print(dates_fcycle)
+# populate dictionary some more and download each hindcast/forcast one-by-one
+for dates in dates_fcycle:
+    for dtype in ('cf','pf'):
+        
+        path         = config.dirs[product]
+        datestring   = dates.strftime('%Y-%m-%d')
+        refyear      = int(datestring[:4])
+        datadir      = path + var + '/' 
+        forcastcycle = d2m.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
+        filename     = '%s/%s_%s_%s_%s_%s.nc'%(datadir,var,forcastcycle,'05x05',datestring,dtype) 
+        dic['date']  = datestring
+        dic['type']  = dtype
+        if product == 'hindcast':
+            hdate        = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-20,refyear)])
+            dic['hdate'] = hdate
 
-# define hindcast dates
-
-
-# populate dictionary
-dic['number'] = number
-
-
-# define output file
-target = ''
-
-
-# download
-#server = ECMWFService("mars")
-#server.execute(dic,target)
-
-
-
-"""
-server = ECMWFService("mars")
-
-product = 'hindcast' # forecast, hincast
-dirbase = '/nird/projects/nird/NS9853K/DATA/S2S/MARS'
-dir = '%s/%s/%s/'%(dirbase,product,'/ECMWF/sfc')
+        print(filename)
+        #server.execute(dic,filename)
 
 
-if product == 'hindcast':
-    STREAM =  'enfh' 
-if product == 'forecast':
-    STREAM = 'enfo' 
-  
-
-
-
-basedict = {
-    'class': 'od',
-    'expver': '1',
-    'stream': STREAM ,
-    'time': '00:00:00',
-    'grid': '0.5/0.5',
-    'area': '89/-45/20/50'
-    
-}
-
-# timestep stuff
-l = range(0,1128,24)
-paired = ['-'.join([str(v) for v in l[i:i + 2]]) for i in range(len(l))]
-final = '/'.join(paired[0:-1])
-
-
-meta = {
-    'tp': {
-        'param': '228228',  
-        'levtype': 'sfc',
-        #'step': '/'.join(['%i'%i for i in range(0,1128,24)]) 
-        'step': '0/to/1104/by/24'
-    },
-    
-     't2m': {
-        'param': '167',  
-        'levtype': 'sfc',
-        'step': '/'.join([final]) 
-    },
-    
-     'sst': {
-        'param': '34.128',  
-        'levtype': 'sfc',
-        'step': '0/to/1104/by/24'
-       # 'step': '/'.join([final]) 
-    },
-    
-     'u10': {
-        'param': '165',  
-        'levtype': 'sfc',
-        'step': '0/to/1104/by/24'
-    },
-    
-    'v10': {
-        'param': '166',  
-        'levtype': 'sfc',
-        'step': '0/to/1104/by/24'
-    },
-  
-    'mslp': {
-        'param': '151',  
-        'levtype': 'sfc',
-        'step': '0/to/1104/by/24'
-    },
-     
-    'sal': {
-        'param': '151175',  
-        'levtype': 'o2d',
-        'step': '/'.join([final]) 
-    }
-}
-
-# generate set of continuous monday and thursday dates 
-dates_monday = pd.date_range("20200123", periods=52, freq="7D") # forecasts start Thursday
-dates_thursday = pd.date_range("20200127", periods=52, freq="7D") # forecasts start Monday
-dates_fcycle = dates_monday.union(dates_thursday) 
-
-
-
-# Program start
-for filename in (
-    'sst',
-    
-):
-    for prefix in (
-        'pf',
-        'cf',
-    ):
-        for dates in dates_fcycle:
-            d       = dates.strftime('%Y-%m-%d')
-            refyear = int(d[:4])
-            datadir = '%s/%s'%(dir,filename)
-            
-            #if not os.path.exists(datadir)  :
-            #    os.makedirs(datadir)
-
-            # hindcast dates for past twenty years
-            hdate = '/'.join([d.replace('%i'%refyear,'%i'%i) for i in range(refyear-20,refyear)])
-
-            # model version for given hindcast dates
-            forcastcycle = d2m.which_mv_for_init(d,model='ECMWF',fmt='%Y-%m-%d')
-
-            # name of output directory + filename 
-            target = '%s/%s_%s_%s_%s_%s_%s.grb'%(datadir,filename,forcastcycle,'05x05',d,prefix,product)
-
-
-            if not os.path.isfile(target):
-               dic = basedict.copy()
-               for k,v in meta[filename].items():
-                   dic[k] = v
-                   #print(dic)
-               dic['date'] = d
-               dic['type'] = prefix
-               if ( product == 'hindcast' ):
-                   dic['hdate'] = hdate
-                   if prefix == 'pf':
-                       dic['number'] =  '1/to/10'
-               if ( product == 'forecast' ):
-                   if prefix == 'pf':
-                       dic['number'] =  '1/to/50'
-              # out = '%s,%s=%s'%(dic, '"target"',target)
-              # out= '%s=%s'%('target', target) 
-               out= '%s%s%s'%('"', target,'"')
-               print(dic)
-
-            
-               if server is not None:
-                   server.execute(dic,target)
-                    
-print('DONE')
-"""
