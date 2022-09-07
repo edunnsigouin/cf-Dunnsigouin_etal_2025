@@ -3,13 +3,12 @@ from ecmwfapi import *
 import os,sys
 import pandas as pd
 from datetime import datetime
-import S2S.date_to_model  as d2m
-
+from forsikring import date_to_model  as d2m
 
 server = ECMWFService("mars")
 
 product = 'hindcast' # forecast, hincast
-dirbase = '/nird/projects/nird/NS9853K/DATA/S2S/MARS'
+dirbase = '/nird/projects/NS9853K/DATA/S2S/MARS'
 dir = '%s/%s/%s/'%(dirbase,product,'/ECMWF/sfc')
 
 
@@ -119,7 +118,6 @@ for filename in (
               # out = '%s,%s=%s'%(dic, '"target"',target)
               # out= '%s=%s'%('target', target) 
                out= '%s%s%s'%('"', target,'"')
-               print(dic)
                print(out)
                if server is not None:
                    print('')

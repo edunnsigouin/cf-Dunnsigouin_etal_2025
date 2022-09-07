@@ -3,13 +3,12 @@ from ecmwfapi import *
 import os,sys
 import pandas as pd
 from datetime import datetime
-import S2S.date_to_model  as d2m
-
+from forsikring import date_to_model  as d2m
 
 server = ECMWFService("mars")
 
 product = 'hindcast' # forecast, hincast
-dirbase = '/nird/projects/nird/NS9853K/DATA/S2S/MARS'
+dirbase = '/nird/projects/NS9853K/DATA/S2S/MARS'
 dir = '%s/%s/%s/'%(dirbase,product,'/ECMWF/sfc')
 
 
@@ -40,7 +39,7 @@ meta = {
         'param': '228228',  
         'levtype': 'sfc',
         #'step': '/'.join(['%i'%i for i in range(0,1128,24)]) 
-        'step': '0/to/1104/by/24'
+        'step': '0'
     },
     
      't2m': {
@@ -52,7 +51,7 @@ meta = {
      'sst': {
         'param': '34.128',  
         'levtype': 'sfc',
-        'step': '0/to/1104/by/24'
+        'step': '0'
        # 'step': '/'.join([final]) 
     },
     
@@ -81,26 +80,25 @@ meta = {
     }
 }
 
-dates_monday = pd.date_range("20200123", periods=52, freq="7D") # forecasts start Thursday
-dates_thursday = pd.date_range("20200127", periods=52, freq="7D") # forecasts start Monday
-dates_fcycle = dates_monday.union(dates_thursday) 
-    
+dates_monday = pd.date_range("20200123", periods=1, freq="7D") # forecasts start Thursday
+dates_thursday = pd.date_range("20200127", periods=1, freq="7D") # forecasts start Monday
+dates_fcycle = dates_monday#.union(dates_thursday) 
+
+temp  = ['cf']
    # Program start
 for filename in (
     'sst',
     
 ):
-    for prefix in (
-        'pf',
-        'cf',
-    ):
+    for prefix in temp:
+        
         for dates in dates_fcycle:
             d = dates.strftime('%Y-%m-%d')
             refyear = int(d[:4])
             datadir = '%s/%s'%(dir,filename)
             if not os.path.exists(datadir)  :
                 os.makedirs(datadir)
-            hdate = '/'.join([d.replace('%i'%refyear,'%i'%i) for i in range(refyear-20,refyear)])
+            hdate = '/'.join([d.replace('%i'%refyear,'%i'%i) for i in range(refyear-1,refyear)])
             forcastcycle = d2m.which_mv_for_init(d,model='ECMWF',fmt='%Y-%m-%d')
             target = '%s/%s_%s_%s_%s_%s_%s.grb'%(datadir,filename,forcastcycle,'05x05',d,prefix,product)
             if not os.path.isfile(target):
@@ -112,10 +110,10 @@ for filename in (
                if ( product == 'hindcast' ):
                    dic['hdate'] = hdate
                    if prefix == 'pf':
-                       dic['number'] =  '1/to/10'
+                       dic['number'] =  '1/to/1'
                if ( product == 'forecast' ):
                    if prefix == 'pf':
-                       dic['number'] =  '1/to/50'
+                       dic['number'] =  '1/to/1'
               # out = '%s,%s=%s'%(dic, '"target"',target)
               # out= '%s=%s'%('target', target) 
                out= '%s%s%s'%('"', target,'"')
@@ -123,6 +121,6 @@ for filename in (
                print(out)
                if server is not None:
                    print('')
-                   #server.execute(dic,target)
+                   server.execute(dic,target)
                     
 #print('DONE')
