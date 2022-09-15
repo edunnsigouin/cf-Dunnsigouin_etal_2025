@@ -10,7 +10,7 @@ resolution). Contact the person from Norway here:
 https://www.ecmwf.int/en/about/contact-us/computing-representatives 
 """
 
-from ecmwfapi                    import ECMWFService
+from ecmwfapi                    import *
 import os,sys
 import pandas                    as pd
 from datetime                    import datetime
@@ -19,11 +19,11 @@ from forsikring                  import config
 
 # input -----------------------------------
 product = 'hindcast' # hindcast/forecast
-grid    = '0.5/0.5' # degree lat/lon resolution
-area    = '65/-5/60/0' #'80/0/50/40' # lat-lon limits for download
+nhdates = 1 # number of hindcast years
+grid    = '0.25/0.25' # degree lat/lon resolution
+area    = '73.5/-27/33/45'# ecmwf european lat-lon bounds
 var     = 'tp'
 step    = '0'#'0/to/1104/by/6' #  46 days at given time resolution
-#dformat = 'netcdf'
 # -----------------------------------------
 
 # download stuff
@@ -32,7 +32,7 @@ server = ECMWFService("mars")
 
 # define stuff
 if product == 'hindcast':
-    number = '1/to/10'
+    number = '1'#'1/to/10'
     stream = 'enfh'
 elif product == 'forecast':
     number = '1/to/50'
@@ -48,34 +48,23 @@ elif var == 'sf': # snowfall (m)
     param = '144.128'
     
 # populate dictionary
-#dic = {
-#    'class': 'od',
-#    'expver': '1',
-#    'stream': stream,
-#    'time': '00:00:00',
-#    'grid': grid,
-#    'area': area,
-#    'param':param,
-#    'levtype':'sfc',
-#    'step':step,
-#    'number':number,
-#    'type':'',
-#    'date':''
-#}    
 
 dic = {
     'class': 'od',
     'expver': '1',
     'stream': stream,
     'time': '00:00:00',
+    'grid': grid,
     'area': area,
-    'param':param,
-    'levtype':'sfc',
-    'step':step,
-    'number':'1',
+    'param': param,
+    'levtype': 'sfc',
+    'step': step,
+    'number': number,
     'type':'',
     'date':''
-}
+}    
+
+
 
 
 # generate set of continuous monday and thursday dates for the year 2021  
@@ -98,8 +87,7 @@ for date in dates_monday_thursday:
         dic['date']  = datestring
         dic['type']  = dtype
         if product == 'hindcast':
-            #hdate        = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-20,refyear)])
-            hdate        = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-1,refyear)])
+            hdate        = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-nhdates,refyear)])
             dic['hdate'] = hdate
 
         print('downloading: ' + filename)

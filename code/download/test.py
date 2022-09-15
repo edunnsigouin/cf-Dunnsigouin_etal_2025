@@ -1,40 +1,26 @@
 #!/usr/bin/env python
-from ecmwfapi import ECMWFService
-
-"""
-server = ECMWFService("mars")
-server.execute(
-    {
-    "class": "od",
-    "date": "2019-01-03",
-    "expver": "1",
-    "hdate":"1999-01-03",
-    "levtype": "sfc",
-    "param": "228.128",
-    "step": "0",
-    "stream": "enfh",
-    "time": "00:00:00",
-    "type": "cf"
-    },
-    "target.grib")
-"""
-
+from ecmwfapi import *
 
 server = ECMWFService("mars")
-req = {
-    "class": "od",
-    "date": "20210104",
-    "hdate": "20200104",
-    "expver": "1",
-    "levtype": "sfc",
-    "param": "228.128",
-    "step": "0",
-    "stream": "enfh",
-    "time": "00",
-    "type": "cf"
-    }
- 
-kv=['{}={}'.format(k, v) for k, v in req.items()]
-kv='list,output=cost,{}'.format(','.join(kv))
 
-server.execute(kv,'target.txt')
+dic = {
+    'class': 'od',
+    'expver': '1',
+    'stream': 'enfh',
+    'time': '00:00:00',
+    'param': '228.128',
+    'levtype': 'sfc',
+    'step': '0',
+    'number':'1',
+    'type': 'pf',
+    'date': '2021-01-04',
+    'hdate':'2020-01-04'
+}
+
+path     = '/nird/projects/NS9853K/DATA/S2S/MARS/hindcast/ECMWF/sfc/tp/'
+filename = 'test.grib'
+
+server.execute(dic, path + filename)
+
+
+
