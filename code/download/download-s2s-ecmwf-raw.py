@@ -3,7 +3,7 @@ Downloads raw ecmwf S2S data following this procedure:
 https://confluence.ecmwf.int/display/WEBAPI/Access+MARS
 
 Basically, you need to populate a dictionary with specific
-values/keywords and use it as input to the downloading software.
+values/keywords and use it as input to the downloading api
 
 Note: You need special access to download raw forecasts (at higher
 resolution). Contact the person from Norway here:
@@ -18,26 +18,28 @@ from forsikring                  import date_to_model  as d2m
 from forsikring                  import config
 
 # input -----------------------------------
-product = 'hindcast' # hindcast/forecast
-nhdates = 1 # number of hindcast years
-grid    = '0.25/0.25' # degree lat/lon resolution
-area    = '73.5/-27/33/45'# ecmwf european lat-lon bounds
-var     = 'tp'
-step    = '0'#'0/to/1104/by/6' #  46 days at given time resolution
+product    = 'hindcast' # hindcast/forecast
+nhdates    = 1 # number of hindcast years
+grid       = '0.25/0.25' # degree lat/lon resolution
+area       = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
+var        = 'tp'
+step       = '0'#'0/to/1104/by/6' #  46 days at given time resolution
+write2file = True
 # -----------------------------------------
 
 # download stuff
 server = ECMWFService("mars")
 
-
 # define stuff
 if product == 'hindcast':
     number = '1'#'1/to/10'
     stream = 'enfh'
+    path   = config.dirs['raw_hindcast'] + var + '/'
 elif product == 'forecast':
     number = '1/to/50'
     stream = 'enfo'
-
+    path   = config.dirs['raw_forecast'] + var + '/'
+    
 dtypes = ['pf']
 
 if var == 'tp': # total precipitation (m)
@@ -79,7 +81,6 @@ dates_monday_thursday = dates_monday
 for date in dates_monday_thursday:
     for dtype in dtypes:
         
-        path         = config.dirs[product] + var + '/'
         datestring   = date.strftime('%Y-%m-%d')
         refyear      = int(datestring[:4])
         forcastcycle = d2m.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
@@ -92,7 +93,8 @@ for date in dates_monday_thursday:
 
         print('downloading: ' + filename)
         print(dic)
-        server.execute(dic,path + filename)
+        if write2file:
+            server.execute(dic,path + filename)
 
         # merge cf and pf into new file & delete old files
 

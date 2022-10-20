@@ -24,8 +24,8 @@ from forsikring import config
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe
 grid       = '0.25/0.25'
-variables  = ['total_precipitation'] 
-years      = np.array([2021])
+variables  = ['maximum_total_precipitation_rate_since_previous_post_processing']
+years      = np.arange(2000,2022,1)
 months     = np.arange(1,13,1)
 write2file = True
 # -----------------------------------------------------
@@ -67,31 +67,33 @@ for variable in variables:
                     # aggregate from hourly to daily
                     da = xr.open_dataarray(path + filename)
                     
-                    if variable == 'total_precipitation':
-                        da = da.resample(time='1D').sum('time') # accumulated
-                    elif variable == 'snowfall':
-                        da = da.resample(time='1D').sum('time') # accumulated
-                    elif variable == 'surface_runoff':
-                        da = da.resample(time='1D').sum('time') # accumulated
-                    elif (variable == 'maximum_total_precipitation_rate_since_previous_post_processing'):
-                        da = da.resample(time='1D').max('time')
-                    elif variable == 'convective_rain_rate': # instantaneous
-                        da = da.resample(time='1D').max('time')
-                    elif variable == 'large_scale_rain_rate': # instantaneous
-                        da = da.resample(time='1D').max('time')
-                    elif variable == 'mean_total_precipitation_rate': # could calc max here maybe?
-                        da = da.resample(time='1D').mean('time')
-                    elif variable == 'mean_snowfall_rate': 
-                        da = da.resample(time='1D').mean('time')
+                    with xr.set_options(keep_attrs=True):
+                        if variable == 'total_precipitation':
+                            da = da.resample(time='1D').sum('time') # accumulated
+                        elif variable == 'snowfall':
+                            da = da.resample(time='1D').sum('time') # accumulated
+                        elif variable == 'surface_runoff':
+                            da = da.resample(time='1D').max('time') # accumulated
+                        elif (variable == 'maximum_total_precipitation_rate_since_previous_post_processing'):
+                            da = da.resample(time='1D').max('time')
+                        elif variable == 'convective_rain_rate': # instantaneous
+                            da = da.resample(time='1D').max('time')
+                        elif variable == 'large_scale_rain_rate': # instantaneous
+                            da = da.resample(time='1D').max('time')
+                        elif variable == 'mean_total_precipitation_rate': # could calc max here maybe?
+                            da = da.resample(time='1D').mean('time')
+                        elif variable == 'mean_snowfall_rate': 
+                            da = da.resample(time='1D').mean('time')
                         
                     da.to_netcdf(path + filename)
                     da.close()
 
         # aggregate to yearly files & delete daily files
-        filenames    = variable + '_' + str(year) + '-*'
-        filename_out = variable + '_' + str(year) + '.nc'
-        da           = xr.open_mfdataset(path + filenames)
-        da.to_netcdf(path + filename_out)
-        da.close()
-        os.system('rm ' + path + filenames)
+        with xr.set_options(keep_attrs=True):
+            filenames    = variable + '_' + str(year) + '-*'
+            filename_out = variable + '_' + str(year) + '.nc'
+            da           = xr.open_mfdataset(path + filenames)
+            da.to_netcdf(path + filename_out)
+            da.close()
+            os.system('rm ' + path + filenames)
 
