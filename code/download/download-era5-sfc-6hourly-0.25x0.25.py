@@ -1,17 +1,6 @@
 """
-Downloads era5 subdaily at 0.25x0.25 resolution over europe
+Downloads era5 6hourly data at 0.25x0.25 resolution over europe
 Europe defined following ecmwf. 
-Some interesting variables are:
-- total precipitation
-- snowfall
-- maximum total precipitation rate since last post-processing
-- mean snowfall rate
-- mean total precipitation rate
-- convective and large scale snowfall rate (instantaneous)
-- convective and large scale rain rate (instantaneous) 
-- runoff (surface & sub-surface)
-- soil moisture 
-
 """
 
 import numpy  as np
@@ -24,9 +13,10 @@ from forsikring import config
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe
 grid       = '0.25/0.25'
-variables  = ['total_precipitation'] 
-years      = np.array([2021])
+variables  = ['tp']
+years      = np.arange(1995,2022,1)
 months     = np.arange(1,13,1)
+comp_lev   = 5 # file compression level
 write2file = True
 # -----------------------------------------------------
 
@@ -46,16 +36,21 @@ specs = {
 }
 
 for variable in variables:
+    path  = config.dirs['era5_6hourly'] + variable + '/'
     for year in years:
         for month in months:
             days      = pd.Period(str(year) + '-' + str(month)).days_in_month
             for day in np.arange(1,days+1):
 
-                specs['variable'] = variable
+                if variable == 'mxtpr':
+                    # api doesn't recognize short variable name..
+                    specs['variable'] = 'maximum_total_precipitation_rate_since_previous_post_processing'
+                else:
+                    specs['variable'] = variable
+                    
                 specs['year']     = str(year)
                 specs['month']    = str(month)
                 specs['day']      = str(day)
-                path              = config.dirs['era5'] + variable + '/'
                 filename          = variable + '_' + str(year) + '-' + str(month).zfill(2) + '-' + str(day).zfill(2) + '.nc'
 
                 if write2file:
@@ -64,30 +59,26 @@ for variable in variables:
                     print('')
                     c.retrieve(data_type,specs,path + filename)
 
-                    # aggregate from hourly to daily
+                    print('aggregate from hourly to 6 hourly..')
                     da = xr.open_dataarray(path + filename)
                     
-                    if variable == 'total_precipitation':
-                        da = da.resample(time='1D').sum('time')
-                    elif variable == 'snowfall':
-                        da = da.resample(time='1D').sum('time')
-                    elif variable == 'surface_runoff':
-                        da = da.resample(time='1D').sum('time')
-                    elif (variable == 'maximum_total_precipitation_rate_since_previous_post_processing'):
-                        da = da.resample(time='1D').max('time')
-                    elif variable == 'convective_rain_rate': # instantaneous
-                        da = da.resample(time='1D').max('time')
-                    elif variable == 'large_scale_rain_rate': # instantaneous
-                        da = da.resample(time='1D').max('time')
-                    elif variable == 'mean_total_precipitation_rate': # could calc max here maybe?
-                        da = da.resample(time='1D').mean('time')
-                    elif variable == 'mean_snowfall_rate': 
-                        da = da.resample(time='1D').mean('time')
+                    with xr.set_options(keep_attrs=True):
+                        if variable == 'tp':
+                            da = da.resample(time='6H').sum('time') # accumulated
+                        elif variable == 'sf':
+                            da = da.resample(time='6H').sum('time') # accumulated
+                        elif (variable == 'mxtpr'):
+                            da = da.resample(time='6H').max('time')
                         
                     da.to_netcdf(path + filename)
                     da.close()
 
-        # aggregate to yearly files & delete daily files
+        print('')
+        print('')
+        print('')
+        print('')            
+        print('aggregate to yearly files & delete daily files..')
+        #with xr.set_options(keep_attrs=True):
         filenames    = variable + '_' + str(year) + '-*'
         filename_out = variable + '_' + str(year) + '.nc'
         da           = xr.open_mfdataset(path + filenames)
@@ -95,3 +86,8 @@ for variable in variables:
         da.close()
         os.system('rm ' + path + filenames)
 
+        print('compress file to reduce space..')
+        cmd               = 'nccopy -k 3 -s -d ' + str(comp_lev) + ' '
+        filename_out_comp = 'compressed_' + variable + '_' + str(year) + '.nc'
+        os.system(cmd + path + filename_out + ' ' + path + filename_out_comp)
+        os.system('mv ' + path + filename_out_comp + ' ' + path + filename_out)

@@ -17,19 +17,19 @@ import xarray                    as xr
 import numpy                     as np
 from datetime                    import datetime
 from forsikring                  import date_to_model  as d2m
-from forsikring                  import config
+from forsikring                  import config,misc
 
 # input -----------------------------------
 product       = 'hindcast' # hindcast/forecast
 mon_thu_start = ['20210104','20210107'] # first initialization date of forecast
-num_weeks     = 1 # number of forecasts to download
-nhdates       = 1 # number of hindcast years
+num_weeks     = 1 # number of forecasts to download (52)
+nhdates       = 2 # number of hindcast years
 grid          = '0.25/0.25' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var           = 't2m'
-step          = '0/to/24'#'0/to/1104/by/6' #  46 days at given time resolution
+var           = 'tp'
+step          = '0/to/360/by/6' # 0/to/1104/by/6' #  46 days at given time resolution
 comp_lev      = 5 # file compression level
-write2file    = False
+write2file    = True
 # -----------------------------------------
 
 # download stuff
@@ -48,16 +48,12 @@ elif product == 'forecast':
     dtypes = ['cf','pf']
 
 # translate variable names to code    
-if var == 'tpd': # total precipitation per day (m)
+if var == 'tp': # total precipitation per 6 hours (m)
     param = '228.128'
-elif var == 'mxtp6': # maximum daily total precipitation in 6 hour interval (m)
-    param = '228.128'
-elif var == 'mxtprd': # maximum daily precipitation rate at a given timestep (kgm-2s-1)
-    param = '226.228'
-elif var == 'sf': # total snowfall per day (m)
+elif var == 'sf': # snowfall per 6 hours (m)
     param = '144.128'
-elif var == 'mxsf6': # maximum daily total snowfall in 6 hour interval (m)
-    param = '144.128'    
+elif var == 'mxtpr': # maximum daily precipitation rate after last post-processing (kgm-2s-1)
+    param = '226.228'
 elif var == 't2m':
     param = '167.128' # two-meter temperature
 
@@ -89,6 +85,8 @@ dates_monday_thursday = dates_monday
 # populate dictionary some more and download each hindcast/forcast one-by-one
 for date in dates_monday_thursday:
     for dtype in dtypes:
+
+        misc.tic()
         
         datestring    = date.strftime('%Y-%m-%d')
         refyear       = int(datestring[:4])
@@ -111,6 +109,8 @@ for date in dates_monday_thursday:
         print('convert grib to netcdf..')    
         os.system('grib_to_netcdf ' + filename_grb + ' -o ' + filename_nc)    
         os.system('rm ' +  filename_grb)
+
+        misc.toc()
         
     print('merge cf and pf into new file...')
     filename_cf    = path + '%s_%s_%s_%s_%s.nc'%(var,forcastcycle,'05x05',datestring,'cf')
@@ -131,5 +131,4 @@ for date in dates_monday_thursday:
     cmd              = 'nccopy -k 4 -s -d ' + str(comp_lev) + ' '
     filename_nc_comp = path + 'compressed_' + '%s_%s_%s_%s.nc'%(var,forcastcycle,'05x05',datestring)
     os.system(cmd + filename_merge + ' ' + filename_nc_comp)
-    os.system('rm ' + filename_merge)
     os.system('mv ' + filename_nc_comp + ' ' + filename_merge)
