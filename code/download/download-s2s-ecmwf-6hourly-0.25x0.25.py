@@ -20,14 +20,14 @@ from forsikring                  import date_to_model  as d2m
 from forsikring                  import config,misc
 
 # input -----------------------------------
-product       = 'hindcast' # hindcast/forecast
+product       = 'forecast' # hindcast/forecast
 mon_thu_start = ['20210104','20210107'] # first initialization date of forecast
 num_weeks     = 1 # number of forecasts to download (52)
-nhdates       = 2 # number of hindcast years
+nhdates       = 1 # number of hindcast years
 grid          = '0.25/0.25' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var           = 'tp'
-step          = '0/to/360/by/6' # 0/to/1104/by/6' #  46 days at given time resolution
+step          = '0'#'0/to/360/by/6' # 0/to/1104/by/6' #  46 days at given time resolution
 comp_lev      = 5 # file compression level
 write2file    = True
 # -----------------------------------------
@@ -42,10 +42,10 @@ if product == 'hindcast':
     path   = config.dirs['raw_hindcast'] + var + '/'
     dtypes = ['cf','pf']
 elif product == 'forecast':
-    number = '1/to/50'
+    number = '1/to/2'#'1/to/50'
     stream = 'enfo'
     path   = config.dirs['raw_forecast'] + var + '/'
-    dtypes = ['cf','pf']
+    dtypes = ['pf']
 
 # translate variable names to code    
 if var == 'tp': # total precipitation per 6 hours (m)
@@ -73,7 +73,6 @@ dic = {
     'date':''
 }    
 
-
 # generate set of continuous monday and thursday dates starting on mon_thu_start[0] and mon_thu_start[1] respectively
 #dates_monday          = pd.date_range("20210104", periods=num_weeks, freq="7D") # forecasts start Thursday
 #dates_thursday        = pd.date_range("20210107", periods=num_weeks, freq="7D") # forecasts start Monday
@@ -91,7 +90,7 @@ for date in dates_monday_thursday:
         datestring    = date.strftime('%Y-%m-%d')
         refyear       = int(datestring[:4])
         forcastcycle  = d2m.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
-        base_name     = '%s_%s_%s_%s_%s'%(var,forcastcycle,'05x05',datestring,dtype)
+        base_name     = '%s_%s_%s_%s_%s'%(var,forcastcycle,'0.25x0.25',datestring,dtype)
         filename_grb  = path + base_name + '.grb'
         filename_nc   = path + base_name + '.nc'
         dic['date']   = datestring
@@ -99,7 +98,7 @@ for date in dates_monday_thursday:
         if product == 'hindcast':
             hdate        = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-nhdates,refyear)])
             dic['hdate'] = hdate
-
+            
         print('downloading: ' + filename_grb)
         print(dic)
 
@@ -108,14 +107,14 @@ for date in dates_monday_thursday:
     
         print('convert grib to netcdf..')    
         os.system('grib_to_netcdf ' + filename_grb + ' -o ' + filename_nc)    
-        os.system('rm ' +  filename_grb)
+        #os.system('rm ' +  filename_grb)
 
         misc.toc()
-        
+       
     print('merge cf and pf into new file...')
-    filename_cf    = path + '%s_%s_%s_%s_%s.nc'%(var,forcastcycle,'05x05',datestring,'cf')
-    filename_pf    = path + '%s_%s_%s_%s_%s.nc'%(var,forcastcycle,'05x05',datestring,'pf')
-    filename_merge = path + '%s_%s_%s_%s.nc'%(var,forcastcycle,'05x05',datestring)
+    filename_cf    = path + '%s_%s_%s_%s_%s.nc'%(var,forcastcycle,'0.25x0.25',datestring,'cf')
+    filename_pf    = path + '%s_%s_%s_%s_%s.nc'%(var,forcastcycle,'0.25x0.25',datestring,'pf')
+    filename_merge = path + '%s_%s_%s_%s.nc'%(var,forcastcycle,'0.25x0.25',datestring)
     ds_cf          = xr.open_dataset(filename_cf)
     ds_pf          = xr.open_dataset(filename_pf)
     ds_cf          = ds_cf.assign_coords(number=11).expand_dims("number",axis=1) # hard coded # of ensemble members
@@ -124,11 +123,12 @@ for date in dates_monday_thursday:
     ds_pf.close()
 
     ds.to_netcdf(filename_merge)
-    os.system('rm ' + filename_cf)
-    os.system('rm ' + filename_pf)
+    #os.system('rm ' + filename_cf)
+    #os.system('rm ' + filename_pf)
     
     print('compress file to reduce space..')
     cmd              = 'nccopy -k 4 -s -d ' + str(comp_lev) + ' '
-    filename_nc_comp = path + 'compressed_' + '%s_%s_%s_%s.nc'%(var,forcastcycle,'05x05',datestring)
+    filename_nc_comp = path + 'compressed_' + '%s_%s_%s_%s.nc'%(var,forcastcycle,'0.25x0.25',datestring)
     os.system(cmd + filename_merge + ' ' + filename_nc_comp)
-    os.system('mv ' + filename_nc_comp + ' ' + filename_merge)
+    #os.system('mv ' + filename_nc_comp + ' ' + filename_merge)
+

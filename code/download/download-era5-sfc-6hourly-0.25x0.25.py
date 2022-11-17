@@ -14,7 +14,7 @@ from forsikring import config
 area       = '73.5/-27/33/45' # or 'E' for europe
 grid       = '0.25/0.25'
 variables  = ['tp']
-years      = np.arange(1995,2022,1)
+years      = np.arange(1995,1996,1)
 months     = np.arange(1,13,1)
 comp_lev   = 5 # file compression level
 write2file = True

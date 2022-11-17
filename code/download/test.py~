@@ -1,0 +1,30 @@
+
+from ecmwfapi                    import *
+import os,sys
+import pandas                    as pd
+import xarray                    as xr
+import numpy                     as np
+from datetime                    import datetime
+from forsikring                  import date_to_model  as d2m
+from forsikring                  import config,misc
+
+
+# download stuff
+server = ECMWFService("mars")
+
+# populate API dictionary
+dic = {
+    'class': 'od',
+    'expver': '1',
+    'stream': 'enfh',
+    'time': '00:00:00',
+    'param': '167.128',
+    'levtype': 'sfc',
+    'step': '0',
+    'grid': '0.25/0.25',
+    'type':'cf',
+    'date':'2021-01-04',
+    'hdate':'2016-01-04/2017-01-04/2018-01-04/2019-01-04/2020-01-04'
+}    
+
+server.execute(dic,'download.grb')
