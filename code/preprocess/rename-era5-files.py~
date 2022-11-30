@@ -1,0 +1,21 @@
+"""                                                                                                                                                                                                                        
+renames era5 files to lincude grid resolution in filename
+"""
+
+import numpy  as np
+import xarray as xr
+from dask.diagnostics import ProgressBar
+import cdsapi
+import pandas as pd
+import os
+from forsikring import config
+
+# INPUT ----------------------------------------------- 
+area       = '73.5/-27/33/45' # or 'E' for europe
+grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
+variables  = ['sf','mxtpr']
+years      = np.arange(1995,2022,1)
+months     = np.arange(1,13,1)
+comp_lev   = 5 # file compression level    
+write2file = False
+# -----------------------------------------------------       

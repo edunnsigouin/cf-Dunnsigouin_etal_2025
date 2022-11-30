@@ -1,0 +1,102 @@
+"""
+Downloads era5 6hourly data at 0.25x0.25 resolution over europe
+Europe defined following ecmwf. 
+"""
+
+import numpy  as np
+import xarray as xr
+from dask.diagnostics import ProgressBar
+import cdsapi
+import pandas as pd
+import os
+from forsikring import config
+
+# INPUT -----------------------------------------------
+area       = '73.5/-27/33/45' # or 'E' for europe
+grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
+variables  = ['sf','mxtpr']
+years      = np.arange(1995,2022,1)
+months     = np.arange(1,13,1)
+comp_lev   = 5 # file compression level
+write2file = True
+# -----------------------------------------------------
+
+c         = cdsapi.Client()
+data_type = 'reanalysis-era5-single-levels'
+
+specs = {
+    'product_type': 'reanalysis',
+    'format': 'netcdf',
+    'variable': '',
+    'year': '',
+    'month': '',
+    'day': '',
+    'time': '00:00/01:00/02:00/03:00/04:00/05:00/06:00/07:00/08:00/09:00/10:00/11:00/12:00/13:00/14:00/15:00/16:00/17:00/18:00/19:00/20:00/21:00/22:00/23:00',
+    'area': area,
+    'grid': grid,
+}
+
+for variable in variables:
+    
+    if grid == '0.25/0.25':
+        path       = config.dirs['era5_6hourly'] + variable + '/'
+        gridstring = '0.25x0.25'
+    elif grid == '0.5/0.5':
+        path       = config.dirs['era5_6hourly'] + variable + '/'
+        gridstring = '0.5x0.5'
+        
+    for year in years:
+        for month in months:
+            days      = pd.Period(str(year) + '-' + str(month)).days_in_month
+            for day in np.arange(1,days+1):
+
+                if variable == 'mxtpr':
+                    # api doesn't recognize short variable name..
+                    specs['variable'] = 'maximum_total_precipitation_rate_since_previous_post_processing'
+                else:
+                    specs['variable'] = variable
+                    
+                specs['year']     = str(year)
+                specs['month']    = str(month)
+                specs['day']      = str(day)
+                filename          = variable + '_' + gridstring + '_' + str(year) + '-' + str(month).zfill(2) + '-' + str(day).zfill(2) + '.nc'
+
+                if write2file:
+                    print('')
+                    print('downloading: ' + filename)
+                    print('')
+                    c.retrieve(data_type,specs,path + filename)
+
+                    print('aggregate from hourly to 6 hourly..')
+                    da = xr.open_dataarray(path + filename)
+                    
+                    with xr.set_options(keep_attrs=True):
+                        if variable == 'tp':
+                            da = da.resample(time='6H').sum('time') # accumulated
+                        elif variable == 'sf':
+                            da = da.resample(time='6H').sum('time') # accumulated
+                        elif (variable == 'mxtpr'):
+                            da = da.resample(time='6H').max('time')
+                        
+                    da.to_netcdf(path + filename)
+                    da.close()
+
+        print('')
+        print('')
+        print('')
+        print('')            
+        print('aggregate to yearly files & delete daily files..')
+        filenames    = variable + '_' + gridstring + '_' + str(year) + '-*'
+        filename_out = variable + '_' + gridstring + '_' + str(year) + '.nc'
+        da           = xr.open_mfdataset(path + filenames)
+        with ProgressBar():
+            da = da.compute()
+        da.to_netcdf(path + filename_out)
+        da.close()
+        os.system('rm ' + path + filenames)
+
+        print('compress file to reduce space..')
+        cmd               = 'nccopy -k 3 -s -d ' + str(comp_lev) + ' '
+        filename_out_comp = 'compressed_' + variable + '_' + gridstring + '_' + str(year) + '.nc'
+        os.system(cmd + path + filename_out + ' ' + path + filename_out_comp)
+        os.system('mv ' + path + filename_out_comp + ' ' + path + filename_out)

@@ -5,6 +5,7 @@ Europe defined following ecmwf.
 
 import numpy  as np
 import xarray as xr
+from dask.diagnostics import ProgressBar
 import cdsapi
 import pandas as pd
 import os
@@ -12,9 +13,9 @@ from forsikring import config
 
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe
-grid       = '0.25/0.25'
-variables  = ['tp']
-years      = np.arange(1995,1996,1)
+grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
+variables  = ['sf','mxtpr']
+years      = np.arange(1995,2022,1)
 months     = np.arange(1,13,1)
 comp_lev   = 5 # file compression level
 write2file = True
@@ -36,7 +37,12 @@ specs = {
 }
 
 for variable in variables:
-    path  = config.dirs['era5_6hourly'] + variable + '/'
+    
+    if grid == '0.25/0.25':
+        path = config.dirs['era5_6hourly'] + '/0.25x0.25/' + variable + '/'
+    elif grid == '0.5/0.5':
+        path = config.dirs['era5_6hourly'] + '/0.5x0.5/' + variable + '/'
+        
     for year in years:
         for month in months:
             days      = pd.Period(str(year) + '-' + str(month)).days_in_month
@@ -78,10 +84,11 @@ for variable in variables:
         print('')
         print('')            
         print('aggregate to yearly files & delete daily files..')
-        #with xr.set_options(keep_attrs=True):
         filenames    = variable + '_' + str(year) + '-*'
         filename_out = variable + '_' + str(year) + '.nc'
         da           = xr.open_mfdataset(path + filenames)
+        with ProgressBar():
+            da = da.compute()
         da.to_netcdf(path + filename_out)
         da.close()
         os.system('rm ' + path + filenames)

@@ -12,8 +12,8 @@ raw_hindcast        = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
 raw_forecast        = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
 processed_hindcast  = processed + "s2s/mars/ecmwf/hindcast/sfc/"
 processed_forecast  = processed + "s2s/mars/ecmwf/forecast/sfc/"
-era5_daily          = raw + "era5/daily/0.25x0.25_europe_nc/"
-era5_6hourly        = raw + "era5/6hourly/0.25x0.25_europe_nc/"
+era5_daily          = raw + "era5/daily/"
+era5_6hourly        = raw + "era5/6hourly/"
 
 dirs = {"proj":proj,
         "data_interim":data_interim,
