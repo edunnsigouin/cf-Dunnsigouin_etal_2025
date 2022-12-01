@@ -16,3 +16,5 @@ def toc():
         print("Elapsed time is " + str(time.time() - startTime_for_tictoc) + " seconds.")
     else:
         print("Toc: start time not set")
+
+        
