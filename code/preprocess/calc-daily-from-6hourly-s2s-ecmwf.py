@@ -12,14 +12,14 @@ from forsikring import config,misc,s2s
 from matplotlib  import pyplot as plt
 
 # INPUT ----------------------------------------------- 
-variables     = ['sf']                  
+variables     = ['tp','rn','mxtp6','mxtpr','mxrn6']                  
 dtypes        = ['cf']                  # control & perturbed forecasts/hindcasts
 product       = 'hindcast'              # hindcast or forecast ?
 mon_thu_start = ['20210104','20210107'] # first monday & thursday initialization date of forecast
 num_i_weeks   = 1                       # number of forecasts/hindcast intialization dates to download
 grid          = '0.25/0.25'             # '0.25/0.25' or '0.5/0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)
-write2file    = False
+write2file    = True
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
@@ -36,7 +36,6 @@ for variable in variables:
             
             path_in    = config.dirs[product + '_6hourly']
             path_out   = config.dirs[product + '_daily']
-
             if grid == '0.25/0.25': gridstring = '0.25x0.25'
             elif grid == '0.5/0.5': gridstring = '0.5x0.5'
                 
@@ -50,7 +49,7 @@ for variable in variables:
                 ds                               = ds.resample(time='1D').sum('time')
                 ds[variable].attrs['units']      = 'm'
                 ds[variable].attrs['long_name']  = 'daily accumulated precipitation'
-                if write2file: ds.to_netcdf(filename_out)  
+                if write2file: s2s.to_netcdf_pack64bit(ds[variable],filename_out) 
                 ds.close()
 
             elif variable == 'rn': # daily accumulated rain (precip - snowfall, m)  
@@ -65,7 +64,7 @@ for variable in variables:
                 ds1                              = ds1.rename({'tp':variable})
                 ds1[variable].attrs['units']     = 'm'
                 ds1[variable].attrs['long_name'] = 'daily accumulated rainfall'
-                if write2file: ds1.to_netcdf(filename_out)
+                if write2file: s2s.to_netcdf_pack64bit(ds1[variable],filename_out) 
                 ds1.close()
                 ds2.close()
 
@@ -77,7 +76,7 @@ for variable in variables:
                 ds                               = ds.rename({'tp':variable})
                 ds[variable].attrs['units']      = 'm'
                 ds[variable].attrs['long_name']  = 'daily maximum 6 hour accumulated precipitation'
-                if write2file: ds.to_netcdf(filename_out)
+                if write2file: s2s.to_netcdf_pack64bit(ds[variable],filename_out) 
                 ds.close()
 
             elif variable == 'mxtpr': # daily maximum timestep precipitation rate (kgm-2s-1)
@@ -87,7 +86,7 @@ for variable in variables:
                 ds                              = ds.resample(time='1D').max('time')
                 ds[variable].attrs['units']     = 'kg m**-2 s**-1'
                 ds[variable].attrs['long_name'] = 'daily maximum timestep precipitation rate'
-                if write2file: ds.to_netcdf(filename_out)
+                if write2file: s2s.to_netcdf_pack64bit(ds[variable],filename_out) 
                 ds.close()
             
             elif variable == 'mxrn6': # daily maximum 6 hour accumulated rain (precip - snowfall, m)
@@ -100,7 +99,7 @@ for variable in variables:
                 da.name                   = variable
                 da.attrs['units']         = 'm'
                 da.attrs['long_name']     = 'daily maximum 6 hour accumulated rainfall'
-                if write2file: da.to_netcdf(filename_out)
+                if write2file: s2s.to_netcdf_pack64bit(da,filename_out) 
                 ds1.close()
                 ds2.close()
                 da.close()

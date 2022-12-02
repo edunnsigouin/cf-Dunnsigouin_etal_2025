@@ -12,6 +12,7 @@ hindcast_6hourly    = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
 forecast_6hourly    = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
 hindcast_daily      = raw + "s2s/mars/ecmwf/hindcast/sfc/daily/"
 forecast_daily      = raw + "s2s/mars/ecmwf/forecast/sfc/daily/"
+hindcast_temp       = raw + "s2s/mars/ecmwf/hindcast/sfc/temp/"
 
 processed_hindcast  = processed + "s2s/mars/ecmwf/hindcast/sfc/"
 processed_forecast  = processed + "s2s/mars/ecmwf/forecast/sfc/"
@@ -25,6 +26,7 @@ dirs = {"proj":proj,
         "processed":processed,
         "hindcast_6hourly":hindcast_6hourly,
         "forecast_6hourly":forecast_6hourly,
+        "hindcast_temp":hindcast_temp,
         "hindcast_daily":hindcast_daily,
         "forecast_daily":forecast_daily,        
         "processed_hindcast":processed_hindcast,
