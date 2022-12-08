@@ -17,14 +17,23 @@ def get_monday_thursday_dates(mon_thu_start,num_i_weeks):
     return dates_monday_thursday
 
 
+def grib_to_netcdf(path,filename_grb,filename_nc):
+    """
+    wrapper for eccode's grib_to_netcdf function
+    """
+    os.system('grib_to_netcdf ' + path + filename_grb + ' -I step -o ' + path + filename_nc)
+    os.system('rm ' +  path + filename_grb)
+    return
+
+
 def compress_file(comp_lev,ncfiletype,filename,path_out):
     """
     wrapper for compressing file using nccopy
     """
     cmd           = 'nccopy -k ' + str(ncfiletype) + ' -s -d ' + str(comp_lev) + ' '
-    filename_comp = path_out + 'temp.nc'
-    os.system(cmd + filename + ' ' + filename_comp)
-    os.system('mv ' + filename_comp + ' ' + filename)
+    filename_comp = 'temp_' + filename 
+    os.system(cmd + path_out + filename + ' ' + path_out + filename_comp)
+    os.system('mv ' + path_out + filename_comp + ' ' + path_out + filename)
     return
 
 

@@ -41,20 +41,35 @@ for variable in variables:
             elif grid == '0.5/0.5': gridstring = '0.5x0.5'
 
             # read data
-            forcastcycle  = d2m.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
-            basename      = '%s_%s_%s_%s'%(forcastcycle,gridstring,datestring,dtype)
-            filename_in   = path_in + variable + '/' + variable + '_' + basename + '.nc'
-            filename_out  = path_out + variable + '/mod_' + variable + '_' + basename + '.nc'
-            ds            = xr.open_dataset(filename_in)
+            forcastcycle   = d2m.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
+            basename       = '%s_%s_%s_%s_%s'%(var,forcastcycle,gridstring,datestring,dtype)
+            basename_vr    = '%s_%s_%s_%s_%s_%s'%(var,forcastcycle,'vr',gridstring,datestring,dtype)
+            filename_in    = path_in + variable + '/' + basename + '.nc'
+            filename_in_vr = path_in + variable + '/' + basename_vr + '.nc' 
+            filename_out   = path_out + variable + '/mod_' + variable + '_' + basename + '.nc'
+            ds             = xr.open_dataset(filename_in)
 
-            if grid == '0.25/0.25': # first 15 days of hindcast/forecast
-                ds[variable] = ds[variable].pad(time=1,mode='edge')[:,:-1,:,:].diff('time') # key operation
-                if variable == 'tp':
-                    ds[variable].attrs['units']      = 'm'
-                    ds[variable].attrs['long_name']  = 'accumulated precipitation'
-                elif variable == 'sf':
-                    ds[variable].attrs['units']      = 'm'
-                    ds[variable].attrs['long_name']  = 'accumulated snowfall'
+            if grid == '0.25/0.25': # first 15 days of hindcast/forecast @ high-resolution
+                # to get 6 hour accumulated values do var(t) - var(t-1)
+                ds[variable] = ds[variable].pad(time=1,mode='edge')[:,:-1,:,:].diff('time') 
+
+            elif grid == '0.5/0.5': # last 30 days of hindcast/forecast @ low-resolution
+                # to get 6 hour accumulated values do var(t) = var(t) - var(t-1)
+                ds[variable] = ds[variable].pad(time=1,mode='edge')[:,:-1,:,:].diff('time')
+
+                # 1) fix hour 366 in LR data using variable resolution data, var_new(366) = var_old(366) - var_variable_res(360)
+                # 2) Add day 360 from variable resolution data to LR data.
+                ds_vr                 = xr.open_dataset(filename_in_vr)
+                ds[variable][1,:,:,:] = ds[variable][1,:,:,:] - ds_vr[variable][-1,:,:,:]
+                ds[variable][0,:,:,:] = ds_vr[variable][-1,:,:,:] - ds_vr[variable][-2,:,:,:]
+                ds_vr.close()
+                
+            if variable == 'tp':
+                ds[variable].attrs['units']      = 'm'
+                ds[variable].attrs['long_name']  = 'accumulated precipitation'
+            elif variable == 'sf':
+                ds[variable].attrs['units']      = 'm'
+                ds[variable].attrs['long_name']  = 'accumulated snowfall'
                     
             if write2file: s2s.to_netcdf_pack64bit(ds[variable],filename_out)
             ds.close()

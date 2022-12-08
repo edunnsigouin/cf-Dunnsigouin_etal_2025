@@ -17,111 +17,143 @@ import xarray                    as xr
 import numpy                     as np
 from datetime                    import datetime
 from forsikring                  import date_to_model  as d2m
-from forsikring                  import config,misc
+from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
-product       = 'hindcast' # hindcast/forecast
+product       = 'vr_forecast' # hindcast/forecast/vr_forecast/vr_hindcast
 mon_thu_start = ['20210104','20210107'] # first initialization date of forecast
-num_weeks     = 52 # number of forecasts/hindcast intialization dates to download 
-nhdates       = 20 # number of hindcast years
+num_i_weeks   = 1 # number of forecasts/hindcast intialization dates to download 
+nhdates       = 20 # number of hindcast years  
 grid          = '0.5/0.5' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var           = 'tp'
-step          = '366/to/1104/by/6' #'0/to/360/by/6' # 0/to/1104/by/6' #  46 days at given time resolution
 comp_lev      = 5 # file compression level
 write2file    = True
 # -----------------------------------------
 
-# download stuff
+# initialize mars server
 server = ECMWFService("mars")
 
 # define stuff
 if product == 'hindcast':
+    if grid == '0.25/0.25':
+        step = '0/to/360/by/6'
+    elif grid == '0.5/0.5':
+        step = '360/to/1104/by/6'
     number = '1/to/10'
     stream = 'enfh'
-    path   = config.dirs['raw_hindcast'] + var + '/'
+    path   = config.dirs['hindcast_6hourly'] + var + '/'
     dtypes = ['cf','pf']
 elif product == 'forecast':
+    if grid == '0.25/0.25':
+        step = '0/to/360/by/6'
+    elif grid == '0.5/0.5':
+        step = '360/to/1104/by/6'
     number = '1/to/50'
     stream = 'enfo'
-    path   = config.dirs['raw_forecast'] + var + '/'
-    dtypes = ['pf']
-
-if grid == '0.25/0.25':
-    gridstring = '0.25x0.25'
-elif grid == '0.5/0.5':
-    gridstring = '0.5x0.5'
+    path   = config.dirs['forecast_6hourly'] + var + '/'
+    dtypes = ['cf','pf']
+elif product == 'vr_forecast':
+    step   = '336/to/360/by/6'
+    number = '1/to/50'
+    stream = 'efov'
+    path   = config.dirs['forecast_6hourly'] + var + '/'
+    dtypes = ['cf'] #['cf','pf']
+    grid   = '0.5/0.5' # need to use low-res
+elif product == 'vr_hindcast':
+    step   = '336/to/360/by/6'
+    number = '1/to/10'
+    stream = 'efho'
+    path   = config.dirs['hindcast_6hourly'] + var + '/'
+    dtypes = ['cf','pf']
+    grid   = '0.5/0.5' # need to use low-res
     
-# translate variable names to code    
+if grid == '0.25/0.25': gridstring = '0.25x0.25'
+elif grid == '0.5/0.5': gridstring = '0.5x0.5'
+    
 if var == 'tp': # total precipitation per 6 hours (m)
-    param = '228.128'
+    if (product == 'forecast') or (product == 'hindcast'):
+        param = '228.128'
+    elif (product == 'vr_forecast') or (product == 'vr_hindcast'):
+        param = '228.230' # note different variable for variable resolution
 elif var == 'sf': # snowfall per 6 hours (m)
-    param = '144.128'
+    if (product == 'forecast') or (product == 'hindcast'):
+        param = '144.128'
+    elif (product == 'vr_forecast') or (product == 'vr_hindcast'):
+        param = '144.230' # note different variable for variable resolution
 elif var == 'mxtpr': # maximum daily precipitation rate after last post-processing (kgm-2s-1)
     param = '226.228'
-elif var == 't2m':
-    param = '167.128' # two-meter temperature
 
 # populate API dictionary
+#dic = {
+#    'class': 'od',
+#    'expver': '1',
+#    'stream': stream,
+#    'time': '00:00:00',
+#    'grid': grid,
+#    'area': area,
+#    'param': param,
+#    'levtype': 'sfc',
+#    'step': step,
+#    'number': number,
+#    'type':'',
+#    'date':''
+#}    
+
 dic = {
     'class': 'od',
     'expver': '1',
-    'stream': stream,
+    'stream': 'efov',
     'time': '00:00:00',
-    'grid': grid,
     'area': area,
-    'param': param,
+    'param': '228.230',
     'levtype': 'sfc',
-    'step': step,
-    'number': number,
-    'type':'',
-    'date':''
-}    
+    'step': '336/342/348/354/360',
+    'type':'cf',
+    'date':'2021-01-04'
+}
 
-# generate set of continuous monday and thursday dates starting on mon_thu_start[0] and mon_thu_start[1] respectively
-dates_monday          = pd.date_range(mon_thu_start[0], periods=num_weeks, freq="7D") # forecasts start Thursday
-dates_thursday        = pd.date_range(mon_thu_start[1], periods=num_weeks, freq="7D") # forecasts start Monday
-dates_monday_thursday = dates_monday.union(dates_thursday)
 
+# get all dates for monday and thursday forecast initializations
+dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
 
 # populate dictionary some more and download each hindcast/forcast one-by-one
 for date in dates_monday_thursday:
     for dtype in dtypes:
 
         misc.tic()
+
+        # define filenames & variables
+        datestring       = date.strftime('%Y-%m-%d')
+        refyear          = int(datestring[:4])
+        hdate            = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-nhdates,refyear)])
+        forcastcycle     = d2m.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
         
-        datestring    = date.strftime('%Y-%m-%d')
-        refyear       = int(datestring[:4])
-        forcastcycle  = d2m.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
-        base_name     = '%s_%s_%s_%s_%s'%(var,forcastcycle,gridstring,datestring,dtype)
-        filename_grb  = path + base_name + '.grb'
-        filename_nc   = path + base_name + '.nc'
-        dic['date']   = datestring
-        dic['type']   = dtype
-        if product == 'hindcast':
-            hdate        = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-nhdates,refyear)])
-            dic['hdate'] = hdate
-            
-        print('downloading: ' + filename_grb)
+        if (product == 'forecast') or (product == 'hindcast'): base_name = '%s_%s_%s_%s_%s'%(var,forcastcycle,gridstring,datestring,dtype)
+        elif (product == 'vr_forecast') or (product == 'vr_hindcast'): base_name = '%s_%s_%s_%s_%s_%s'%(var,forcastcycle,'vr',gridstring,datestring,dtype)
+
+        filename_grb     = base_name + '.grb'
+        filename_nc      = base_name + '.nc'
+
+        # populate dictionary some more
+        #dic['date']  = datestring
+        #dic['type']  = dtype
+        #dic['hdate'] = hdate # only usefull for hindcast downloads
+
+        print(filename_nc)
+
         print(dic)
-
+        
         if write2file:
-            server.execute(dic,filename_grb)
+            print('downloading: ' + path + filename_grb)
+            print(dic)
+            server.execute(dic, path + filename_grb)
     
-        print('convert grib to netcdf..')    
-        os.system('grib_to_netcdf ' + filename_grb + ' -I step -o ' + filename_nc)    
-        os.system('rm ' +  filename_grb)
+            print('convert grib to netcdf..')    
+            s2s.grib_to_netcdf(path,filename_grb,filename_nc)
 
+            print('compress files to reduce space..')
+            s2s.compress_file(comp_lev,4,filename_nc,path)
+    
         misc.toc()
-
-    print('compress files to reduce space..')
-    filename_cf      = path + '%s_%s_%s_%s_%s.nc'%(var,forcastcycle,gridstring,datestring,'cf')
-    filename_pf      = path + '%s_%s_%s_%s_%s.nc'%(var,forcastcycle,gridstring,datestring,'pf')
-    cmd              = 'nccopy -k 4 -s -d ' + str(comp_lev) + ' '
-    filename_nc_comp = path + 'compressed_' + '%s_%s_%s_%s.nc'%(var,forcastcycle,gridstring,datestring)
-    os.system(cmd + filename_cf + ' ' + filename_nc_comp)
-    os.system('mv ' + filename_nc_comp + ' ' + filename_cf)
-    os.system(cmd + filename_pf + ' ' + filename_nc_comp)
-    os.system('mv ' + filename_nc_comp + ' ' + filename_pf)
-
 
