@@ -22,7 +22,7 @@ from forsikring                  import config,misc,s2s
 # input -----------------------------------
 product       = 'vr_forecast' # hindcast/forecast/vr_forecast/vr_hindcast
 mon_thu_start = ['20210104','20210107'] # first initialization date of forecast
-num_i_weeks   = 1 # number of forecasts/hindcast intialization dates to download 
+num_i_weeks   = 52 # number of forecasts/hindcast intialization dates to download 
 nhdates       = 20 # number of hindcast years  
 grid          = '0.5/0.5' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
@@ -43,7 +43,7 @@ if product == 'hindcast':
     number = '1/to/10'
     stream = 'enfh'
     path   = config.dirs['hindcast_6hourly'] + var + '/'
-    dtypes = ['cf','pf']
+    dtypes = ['pf']
 elif product == 'forecast':
     if grid == '0.25/0.25':
         step = '0/to/360/by/6'
@@ -54,14 +54,14 @@ elif product == 'forecast':
     path   = config.dirs['forecast_6hourly'] + var + '/'
     dtypes = ['cf','pf']
 elif product == 'vr_forecast':
-    step   = '336/to/360/by/6'
+    step   = '360'
     number = '1/to/50'
     stream = 'efov'
     path   = config.dirs['forecast_6hourly'] + var + '/'
-    dtypes = ['cf'] #['cf','pf']
+    dtypes = ['cf','pf']
     grid   = '0.5/0.5' # need to use low-res
 elif product == 'vr_hindcast':
-    step   = '336/to/360/by/6'
+    step   = '360'
     number = '1/to/10'
     stream = 'efho'
     path   = config.dirs['hindcast_6hourly'] + var + '/'
@@ -85,37 +85,24 @@ elif var == 'mxtpr': # maximum daily precipitation rate after last post-processi
     param = '226.228'
 
 # populate API dictionary
-#dic = {
-#    'class': 'od',
-#    'expver': '1',
-#    'stream': stream,
-#    'time': '00:00:00',
-#    'grid': grid,
-#    'area': area,
-#    'param': param,
-#    'levtype': 'sfc',
-#    'step': step,
-#    'number': number,
-#    'type':'',
-#    'date':''
-#}    
-
 dic = {
     'class': 'od',
     'expver': '1',
-    'stream': 'efov',
+    'stream': stream,
     'time': '00:00:00',
+    'grid': grid,
     'area': area,
-    'param': '228.230',
+    'param': param,
     'levtype': 'sfc',
-    'step': '336/342/348/354/360',
-    'type':'cf',
-    'date':'2021-01-04'
-}
-
+    'step': step,
+    'number': number,
+    'type':'',
+    'date':''
+}    
 
 # get all dates for monday and thursday forecast initializations
 dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
+
 
 # populate dictionary some more and download each hindcast/forcast one-by-one
 for date in dates_monday_thursday:
@@ -136,13 +123,9 @@ for date in dates_monday_thursday:
         filename_nc      = base_name + '.nc'
 
         # populate dictionary some more
-        #dic['date']  = datestring
-        #dic['type']  = dtype
-        #dic['hdate'] = hdate # only usefull for hindcast downloads
-
-        print(filename_nc)
-
-        print(dic)
+        dic['date']  = datestring
+        dic['type']  = dtype
+        dic['hdate'] = hdate # only usefull for hindcast downloads
         
         if write2file:
             print('downloading: ' + path + filename_grb)
