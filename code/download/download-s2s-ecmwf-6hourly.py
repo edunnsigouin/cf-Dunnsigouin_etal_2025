@@ -19,11 +19,11 @@ from datetime                    import datetime
 from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
-product       = 'vr_forecast' # hindcast/forecast/vr_forecast/vr_hindcast
-mon_thu_start = ['20210104','20210107'] # first initialization date of forecast
-num_i_weeks   = 52 # number of forecasts/hindcast intialization dates to download 
+product       = 'hindcast' # hindcast/forecast/vr_forecast/vr_hindcast
+mon_thu_start = ['20210531','20210603'] # first initialization date of forecast
+num_i_weeks   = 31 # number of forecasts/hindcast intialization dates to download 
 nhdates       = 20 # number of hindcast years  
-grid          = '0.5/0.5' # degree lat/lon resolution
+grid          = '0.25/0.25' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var           = 'tp'
 comp_lev      = 5 # file compression level
@@ -38,16 +38,16 @@ if product == 'hindcast':
     if grid == '0.25/0.25':
         step = '0/to/360/by/6'
     elif grid == '0.5/0.5':
-        step = '360/to/1104/by/6'
+        step = '366/to/1104/by/6'
     number = '1/to/10'
     stream = 'enfh'
     path   = config.dirs['hindcast_6hourly'] + var + '/'
-    dtypes = ['pf']
+    dtypes = ['cf','pf']
 elif product == 'forecast':
     if grid == '0.25/0.25':
         step = '0/to/360/by/6'
     elif grid == '0.5/0.5':
-        step = '360/to/1104/by/6'
+        step = '366/to/1104/by/6'
     number = '1/to/50'
     stream = 'enfo'
     path   = config.dirs['forecast_6hourly'] + var + '/'
@@ -101,7 +101,6 @@ dic = {
 
 # get all dates for monday and thursday forecast initializations
 dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
-
 
 # populate dictionary some more and download each hindcast/forcast one-by-one
 for date in dates_monday_thursday:
