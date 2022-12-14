@@ -1,13 +1,17 @@
 """
 Calculates daily quantities based off of downloaded 6hourly 
 s2s ecmwf mars data
+
+SHOULD I SHIFT ALL TIMES BY 6 HOURS FOR ACCUMULATED VARIABLES SO THAT HOUR 24,
+WHICH REPRESENTS AN ACCUMULATION FROM HOUR 18 TO 24 IS IN DAY 0 NOT DAY 1? 
+
 """
+
 
 import numpy    as np
 import xarray   as xr
 import pandas   as pd
 import os
-from forsikring import date_to_model  as d2m
 from forsikring import config,misc,s2s
 from matplotlib  import pyplot as plt
 
@@ -39,7 +43,7 @@ for variable in variables:
             if grid == '0.25/0.25': gridstring = '0.25x0.25'
             elif grid == '0.5/0.5': gridstring = '0.5x0.5'
                 
-            forcastcycle  = d2m.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
+            forcastcycle  = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
             basename      = '%s_%s_%s_%s'%(forcastcycle,gridstring,datestring,dtype)
                 
             if variable == 'tp': # daily accumulated precip (m)
@@ -104,8 +108,9 @@ for variable in variables:
                 ds2.close()
                 da.close()
 
-            print('compress file to reduce space..')
-            s2s.compress_file(comp_lev,3,filename_out,path_out + variable + '/')
+            if write2file:    
+                print('compress file to reduce space..')
+                s2s.compress_file(comp_lev,3,filename_out,path_out + variable + '/')
 
             misc.toc()
 

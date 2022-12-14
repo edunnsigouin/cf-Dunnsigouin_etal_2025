@@ -16,7 +16,6 @@ import pandas                    as pd
 import xarray                    as xr
 import numpy                     as np
 from datetime                    import datetime
-from forsikring                  import date_to_model  as d2m
 from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
@@ -114,7 +113,7 @@ for date in dates_monday_thursday:
         datestring       = date.strftime('%Y-%m-%d')
         refyear          = int(datestring[:4])
         hdate            = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-nhdates,refyear)])
-        forcastcycle     = d2m.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
+        forcastcycle     = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
         
         if (product == 'forecast') or (product == 'hindcast'): base_name = '%s_%s_%s_%s_%s'%(var,forcastcycle,gridstring,datestring,dtype)
         elif (product == 'vr_forecast') or (product == 'vr_hindcast'): base_name = '%s_%s_%s_%s_%s_%s'%(var,forcastcycle,'vr',gridstring,datestring,dtype)

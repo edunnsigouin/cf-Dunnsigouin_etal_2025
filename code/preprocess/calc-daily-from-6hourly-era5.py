@@ -1,6 +1,10 @@
 """
 Calculates daily quantities based off of downloaded 6hourly 
 ERA5 data 
+
+SHOULD I SHIFT ALL TIMES BY 6 HOURS FOR ACCUMULATED VARIABLES SO THAT HOUR 24,
+WHICH REPRESENTS AN ACCUMULATION FROM HOUR 18 TO 24 IS IN DAY 0 NOT DAY 1?   
+
 """
 
 import numpy  as np
