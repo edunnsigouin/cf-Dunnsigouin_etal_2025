@@ -1,6 +1,10 @@
 """
 Modifies 6hourly accumulated variables (sf,tp) so that they record values accumulated in a given 6 hour chunk
 rather than accumulated from time 0 (cumsum) of the forecast/hindcast. Data from s2s ecmwf mars. 
+
+This code also fixes the accumulated data on day 360 when the resolution of the model changes from 
+0.25x0.25 to 0.5x0.5. It does so using the 'variable resolution data'. An explanation on how to do this 
+can be found here: https://confluence.ecmwf.int/display/UDOC/MARS+FAQ
 """
 
 import numpy    as np
@@ -15,8 +19,8 @@ variables     = ['tp']
 dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcasts
 product       = 'forecast'              # hindcast or forecast ?
 mon_thu_start = ['20210104','20210107'] # first monday & thursday initialization date of forecast
-num_i_weeks   = 1                       # number of forecasts/hindcast intialization dates to download
-grid          = '0.5/0.5'               # '0.25/0.25' or '0.5/0.5'
+num_i_weeks   = 52                      # number of forecasts/hindcast intialization dates to download
+grid          = '0.5/0.5'             # '0.25/0.25' or '0.5/0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)
 write2file    = True
 # -----------------------------------------------------            
@@ -31,6 +35,7 @@ for variable in variables:
             misc.tic()
             
             datestring = date.strftime('%Y-%m-%d')
+            print('')
             print('variable: ' + variable + ', date: ' + datestring + ', dtype: ' + dtype)
 
             # define some paths and strings
@@ -79,12 +84,15 @@ for variable in variables:
             elif variable == 'sf':
                 ds[variable_out].attrs['units']      = 'm'
                 ds[variable_out].attrs['long_name']  = '6-hourly accumulated snowfall'
+
+            print(path_out + filename_out)
             
             if write2file:
                 print('writing to file..')
                 s2s.to_netcdf_pack64bit(ds[variable_out],path_out + filename_out)
                 print('compress file to reduce space..')
                 s2s.compress_file(comp_lev,4,filename_out,path_out)
+                print('')
                 
             ds.close()
             
