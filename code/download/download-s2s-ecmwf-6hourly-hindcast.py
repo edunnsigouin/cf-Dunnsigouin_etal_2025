@@ -26,8 +26,8 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product       = 'hindcast' # hindcast/vr_hindcast
-mon_thu_start = ['20210531','20210603'] # first initialization date of forecast
-num_i_weeks   = 31 # number of hindcast intialization dates to download 
+mon_thu_start = ['20210524','20210527'] # first initialization date of forecast
+num_i_weeks   = 1 # number of hindcast intialization dates to download 
 nhdates       = 20 # number of hindcast years  
 grid          = '0.5/0.5' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
@@ -48,7 +48,7 @@ if product == 'hindcast':
     number = '1/to/10'
     stream = 'enfh'
     path   = config.dirs['hindcast_6hourly'] + var + '/'
-    dtypes = ['cf','pf']
+    dtypes = ['pf']
 elif product == 'vr_hindcast':
     step   = '360'
     number = '1/to/10'
@@ -93,9 +93,8 @@ dic1 = {
 # get all dates for monday and thursday forecast initializations
 dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
 
-#dates_monday_thursday = dates_monday_thursday[1:]
-#print(dates_monday_thursday)
-
+dates_monday_thursday = dates_monday_thursday[1:]
+print(dates_monday_thursday)
 
 # populate dictionary some more and download each hindcast/forcast one-by-one
 for date in dates_monday_thursday:
@@ -126,9 +125,6 @@ for date in dates_monday_thursday:
         # create dictionary with other half of hindcast years
         dic2          = dic1.copy()
         dic2['hdate'] = hdate2
-
-        print(dic1)
-        print(dic2)
         
         if write2file:
             
