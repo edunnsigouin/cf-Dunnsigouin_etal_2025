@@ -65,7 +65,7 @@ elif var == 'sf': # snowfall per 6 hours (m)
         param = '144.128'
     elif product == 'vr_forecast':
         param = '144.230' # note different variable for variable resolution
-elif var == 'mxtpr': # maximum daily precipitation rate after last post-processing (kgm-2s-1)
+elif var == 'mx6tpr': # maximum 6-hourly precipitation rate after last post-processing (kgm-2s-1)
     param = '226.228'
 
 # populate API dictionary

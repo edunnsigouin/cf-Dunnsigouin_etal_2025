@@ -19,12 +19,12 @@ mon_thu_start = ['20210104','20210107'] # first monday & thursday initialization
 num_i_weeks   = 52                      # number of forecasts/hindcast intialization dates to download
 grid          = '0.25/0.25'             # '0.25/0.25' or '0.5/0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)
-write2file    = True
+write2file    = False
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
 dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
-      
+
 for variable in variables:
     for date in dates_monday_thursday:
         for dtype in dtypes:
@@ -32,7 +32,6 @@ for variable in variables:
             misc.tic()
             
             datestring = date.strftime('%Y-%m-%d')
-            print('')
             print('variable: ' + variable + ', date: ' + datestring + ', dtype: ' + dtype)
             
             if grid == '0.25/0.25': gridstring = '0.25x0.25'

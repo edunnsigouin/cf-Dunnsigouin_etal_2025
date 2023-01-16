@@ -25,8 +25,8 @@ from datetime                    import datetime
 from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
-product       = 'hindcast' # hindcast/vr_hindcast
-mon_thu_start = ['20210524','20210527'] # first initialization date of forecast
+product       = 'vr_hindcast' # hindcast/vr_hindcast
+mon_thu_start = ['20210104','20210107'] # first initialization date of forecast
 num_i_weeks   = 1 # number of hindcast intialization dates to download 
 nhdates       = 20 # number of hindcast years  
 grid          = '0.5/0.5' # degree lat/lon resolution
@@ -48,7 +48,7 @@ if product == 'hindcast':
     number = '1/to/10'
     stream = 'enfh'
     path   = config.dirs['hindcast_6hourly'] + var + '/'
-    dtypes = ['pf']
+    dtypes = ['cf','pf']
 elif product == 'vr_hindcast':
     step   = '360'
     number = '1/to/10'
@@ -70,7 +70,7 @@ elif var == 'sf': # snowfall per 6 hours (m)
         param = '144.128'
     elif product == 'vr_hindcast':
         param = '144.230' # note different variable for variable resolution
-elif var == 'mxtpr': # maximum daily precipitation rate after last post-processing (kgm-2s-1)
+elif var == 'mx6tpr': # maximum 6-hourly precipitation rate after last post-processing (kgm-2s-1)
     param = '226.228'
 
 # populate API dictionary
@@ -93,7 +93,7 @@ dic1 = {
 # get all dates for monday and thursday forecast initializations
 dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
 
-dates_monday_thursday = dates_monday_thursday[1:]
+dates_monday_thursday = dates_monday_thursday[:1]
 print(dates_monday_thursday)
 
 # populate dictionary some more and download each hindcast/forcast one-by-one
@@ -102,45 +102,74 @@ for date in dates_monday_thursday:
 
         misc.tic()
 
-        # define filenames & variables
-        datestring       = date.strftime('%Y-%m-%d')
-        refyear          = int(datestring[:4])
-        hdate1           = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-nhdates,refyear-int(nhdates/2))]) # first 10 years
-        hdate2           = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-int(nhdates/2),refyear)]) # last 10 years
-        forcastcycle     = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
-        
-        if (product == 'forecast') or (product == 'hindcast'): base_name = '%s_%s_%s_%s_%s'%(var,forcastcycle,gridstring,datestring,dtype)
-        elif (product == 'vr_forecast') or (product == 'vr_hindcast'): base_name = '%s_%s_%s_%s_%s_%s'%(var,forcastcycle,'vr',gridstring,datestring,dtype)
+        if product == 'hindcast':
 
-        filename1_grb     = base_name + '_01' + '.grb' 
-        filename2_grb     = base_name + '_02' + '.grb'
-        filename3_grb     = base_name + '.grb'
-        filename_nc       = base_name + '.nc'
-        
-        # populate dictionary with first half of hindcast years
-        dic1['date']  = datestring
-        dic1['type']  = dtype
-        dic1['hdate'] = hdate1 # only usefull for hindcast downloads
-
-        # create dictionary with other half of hindcast years
-        dic2          = dic1.copy()
-        dic2['hdate'] = hdate2
-        
-        if write2file:
+            # NOTE: here I seperated the hindcast downloads into the requests for the
+            # first and last 10 years of hindcasts (2001-2010,2011-2020). This makes the
+            # downloads much faster on the mars server.
             
-            print('downloading..')
-            server.execute(dic1, path + filename1_grb)
-            server.execute(dic2, path + filename2_grb)
+            # define filenames & variables
+            datestring       = date.strftime('%Y-%m-%d')
+            refyear          = int(datestring[:4])
+            hdate1           = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-nhdates,refyear-int(nhdates/2))]) # first 10 years
+            hdate2           = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-int(nhdates/2),refyear)]) # last 10 years
+            forcastcycle     = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
+            base_name        = '%s_%s_%s_%s_%s'%(var,forcastcycle,gridstring,datestring,dtype)
+            filename1_grb    = base_name + '_01' + '.grb' 
+            filename2_grb    = base_name + '_02' + '.grb'
+            filename3_grb    = base_name + '.grb'
+            filename_nc      = base_name + '.nc'
+        
+            # populate dictionary with first half of hindcast years
+            dic1['date']     = datestring
+            dic1['type']     = dtype
+            dic1['hdate']    = hdate1 # only usefull for hindcast downloads
 
-            print('convert grib to netcdf..')
-            os.system('grib_copy ' + path + filename1_grb + ' ' + path + filename2_grb + ' ' + path + filename3_grb)
-            os.system('rm ' + path + filename1_grb)
-            os.system('rm ' + path + filename2_grb)
-            s2s.grib_to_netcdf(path,filename3_grb,filename_nc)
+            # create dictionary with other half of hindcast years
+            dic2             = dic1.copy()
+            dic2['hdate']    = hdate2
+        
+            if write2file:
             
-            print('compress files to reduce space..')
-            s2s.compress_file(comp_lev,4,filename_nc,path)
-    
+                print('downloading..')
+                server.execute(dic1, path + filename1_grb)
+                server.execute(dic2, path + filename2_grb)
+
+                print('convert grib to netcdf..')
+                os.system('grib_copy ' + path + filename1_grb + ' ' + path + filename2_grb + ' ' + path + filename3_grb)
+                os.system('rm ' + path + filename1_grb)
+                os.system('rm ' + path + filename2_grb)
+                s2s.grib_to_netcdf(path,filename3_grb,filename_nc)
+            
+                print('compress files to reduce space..')
+                s2s.compress_file(comp_lev,4,filename_nc,path)
+
+                
+        elif product == 'vr_hindcast':
+            
+            datestring       = date.strftime('%Y-%m-%d')
+            refyear          = int(datestring[:4])
+            hdate            = '/'.join([datestring.replace('%i'%refyear,'%i'%i) for i in range(refyear-nhdates,refyear)])
+            forcastcycle     = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
+            base_name        = '%s_%s_%s_%s_%s_%s'%(var,forcastcycle,'vr',gridstring,datestring,dtype)
+            filename_grb     = base_name + '.grb'
+            filename_nc      = base_name + '.nc'
+            dic1['date']     = datestring
+            dic1['type']     = dtype
+            dic1['hdate']    = hdate 
+
+            if write2file:
+
+                print('downloading..')
+                server.execute(dic1, path + filename_grb)
+
+                print('convert grib to netcdf..')
+                s2s.grib_to_netcdf(path,filename_grb,filename_nc)
+
+                print('compress files to reduce space..')
+                s2s.compress_file(comp_lev,4,filename_nc,path)
+
+            
         misc.toc()
 
 
