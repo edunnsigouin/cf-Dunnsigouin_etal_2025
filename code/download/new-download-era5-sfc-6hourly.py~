@@ -21,7 +21,7 @@ area       = '73.5/-27/33/45' # or 'E' for europe
 grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
 variables  = ['tp6'] # tp6,sf6,mx6tpr
 date_start = '1960-01-01'
-date_end   = '2022-01-01'
+date_end   = '1961-01-01'
 comp_lev   = 5 # file compression level
 write2file = True
 # -----------------------------------------------------
@@ -95,20 +95,17 @@ for variable in variables:
                         ds                              = ds.isel(time=slice(1,5))
                         ds                              = ds.rename({'tp':variable})
                         ds[variable].attrs['long_name'] = '6-hourly accumulated precipitation'
-                        ds[variable].attrs['units']     = 'm'
                 elif variable == 'sf6':
                         ds                              = ds.resample(time='6h').sum('time')
                         ds                              = ds.isel(time=slice(1,5))
                         ds                              = ds.rename({'sf':variable})
-                        ds[variable].attrs['long_name'] = '6-hourly accumulated snowfall'
-                        ds[variable].attrs['units']     = 'm'
+                        ds[variable].attrs['long_name'] = '6-hourly accumulated snowfall'                        
                 elif variable == 'mx6tpr':
                         ds                              = ds.resample(time='6h').max('time')
                         ds                              = ds.isel(time=slice(1,5))
                         ds                              = ds.rename({'maximum_total_precipitation_rate_since_previous_post_processing':variable})
                         ds[variable].attrs['long_name'] = '6-hourly maximum precipitation rate'                
-                        ds[variable].attrs['units']     = 'kg m**-2 s**-1'
-                        
+
                 ds.to_netcdf(path + filename3)
                 os.system('rm ' + path + filename1 + ' ' + path + filename2)
                 ds.close()

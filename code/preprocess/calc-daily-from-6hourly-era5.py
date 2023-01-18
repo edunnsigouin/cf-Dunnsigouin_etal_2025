@@ -10,7 +10,7 @@ from forsikring import config,misc
 
 # INPUT ----------------------------------------------- 
 variables  = ['tp24'] # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-years      = np.arange(1959,1960,1)
+years      = np.arange(1960,1961,1)
 grid       = '0.25/0.25' # '0.25/0.25' or '0.5/0.5'
 comp_lev   = 5
 write2file = False
