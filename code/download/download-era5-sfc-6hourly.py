@@ -19,7 +19,7 @@ from forsikring import config,s2s
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe
 grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
-variables  = ['tp6'] # tp6,sf6,mx6tpr
+variables  = ['mx6tpr'] # tp6,sf6,mx6tpr
 date_start = '1960-01-01'
 date_end   = '2022-01-01'
 comp_lev   = 5 # file compression level
@@ -105,7 +105,7 @@ for variable in variables:
                 elif variable == 'mx6tpr':
                         ds                              = ds.resample(time='6h').max('time')
                         ds                              = ds.isel(time=slice(1,5))
-                        ds                              = ds.rename({'maximum_total_precipitation_rate_since_previous_post_processing':variable})
+                        ds                              = ds.rename({'mxtpr':variable})  
                         ds[variable].attrs['long_name'] = '6-hourly maximum precipitation rate'                
                         ds[variable].attrs['units']     = 'kg m**-2 s**-1'
                         
