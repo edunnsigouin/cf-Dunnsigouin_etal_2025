@@ -17,16 +17,19 @@ from matplotlib  import pyplot as plt
 # INPUT ----------------------------------------------- 
 variables     = ['tp']                  
 dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcasts
-product       = 'forecast'              # hindcast or forecast ?
+product       = 'hindcast'              # hindcast or forecast ?
 mon_thu_start = ['20210104','20210107'] # first monday & thursday initialization date of forecast
 num_i_weeks   = 52                      # number of forecasts/hindcast intialization dates to download
-grid          = '0.5/0.5'             # '0.25/0.25' or '0.5/0.5'
+grid          = '0.25/0.25'             # '0.25/0.25' or '0.5/0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)
 write2file    = True
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
 dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
+
+#dates_monday_thursday = dates_monday_thursday[:1]
+#print(dates_monday_thursday)
 
 for variable in variables:
     for date in dates_monday_thursday:
@@ -50,7 +53,7 @@ for variable in variables:
             filename_in  = '%s_%s_%s_%s_%s.nc'%(variable,forcastcycle,gridstring,datestring,dtype)
             filename_out = '%s_%s_%s_%s_%s.nc'%(variable_out,forcastcycle,gridstring,datestring,dtype)
             ds           = xr.open_dataset(path_in + filename_in)
-
+            
             if grid == '0.25/0.25': # first 15 days of hindcast/forecast @ high-resolution
                 
                 # to get 6 hour accumulated values do var(t) - var(t-1)
@@ -60,7 +63,7 @@ for variable in variables:
             elif grid == '0.5/0.5': # last 30 days of hindcast/forecast @ low-resolution
 
                 # remove hour 360 from low-resolution hindcast files if they downloaded hour 360
-		# so all files start at hour 366 
+		# so all files start at hour 366
                 if ds['time'].size == 125:
                     ds = ds.isel(time = slice(1,125))
                     

@@ -6,14 +6,14 @@ ERA5 data
 import numpy  as np
 import xarray as xr
 import os
-from forsikring import config,misc
+from forsikring import config,misc,s2s
 
 # INPUT ----------------------------------------------- 
-variables  = ['tp24'] # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-years      = np.arange(1960,1961,1)
-grid       = '0.25/0.25' # '0.25/0.25' or '0.5/0.5'
+variables  = ['mx24rn6'] # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+years      = np.arange(1960,2022,1)
+grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
 comp_lev   = 5
-write2file = False
+write2file = True
 # -----------------------------------------------------            
 
 for variable in variables:
@@ -33,13 +33,13 @@ for variable in variables:
             
         if variable == 'tp24': # daily accumulated precip (m)
             
-            dir_in                         = path_in + 'tp6/'
-            dir_out                        = path_out + variable + '/'
-            filename_in                    = 'tp6_' + gridstring + '_' + str(year) + '.nc'
-            filename_out                   = variable + '_' + gridstring + '_' + str(year) + '.nc'
-            ds                             = xr.open_dataset(dir_in + filename_in)
-            ds                             = ds.resample(time='1D').sum('time')
-            ds                             = ds.rename({'tp6':variable})
+            dir_in                          = path_in + 'tp6/'
+            dir_out                         = path_out + variable + '/'
+            filename_in                     = 'tp6_' + gridstring + '_' + str(year) + '.nc'
+            filename_out                    = variable + '_' + gridstring + '_' + str(year) + '.nc'
+            ds                              = xr.open_dataset(dir_in + filename_in)
+            ds                              = ds.resample(time='1D').sum('time')
+            ds                              = ds.rename({'tp6':variable})
             ds[variable].attrs['units']     = 'm'
             ds[variable].attrs['long_name'] = 'daily accumulated precipitation'
             if write2file: ds.to_netcdf(dir_out + filename_out)

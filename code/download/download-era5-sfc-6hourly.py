@@ -23,8 +23,9 @@ variables  = ['mx6tpr'] # tp6,sf6,mx6tpr
 date_start = '1960-01-01'
 date_end   = '2022-01-01'
 comp_lev   = 5 # file compression level
-write2file = True
+write2file = False
 # -----------------------------------------------------
+
 
 c         = cdsapi.Client()
 data_type = 'reanalysis-era5-single-levels'
