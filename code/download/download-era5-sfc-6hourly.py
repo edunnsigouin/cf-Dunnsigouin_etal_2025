@@ -19,11 +19,11 @@ from forsikring import config,s2s
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe
 grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
-variables  = ['mx6tpr'] # tp6,sf6,mx6tpr
-date_start = '1960-01-01'
-date_end   = '2022-01-01'
+variables  = ['tp6','sf6','mx6tpr'] # tp6,sf6,mx6tpr
+date_start = '2022-01-01'
+date_end   = '2023-01-01'
 comp_lev   = 5 # file compression level
-write2file = False
+write2file = True
 # -----------------------------------------------------
 
 

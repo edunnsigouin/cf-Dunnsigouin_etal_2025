@@ -9,7 +9,7 @@ import os
 from forsikring import config,misc,s2s
 
 # INPUT ----------------------------------------------- 
-variables  = ['mx24rn6'] # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variables  = ['mx24tpr'] # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 years      = np.arange(1960,2022,1)
 grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
 comp_lev   = 5
