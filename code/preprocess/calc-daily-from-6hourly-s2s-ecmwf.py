@@ -17,7 +17,7 @@ dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcast
 product       = 'hindcast'              # hindcast or forecast ?
 mon_thu_start = ['20210104','20210107'] # first monday & thursday initialization date of forecast
 num_i_weeks   = 52                       # number of forecasts/hindcast intialization dates to download
-grid          = '0.25/0.25'             # '0.25/0.25' or '0.5/0.5'
+grid          = '0.5/0.5'             # '0.25/0.25' or '0.5/0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)
 write2file    = True
 # -----------------------------------------------------            

@@ -18,16 +18,13 @@ from forsikring import config,misc,s2s
 variables        = ['tp24']                # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 mon_thu_start    = ['20210104','20210107'] # first monday & thursday initialization date of forecast
 num_i_weeks      = 52                       # number of weeks withe forecasts
-grid             = '0.25/0.25'             # '0.25/0.25' or '0.5/0.5'
+grid             = '0.5/0.5'             # '0.25/0.25' or '0.5/0.5'
 comp_lev         = 5
-write2file       = False
+write2file       = True
 # -----------------------------------------------------         
 
 # get all dates for monday and thursday forecast initializations 
 dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
-
-dates_monday_thursday = dates_monday_thursday[:1]
-print(dates_monday_thursday)
 
 for variable in variables:
     for date in dates_monday_thursday:
@@ -37,14 +34,14 @@ for variable in variables:
         print('')
         print('variable: ' + variable + ', date: ' + datestring)
 
-        # define some paths and strings                                                                                                                                                    
+        # define some paths and strings   
         if grid == '0.25/0.25': gridstring = '0.25x0.25'
         elif grid == '0.5/0.5': gridstring = '0.5x0.5'
-        path_in      = config.dirs['era5_daily'] + variable + '/'
+        path_in      = config.dirs['era5_daily_raw'] + variable + '/'
         filename1_in = variable + '_' + gridstring + '_' + year + '.nc'
         filename2_in = variable + '_' + gridstring + '_' + str(int(year)+1) + '.nc'
         
-        path_out     = config.dirs['era5_forecast'] + variable + '/'
+        path_out     = config.dirs['era5_daily'] + variable + '/'
         filename_out = '%s_%s_%s.nc'%(variable,gridstring,datestring)
 
         # read data & pick out specific dates (46 = # of days in ecmwf forecast) 

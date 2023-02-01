@@ -9,8 +9,8 @@ import os
 from forsikring import config,misc,s2s
 
 # INPUT ----------------------------------------------- 
-variables  = ['mx24tpr'] # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-years      = np.arange(1960,2022,1)
+variables  = ['tp24'] # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+years      = np.arange(2022,2023,1)
 grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
 comp_lev   = 5
 write2file = True
@@ -24,11 +24,11 @@ for variable in variables:
 
         if grid == '0.25/0.25':
             path_in    = config.dirs['era5_6hourly'] 
-            path_out   = config.dirs['era5_daily']
+            path_out   = config.dirs['era5_daily_raw']
             gridstring = '0.25x0.25'
         elif grid == '0.5/0.5':
             path_in    = config.dirs['era5_6hourly'] 
-            path_out   = config.dirs['era5_daily'] 
+            path_out   = config.dirs['era5_daily_raw'] 
             gridstring = '0.5x0.5'
             
         if variable == 'tp24': # daily accumulated precip (m)

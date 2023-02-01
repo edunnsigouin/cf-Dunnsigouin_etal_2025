@@ -18,14 +18,13 @@ from forsikring import config,s2s
 
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe
-grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
-variables  = ['tp6','sf6','mx6tpr'] # tp6,sf6,mx6tpr
+grid       = '0.25/0.25' # '0.25/0.25' or '0.5/0.5'
+variables  = ['sf6','mx6tpr'] # tp6,sf6,mx6tpr
 date_start = '2022-01-01'
-date_end   = '2023-01-01'
+date_end   = '2022-10-01'
 comp_lev   = 5 # file compression level
 write2file = True
 # -----------------------------------------------------
-
 
 c         = cdsapi.Client()
 data_type = 'reanalysis-era5-single-levels'
@@ -79,15 +78,16 @@ for variable in variables:
             filename2     = 'temp_' + variable + '_' + gridstring + '_' + date2 + '.nc'
 
             filename3     = variable + '_' + gridstring + '_' + date1 + '.nc'
-            
+
             if write2file:
                     
                 print('')
                 print('downloading file: ' + date1)
                 print('')
+
                 c.retrieve(data_type,dic1,path + filename1)
                 c.retrieve(data_type,dic2,path + filename2)
-                
+
                 ds         = xr.open_mfdataset([path + filename1,path + filename2])
                 ds['time'] = ds.time - np.timedelta64(1,'h') # shift time to put all required data on same day
 
@@ -113,8 +113,8 @@ for variable in variables:
                 ds.to_netcdf(path + filename3)
                 os.system('rm ' + path + filename1 + ' ' + path + filename2)
                 ds.close()
-
-                if dates[i+1].year - dates[i].year == 1: # if new year
+                
+                if (dates[i+1].year - dates[i].year == 1) or (dates[i+1].strftime('%Y-%m-%d') == date_end): # if new year or end of dates
 
                         print('')
                         print('aggregate daily files to yearly file & delete daily files..')
@@ -131,4 +131,6 @@ for variable in variables:
                         print('compress files to reduce space..')
                         print('')
                         s2s.compress_file(comp_lev,3,filename_out,path)
+
+
 
