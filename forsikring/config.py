@@ -17,8 +17,9 @@ hindcast_daily       = processed + "cf-forsikring/ecmwf/hindcast/daily/"
 forecast_daily       = processed + "cf-forsikring/ecmwf/forecast/daily/"
 
 era5_daily_raw       = raw + "era5/daily/"
-era5_daily           = processed + "cf-forsikring/era5/daily/"
 era5_6hourly         = raw + "era5/6hourly/"
+era5_daily           = processed + "cf-forsikring/era5/daily/"
+era5_climatology     = processed + "cf-forsikring/era5/climatology/"
 
 dirs = {"proj":proj,
         "data_interim":data_interim,
@@ -31,5 +32,6 @@ dirs = {"proj":proj,
         "forecast_daily":forecast_daily,        
         "era5_daily_raw":era5_daily_raw,
         "era5_6hourly":era5_6hourly,
-        "era5_daily":era5_daily
+        "era5_daily":era5_daily,
+        "era5_climatology":era5_climatology
 }        
