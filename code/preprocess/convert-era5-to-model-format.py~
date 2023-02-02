@@ -15,7 +15,7 @@ import os
 from forsikring import config,misc,s2s
 
 # INPUT -----------------------------------------------
-variables        = ['mx24tp6']                # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variables        = ['rn24']                # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 mon_thu_start    = ['20210104','20210107'] # first monday & thursday initialization date of forecast
 num_i_weeks      = 52                       # number of weeks withe forecasts
 grid             = '0.5/0.5'             # '0.25/0.25' or '0.5/0.5'
@@ -37,11 +37,11 @@ for variable in variables:
         # define some paths and strings   
         if grid == '0.25/0.25': gridstring = '0.25x0.25'
         elif grid == '0.5/0.5': gridstring = '0.5x0.5'
-        path_in      = config.dirs['era5_daily_raw'] + variable + '/'
+        path_in      = config.dirs['era5_cont_daily'] + variable + '/'
         filename1_in = variable + '_' + gridstring + '_' + year + '.nc'
         filename2_in = variable + '_' + gridstring + '_' + str(int(year)+1) + '.nc'
         
-        path_out     = config.dirs['era5_daily'] + variable + '/'
+        path_out     = config.dirs['era5_model_daily'] + variable + '/'
         filename_out = '%s_%s_%s.nc'%(variable,gridstring,datestring)
 
         # read data & pick out specific dates (46 = # of days in ecmwf forecast) 

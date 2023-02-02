@@ -34,8 +34,9 @@ for variable in variables:
     # define stuff
     if grid == '0.25/0.25': gridstring = '0.25x0.25'
     elif grid == '0.5/0.5': gridstring = '0.5x0.5'
-    path_in     = config.dirs['era5_daily_raw'] + variable + '/'
-
+    path_in  = config.dirs['era5_cont_daily'] + variable + '/'
+    path_out = config.dirs['era5_model_clim'] + variable + '/'
+    
     print('calculate climatology..')
     filenames = [path_in + variable + '_' + gridstring + '_' + str(years[0]) + '.nc']
     for year in years[1:]:
@@ -57,11 +58,9 @@ for variable in variables:
         ds         = ds_clim.sel(time=era5_dates)
         ds['time'] = pd.date_range(date,periods=46,freq="D") # make dates correspond to forecast for convenience later on
         
-        path_out     = config.dirs['era5_climatology'] + variable + '/'
-        filename_out = '%s_%s_%s.nc'%(variable,gridstring,datestring)
-
         if write2file:
             print('writing to file..')
+            filename_out = '%s_%s_%s.nc'%(variable,gridstring,datestring)
             s2s.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
             print('compress file to reduce space..')
             s2s.compress_file(comp_lev,3,filename_out,path_out)
