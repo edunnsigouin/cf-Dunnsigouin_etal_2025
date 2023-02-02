@@ -26,12 +26,12 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product       = 'hindcast' # hindcast/vr_hindcast
-mon_thu_start = ['20210104','20210107'] # first initialization date of forecast
-num_i_weeks   = 1 # number of hindcast intialization dates to download 
+mon_thu_start = ['20210531','20210603'] # first initialization date of forecast
+num_i_weeks   = 31 # number of hindcast intialization dates to download 
 nhdates       = 20 # number of hindcast years  
 grid          = '0.5/0.5' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var           = 'tp'
+var           = 'sf'
 comp_lev      = 5 # file compression level
 write2file    = True
 # -----------------------------------------
