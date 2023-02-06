@@ -1,0 +1,4 @@
+"""
+Calculates the Mean-square-error statistic as a function of x,y and 
+lead time for ecmwf forecasts, era5 climatology and era5 persistence
+"""
