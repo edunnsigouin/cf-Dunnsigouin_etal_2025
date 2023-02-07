@@ -133,3 +133,15 @@ def to_netcdf_pack64bit(da,filename_out):
     da.to_netcdf(filename_out,encoding=encoding,format='NETCDF3_64BIT')
     
     return
+
+
+def get_dim(grid):
+    """
+    imports data dimensions given a grid
+    """
+    if grid == '0.25x0.25':
+        from forsikring import dim_hr as dim
+    elif grid == '0.5x0.5':
+        from forsikring import dim_lr as dim
+
+    return dim

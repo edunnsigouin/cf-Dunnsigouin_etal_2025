@@ -9,6 +9,7 @@ fig                  = proj + "fig/"
 
 raw                  = cf_space + "raw/"
 processed            = cf_space + "processed/"
+calc                 = cf_space + "calc/"
 
 hindcast_6hourly     = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
 forecast_6hourly     = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
@@ -19,6 +20,9 @@ era5_6hourly         = raw + "era5/6hourly/"
 era5_cont_daily      = processed + "cf-forsikring/era5/continuous-format/daily/"
 era5_model_clim      = processed + "cf-forsikring/era5/model-format/climatology/"
 era5_model_daily     = processed + "cf-forsikring/era5/model-format/daily/"
+
+calc_forecast_daily  = calc + "cf-forsikring/ecmwf/forecast/daily/"
+
 
 dirs = {"proj":proj,
         "data_interim":data_interim,
@@ -32,5 +36,6 @@ dirs = {"proj":proj,
         "era5_6hourly":era5_6hourly,
         "era5_cont_daily":era5_cont_daily,
         "era5_model_clim":era5_model_clim,
-        "era5_model_daily":era5_model_daily
+        "era5_model_daily":era5_model_daily,
+        "calc_forecast_daily":calc_forecast_daily
 }        
