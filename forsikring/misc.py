@@ -3,7 +3,6 @@ Collection of useful miscellaneous functions
 """
 
 import time
-global startTime_for_tictoc
 import numpy  as np
 import xarray as xr
 
@@ -11,6 +10,7 @@ def tic():
     """
     matlab style tic function
     """
+    global startTime_for_tictoc
     startTime_for_tictoc = time.time()
     return
 

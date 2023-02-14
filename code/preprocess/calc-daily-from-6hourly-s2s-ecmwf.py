@@ -12,11 +12,11 @@ from forsikring import config,misc,s2s
 from matplotlib  import pyplot as plt
 
 # INPUT ----------------------------------------------- 
-variables     = ['mx24tp6']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+variables     = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcasts
-product       = 'hindcast'              # hindcast or forecast ?
+product       = 'forecast'              # hindcast or forecast ?
 mon_thu_start = ['20210104','20210107'] # first monday & thursday initialization date of forecast
-num_i_weeks   = 52                       # number of forecasts/hindcast intialization dates to download
+num_i_weeks   = 1                       # number of forecasts/hindcast intialization dates to download
 grid          = '0.5/0.5'             # '0.25/0.25' or '0.5/0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)
 write2file    = True
@@ -24,6 +24,7 @@ write2file    = True
 
 # get all dates for monday and thursday forecast initializations
 dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
+dates_monday_thursday = dates_monday_thursday[:1]
 
 for variable in variables:
     for date in dates_monday_thursday:
@@ -37,8 +38,8 @@ for variable in variables:
             if grid == '0.25/0.25': gridstring = '0.25x0.25'
             elif grid == '0.5/0.5': gridstring = '0.5x0.5'
                 
-            forcastcycle  = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
-            basename      = '%s_%s_%s_%s'%(forcastcycle,gridstring,datestring,dtype)
+            forecastcycle = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
+            basename      = '%s_%s_%s_%s'%(forecastcycle,gridstring,datestring,dtype)
                 
             if variable == 'tp24': # daily accumulated precip (m)
 
@@ -59,10 +60,11 @@ for variable in variables:
                     ds = ds.isel(time=slice(1,ds.time.size)) 
 
                 # metadata    
-                ds                               = ds.rename({'tp6':variable})    
-                ds[variable].attrs['units']      = 'm'
-                ds[variable].attrs['long_name']  = 'daily accumulated precipitation'
-
+                ds                                  = ds.rename({'tp6':variable})    
+                ds[variable].attrs['units']         = 'm'
+                ds[variable].attrs['long_name']     = 'daily accumulated precipitation'
+                ds[variable].attrs['forecastcycle'] = forecastcycle
+                
                 if write2file: s2s.to_netcdf_pack64bit(ds[variable],path_out + filename_out) 
                 ds.close()
 
@@ -163,9 +165,10 @@ for variable in variables:
         if write2file:
             
             print('combine cf and pf files into one file..')
-            basename_cf     = '%s_%s_%s_%s'%(forcastcycle,gridstring,datestring,'cf')
-            basename_pf     = '%s_%s_%s_%s'%(forcastcycle,gridstring,datestring,'pf')
-            basename        = '%s_%s_%s'%(forcastcycle,gridstring,datestring)
+            basename_cf     = '%s_%s_%s_%s'%(forecastcycle,gridstring,datestring,'cf')
+            basename_pf     = '%s_%s_%s_%s'%(forecastcycle,gridstring,datestring,'pf')
+            #basename        = '%s_%s_%s'%(forcastcycle,gridstring,datestring)
+            basename        = '%s_%s'%(gridstring,datestring) 
             filename_out_cf = variable + '_' + basename_cf + '.nc'
             filename_out_pf = variable + '_' + basename_pf + '.nc'
             filename_out    = variable + '_' + basename + '.nc'
