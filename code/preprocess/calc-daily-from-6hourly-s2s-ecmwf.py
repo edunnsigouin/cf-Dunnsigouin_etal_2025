@@ -14,9 +14,9 @@ from matplotlib  import pyplot as plt
 # INPUT ----------------------------------------------- 
 variables     = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcasts
-product       = 'forecast'              # hindcast or forecast ?
+product       = 'hindcast'              # hindcast or forecast ?
 mon_thu_start = ['20210104','20210107'] # first monday & thursday initialization date of forecast
-num_i_weeks   = 1                       # number of forecasts/hindcast intialization dates to download
+num_i_weeks   = 52                      # number of forecasts/hindcast intialization dates to download
 grid          = '0.5/0.5'             # '0.25/0.25' or '0.5/0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)
 write2file    = True
@@ -24,7 +24,6 @@ write2file    = True
 
 # get all dates for monday and thursday forecast initializations
 dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
-dates_monday_thursday = dates_monday_thursday[:1]
 
 for variable in variables:
     for date in dates_monday_thursday:
@@ -89,10 +88,11 @@ for variable in variables:
                     ds1 = ds1.isel(time=slice(1,ds1.time.size))
                     ds2 = ds2.isel(time=slice(1,ds2.time.size))
                     
-                ds1['tp6']                       = ds1['tp6'] - ds2['sf6']
-                ds1                              = ds1.rename({'tp6':variable})
-                ds1[variable].attrs['units']     = 'm'
-                ds1[variable].attrs['long_name'] = 'daily accumulated rainfall'
+                ds1['tp6']                           = ds1['tp6'] - ds2['sf6']
+                ds1                                  = ds1.rename({'tp6':variable})
+                ds1[variable].attrs['units']         = 'm'
+                ds1[variable].attrs['long_name']     = 'daily accumulated rainfall'
+                ds1[variable].attrs['forecastcycle'] = forecastcycle
                 if write2file: s2s.to_netcdf_pack64bit(ds1[variable],path_out + filename_out) 
                 ds1.close()
                 ds2.close()
@@ -112,9 +112,10 @@ for variable in variables:
                 if gridstring == '0.25x0.25':
                     ds = ds.isel(time=slice(1,ds.time.size))
 
-                ds                               = ds.rename({'tp6':variable})
-                ds[variable].attrs['units']      = 'm'
-                ds[variable].attrs['long_name']  = 'daily maximum 6 hour accumulated precipitation'
+                ds                                  = ds.rename({'tp6':variable})
+                ds[variable].attrs['units']         = 'm'
+                ds[variable].attrs['long_name']     = 'daily maximum 6 hour accumulated precipitation'
+                ds[variable].attrs['forecastcycle'] = forecastcycle
                 if write2file: s2s.to_netcdf_pack64bit(ds[variable],path_out + filename_out) 
                 ds.close()
 
@@ -142,6 +143,7 @@ for variable in variables:
                 da.name                          = variable
                 da.attrs['units']                = 'm'
                 da.attrs['long_name']            = 'daily maximum 6 hour accumulated rainfall'
+                da.attrs['forecastcycle']        = forecastcycle
                 if write2file: s2s.to_netcdf_pack64bit(da,path_out + filename_out) 
                 ds1.close()
                 ds2.close()
@@ -149,15 +151,16 @@ for variable in variables:
 
             elif variable == 'mx24tpr': # daily maximum timestep precipitation rate (kgm-2s-1)
 
-                path_in                         = config.dirs[product + '_6hourly'] + 'mxtpr/'
-                path_out                        = config.dirs[product + '_daily'] + variable + '/'
-                filename_in                     = 'mxtpr_' + basename + '.nc'
-                filename_out                    = variable + '_' + basename + '.nc'
-                ds                              = xr.open_dataset(path_in + filename_in)
-                ds                              = ds.resample(time='1D').max('time')                
-                ds                              = ds.rename({'mxtpr':variable})
-                ds[variable].attrs['units']     = 'kg m**-2 s**-1'
-                ds[variable].attrs['long_name'] = 'daily maximum timestep precipitation rate'
+                path_in                             = config.dirs[product + '_6hourly'] + 'mxtpr/'
+                path_out                            = config.dirs[product + '_daily'] + variable + '/'
+                filename_in                         = 'mxtpr_' + basename + '.nc'
+                filename_out                        = variable + '_' + basename + '.nc'
+                ds                                  = xr.open_dataset(path_in + filename_in)
+                ds                                  = ds.resample(time='1D').max('time')                
+                ds                                  = ds.rename({'mxtpr':variable})
+                ds[variable].attrs['units']         = 'kg m**-2 s**-1'
+                ds[variable].attrs['long_name']     = 'daily maximum timestep precipitation rate'
+                ds[variable].attrs['forecastcycle'] = forecastcycle
                 if write2file: s2s.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
                 ds.close()
 
@@ -167,7 +170,6 @@ for variable in variables:
             print('combine cf and pf files into one file..')
             basename_cf     = '%s_%s_%s_%s'%(forecastcycle,gridstring,datestring,'cf')
             basename_pf     = '%s_%s_%s_%s'%(forecastcycle,gridstring,datestring,'pf')
-            #basename        = '%s_%s_%s'%(forcastcycle,gridstring,datestring)
             basename        = '%s_%s'%(gridstring,datestring) 
             filename_out_cf = variable + '_' + basename_cf + '.nc'
             filename_out_pf = variable + '_' + basename_pf + '.nc'

@@ -21,21 +21,28 @@ write2file        = False
 # read hr and lr files and combine
 path_in         = config.dirs['calc_forecast_daily'] + variable + '/'
 filename_hr     = 't_msess_' + ref_forecast_flag + '_0.25x0.25_' + dates[0] + '_' + dates[-1] + '.nc'
-filename_lr     = 't_msess_' + ref_forecast_flag + '_0.5x0.5_' + dates[0] + '_' + dates[-1] + '.nc'
-ds              = xr.open_mfdataset([path_in + filename_hr,path_in + filename_lr]).compute()
-        
+#filename_lr     = 't_msess_' + ref_forecast_flag + '_0.5x0.5_' + dates[0] + '_' + dates[-1] + '.nc'
+#ds              = xr.open_mfdataset([path_in + filename_hr,path_in + filename_lr]).compute()
+ds              = xr.open_dataset(path_in + filename_hr)
+
 # plot
 fontsize  = 11
 figsize   = np.array([4*1.61,4])
 fig,ax    = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
-ax.plot(ds['msess'],'k',linewidth=1.25)
-ax.plot(ds['msess'],'ko',markersize=5)
+ax.plot(ds['msess'][:,0],'k',linewidth=1.25)
+ax.plot(ds['msess'][:,0],'ko',markersize=5)
+ax.plot(ds['msess'][:,1],'r',linewidth=1.25)
+ax.plot(ds['msess'][:,1],'ro',markersize=5)
 ax.set_xticks(np.arange(0,46,5))
 ax.set_xticklabels(np.arange(0,46,5))
-ax.set_yticks(np.round(np.arange(-0.2,1.2,0.2),2))
-ax.set_yticklabels(np.round(np.arange(-0.2,1.2,0.2),2))
-ax.set_xlim([0,45])
+ax.set_yticks(np.round(np.arange(-1.0,1.2,0.2),2))
+ax.set_yticklabels(np.round(np.arange(-1.0,1.2,0.2),2))
+#ax.set_xlim([0,45])
+#ax.set_ylim([-0.2,1.0])
+
+ax.set_xlim([0,15])
 ax.set_ylim([-0.2,1.0])
+
 ax.set_ylabel('msess',fontsize=fontsize)
 ax.set_xlabel('lead time [days]',fontsize=fontsize)
 ax.axhline(y=0, color='k', linestyle='-',linewidth=0.75)
