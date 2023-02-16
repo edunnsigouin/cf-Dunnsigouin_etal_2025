@@ -12,7 +12,7 @@ from forsikring import config,misc,s2s
 from matplotlib  import pyplot as plt
 
 # INPUT ----------------------------------------------- 
-variables     = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+variables     = ['mx24tp6']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcasts
 product       = 'hindcast'              # hindcast or forecast ?
 mon_thu_start = ['20210104','20210107'] # first monday & thursday initialization date of forecast
