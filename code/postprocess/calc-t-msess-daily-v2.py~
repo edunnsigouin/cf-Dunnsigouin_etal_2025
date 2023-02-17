@@ -48,7 +48,6 @@ path_in_ref_forecast = config.dirs['era5_model_clim'] + variable + '/'
 # 1) calculate mse for reference forecast
 print('\ncalculating reference forecast mse..')
 print('variable: ' + variable + ', grid: ',grid)
-
 # get list of filenames                                                                                                                                                                
 filenames_verification = []
 filenames_ref_forecast = []    

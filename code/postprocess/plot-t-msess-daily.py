@@ -19,10 +19,11 @@ write2file        = False
 
 # read hr and lr files and combine
 path_in         = config.dirs['calc_forecast_daily'] + variable + '/'
-filename_hr     = 't_msess_' + ref_forecast_flag + '_0.25x0.25_' + dates[0] + '_' + dates[-1] + '.nc'
-filename_lr     = 't_msess_' + ref_forecast_flag + '_0.5x0.5_' + dates[0] + '_' + dates[-1] + '.nc'
+filename_hr     = 'msess_mse_' + ref_forecast_flag + '_0.25x0.25_' + dates[0] + '_' + dates[-1] + '.nc'
+filename_lr     = 'msess_mse_' + ref_forecast_flag + '_0.5x0.5_' + dates[0] + '_' + dates[-1] + '.nc'
 ds              = xr.open_mfdataset([path_in + filename_hr,path_in + filename_lr]).compute()
 
+# calculate 5th and 95th percentiles explicitely in case tehy are not symetrical?
 yerr = 2*ds['msess'][:,1:].std(dim='number')
 y    = ds['msess'][:,0]
 x    = ds['msess'].time
