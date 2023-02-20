@@ -3,10 +3,12 @@
 
 import numpy as np
 
+timescale  = np.arange(1,3,1)
 time       = np.arange(16,47,1)
 latitude   = np.flip(np.arange(33,74,0.5))
 longitude  = np.arange(-27,45.5,0.5)
 
+ntimescale = timescale.size
 ntime      = time.size
 nlatitude  = latitude.size
 nlongitude = longitude.size
