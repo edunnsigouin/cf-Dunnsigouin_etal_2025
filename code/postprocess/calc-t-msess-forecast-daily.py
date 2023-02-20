@@ -2,6 +2,8 @@
 Calculates the mean-square-error skill score as a function of 
 lead time for ecmwf forecasts. Reference forecasts are either 
 era5 climatology or era5 persistence. Verification is era5.
+Code includes bootstrapping of forecast mse to put error bars
+on msess
 """
 
 import numpy  as np
@@ -20,11 +22,12 @@ def preprocess(ds):
 
 # INPUT -----------------------------------------------
 ref_forecast_flag = 'clim'                   # clim or pers
-variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable          = 'tp24'                # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+domain            = 'nordic'                 # europe or norway only?
 mon_thu_start     = ['20210104','20210107']  # first monday & thursday initialization date of forecast
-num_i_weeks       = 52                        # number of weeks withe forecasts
+num_i_weeks       = 52                       # number of weeks withe forecasts
 grid              = '0.25x0.25'              # '0.25x0.25' & '0.5x0.5'
-nshuffle          = 1000                     # number of times to shuffle initialization dates for error bars
+nshuffle          = 10000                    # number of times to shuffle initialization dates for error bars
 nsample           = 50
 comp_lev          = 5
 write2file        = True
@@ -33,39 +36,36 @@ write2file        = True
 misc.tic()
 
 # initialize msess array
-dim              = s2s.get_dim(grid)
-msess            = np.zeros((dim.ntime,nshuffle))
-mse_forecast     = np.zeros((dim.ntime,nshuffle))
+dim                    = s2s.get_dim(grid)
+msess                  = np.zeros((dim.ntime,nshuffle))
+mse_forecast           = np.zeros((dim.ntime,nshuffle))
 
 # get all initialization dates and convert to list
-init_dates        = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
-init_dates        = init_dates.strftime('%Y-%m-%d').values.tolist()
+init_dates             = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
+init_dates             = init_dates.strftime('%Y-%m-%d').values
 
-# define paths
-path_in_forecast     = config.dirs['forecast_daily'] + variable + '/'
-path_in_verification = config.dirs['era5_model_daily'] + variable + '/'
-path_in_ref_forecast = config.dirs['era5_model_clim'] + variable + '/'
-path_out             = config.dirs['calc_forecast_daily'] + variable + '/'
+# define paths and output filename
+path_in_forecast       = config.dirs['forecast_daily'] + variable + '/'
+path_in_verification   = config.dirs['era5_model_daily'] + variable + '/'
+path_in_ref_forecast   = config.dirs['era5_model_clim'] + variable + '/'
+path_out               = config.dirs['calc_forecast_daily'] 
+filename_out           = 't_msess_' + variable + '_' + 'forecast-' + ref_forecast_flag + '_' + grid + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 
-# get list of filenames                                                                                                                                                                
-filenames_verification = []
-filenames_ref_forecast = []    
-filenames_forecast     = []
-for j in init_dates:
-    filename1 = path_in_forecast + variable + '_' + grid + '_' + j + '.nc'
-    filename2 = path_in_verification + variable + '_' + grid + '_' + j + '.nc'
-    if ref_forecast_flag == 'clim':
-        filename3 = path_in_ref_forecast + variable + '_' + grid + '_' + j + '.nc'
-    elif ref_forecast_flag == 'pers':
-        print('need to code this!')
-    filenames_forecast.append(filename1)
-    filenames_verification.append(filename2)
-    filenames_ref_forecast.append(filename3)
-    
+# define input filenames
+filenames_verification =  path_in_verification + variable + '_' + grid + '_' + init_dates + '.nc'
+filenames_forecast     =  path_in_forecast + variable + '_' + grid + '_' + init_dates + '.nc'
+filenames_ref_forecast =  path_in_ref_forecast + variable + '_' + grid + '_' + init_dates + '.nc'
+
 # read in files     
 ds_ref_forecast = xr.open_mfdataset(filenames_ref_forecast,preprocess=preprocess,combine='nested',concat_dim='chunks')
 ds_verification = xr.open_mfdataset(filenames_verification,preprocess=preprocess,combine='nested',concat_dim='chunks')
 ds_forecast     = xr.open_mfdataset(filenames_forecast,preprocess=preprocess,combine='nested',concat_dim='chunks').mean(dim='number') # ensemble mean
+
+# sub-select specific domain
+dim             = misc.get_domain_dim(domain,dim)
+ds_ref_forecast = ds_ref_forecast.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
+ds_forecast     = ds_forecast.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
+ds_verification = ds_verification.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 
 # calc squared error for all forecasts individually
 error_forecast     = (ds_forecast[variable] - ds_verification[variable])**2
@@ -85,7 +85,7 @@ with ProgressBar():
     error_ref_forecast = error_ref_forecast.compute().to_dataset()
 
 # bootstrap
-chunks           = np.arange(0,len(init_dates),1)
+chunks           = np.arange(0,init_dates.size,1)
 chunks_random    = chunks.copy()
 mse_ref_forecast = (1/chunks.size)*error_ref_forecast[variable].sum(dim='chunks').values
 for i in range(nshuffle):
@@ -115,10 +115,8 @@ if write2file:
                                      attrs=dict(description='mean square error of reference forecast',units='?'),
                                      name='mse_ref_forecast')
     ds                = xr.merge([msess,mse_forecast,mse_ref_forecast])
-    filename_out      = 'msess_mse_' + ref_forecast_flag + '_' + grid + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
-    #s2s.to_netcdf_pack64bit(ds['msess'],path_out + filename_out)
     ds.to_netcdf(path_out+filename_out)
-    print('compress file to reduce space..\n')
+    print('compress file to reduce space..')
     s2s.compress_file(comp_lev,3,filename_out,path_out)
 
 misc.toc()

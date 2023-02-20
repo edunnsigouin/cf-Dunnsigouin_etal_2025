@@ -11,41 +11,49 @@ from matplotlib  import pyplot as plt
 
 # INPUT -----------------------------------------------
 ref_forecast_flag = 'clim' 
-variable          = 'tp24'                    # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable          = 'tp24'                      # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 dates             = ['2021-01-04','2021-12-30'] # first monday & thursday initialization date of forecast
+domain            = 'nordic'                    # nordic only or europe?
 comp_lev          = 5
-write2file        = False
+write2file        = True
 # -----------------------------------------------------      
 
+# define output filename
+path_out = config.dirs['fig'] + 'ecmwf/forecast/daily/'  
+figname = 't_msess_' + variable + '_forecast-' + ref_forecast_flag + '_' + domain + '_' + dates[0] + '_' + dates[-1] + '.pdf'
+
 # read hr and lr files and combine
-path_in         = config.dirs['calc_forecast_daily'] + variable + '/'
-filename_hr     = 'msess_mse_' + ref_forecast_flag + '_0.25x0.25_' + dates[0] + '_' + dates[-1] + '.nc'
-filename_lr     = 'msess_mse_' + ref_forecast_flag + '_0.5x0.5_' + dates[0] + '_' + dates[-1] + '.nc'
+path_in         = config.dirs['calc_forecast_daily']
+filename_hr     = 't_msess_' + variable + '_forecast-' + ref_forecast_flag + '_0.25x0.25_' + domain + '_' + dates[0] + '_' + dates[-1] + '.nc'
+filename_lr     = 't_msess_' + variable + '_forecast-' + ref_forecast_flag + '_0.5x0.5_' + domain + '_' + dates[0] + '_' + dates[-1] + '.nc'
 ds              = xr.open_mfdataset([path_in + filename_hr,path_in + filename_lr]).compute()
 
-# calculate 5th and 95th percentiles explicitely in case tehy are not symetrical?
-yerr = 2*ds['msess'][:,1:].std(dim='number')
-y    = ds['msess'][:,0]
-x    = ds['msess'].time
+# deifne error bar quantities (mean + 5th and 95th percentiles)
+y     = ds['msess'][:,0].values
+yerr1 = y - ds['msess'][:,1:].quantile(0.05,dim='number').values 
+yerr2 =	ds['msess'][:,1:].quantile(0.95,dim='number').values - y 
+x     = ds['msess'].time
 
 # plot
 fontsize  = 11
 figsize   = np.array([4*1.61,4])
 fig,ax    = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
 
-ax.errorbar(x,y,yerr=yerr,fmt='o',c='k',elinewidth=2)
+ax.errorbar(x,y,yerr=[yerr1,yerr2],fmt='o',c='k',elinewidth=2)
 ax.set_xticks(np.arange(0,46,5))
 ax.set_xticklabels(np.arange(0,46,5))
 ax.set_yticks(np.round(np.arange(-1.0,1.2,0.2),2))
 ax.set_yticklabels(np.round(np.arange(-1.0,1.2,0.2),2))
 ax.set_xlim([0,46])
-ax.set_ylim([-0.2,1.0])
+ax.set_ylim([-0.25,1.0])
 
 ax.set_ylabel('msess',fontsize=fontsize)
 ax.set_xlabel('lead time [days]',fontsize=fontsize)
 ax.axhline(y=0, color='k', linestyle='-',linewidth=0.75)
-plt.show()
 
+plt.tight_layout()
+if write2file: plt.savefig(path_out + figname)
+plt.show()
 
 ds.close()
 

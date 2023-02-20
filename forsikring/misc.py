@@ -17,7 +17,8 @@ def tic():
 
 def toc():
     """
-    matlab style toc function                                                                                                                                                  """                                 
+    matlab style toc function
+    """                        
     if 'startTime_for_tictoc' in globals():
         print("Elapsed time is " + str(time.time() - startTime_for_tictoc) + " seconds.")
     else:
@@ -50,3 +51,19 @@ def convert_xyt_np_to_xr(array,name,description,units,dim):
     ds = da.to_dataset(name=name)
 
     return ds
+
+
+def get_domain_dim(domain,dim):
+    """
+    outputs lat and lon array of domain
+    given as a string
+    """
+    if domain == 'europe':
+        dim = dim
+    elif domain == 'nordic':
+        dim.latitude   = np.flip(np.arange(53,73.75,0.25))
+        dim.longitude  = np.arange(0,35.25,0.25)
+        dim.nlatitude  = dim.latitude.size
+        dim.nlongitude = dim.longitude.size
+    
+    return dim
