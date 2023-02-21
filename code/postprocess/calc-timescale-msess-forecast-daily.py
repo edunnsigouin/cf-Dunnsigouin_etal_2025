@@ -23,7 +23,8 @@ def preprocess(ds):
 def resample_2_timescale(ds):
     """
     resamples daily time into timescales following 
-    Wheeler et al. 2016 QJRMS
+    Wheeler et al. 2016 QJRMS. For exmaple, 1d1d,2d2d etc..
+    Not exactly same since hr to lr data occurs on day 15 not 14.
     """
     if ds.time.size == 15:
         temp1 = ds.sel(time=2).drop_vars('time')
@@ -33,24 +34,20 @@ def resample_2_timescale(ds):
         ds    = xr.concat([temp1,temp2,temp3,temp4], "timescale")
         ds    = ds.assign(timescale=np.arange(1,5,1))
     elif ds.time.size == 31:
-
-        """
-        Need to find right timescales for lr data !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        """
-        temp1 = ds.sel(time=slice(16,29)).mean(dim='time')
-        temp2 = ds.sel(time=slice(31,46)).mean(dim='time')
+        temp1 = ds.sel(time=slice(16,28)).mean(dim='time')
+        temp2 = ds.sel(time=slice(29,46)).mean(dim='time')
         ds    = xr.concat([temp1,temp2], "timescale")
-	ds    = ds.assign(timescale=np.arange(1,3,1))
+        ds    = ds.assign(timescale=np.arange(5,7,1))
     return ds
     
 
 # INPUT -----------------------------------------------
 ref_forecast_flag = 'clim'                   # clim or pers
-variable          = 'tp24'                # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable          = 'mx24tp6'                # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe or norway only?
 mon_thu_start     = ['20210104','20210107']  # first monday & thursday initialization date of forecast
-num_i_weeks       = 52                       # number of weeks withe forecasts
-grid              = '0.25x0.25'              # '0.25x0.25' & '0.5x0.5'
+num_i_weeks       = 52                      # number of weeks withe forecasts
+grid              = '0.5x0.5'              # '0.25x0.25' & '0.5x0.5'
 nshuffle          = 10000                    # number of times to shuffle initialization dates for error bars
 nsample           = 50
 comp_lev          = 5
@@ -73,7 +70,7 @@ path_in_forecast       = config.dirs['forecast_daily'] + variable + '/'
 path_in_verification   = config.dirs['era5_model_daily'] + variable + '/'
 path_in_ref_forecast   = config.dirs['era5_model_clim'] + variable + '/'
 path_out               = config.dirs['calc_forecast_daily'] 
-filename_out           = 'ts_msess_' + variable + '_' + 'forecast-' + ref_forecast_flag + '_' + grid + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+filename_out           = 'timescale_msess_' + variable + '_' + 'forecast-' + ref_forecast_flag + '_' + grid + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 
 # define input filenames
 filenames_verification =  path_in_verification + variable + '_' + grid + '_' + init_dates + '.nc'
@@ -101,6 +98,7 @@ with ProgressBar():
 ds_ref_forecast = resample_2_timescale(ds_ref_forecast) 
 ds_forecast     = resample_2_timescale(ds_forecast)
 ds_verification = resample_2_timescale(ds_verification)
+
 
 # calc squared error for all forecasts individually
 error_forecast     = (ds_forecast[variable] - ds_verification[variable])**2

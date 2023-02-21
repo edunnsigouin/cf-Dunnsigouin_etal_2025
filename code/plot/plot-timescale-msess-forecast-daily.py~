@@ -1,0 +1,102 @@
+"""
+plots mean-square-error skill score as a function of lead time for 
+ecmwf forecasts relative to reference forecasts era5 climatology 
+or era5 persistence
+"""
+
+import numpy     as np
+import xarray    as xr
+from forsikring  import config,misc,s2s
+from matplotlib  import pyplot as plt
+
+# INPUT -----------------------------------------------
+ref_forecast_flag = 'clim' 
+variable          = 'mx24tp6'                      # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+dates             = ['2021-01-04','2021-12-30'] # first monday & thursday initialization date of forecast
+domain            = 'europe'                    # nordic only or europe?
+comp_lev          = 5
+write2file        = True
+# -----------------------------------------------------      
+
+# define output filename
+path_out = config.dirs['fig'] + 'ecmwf/forecast/daily/'  
+figname = 'timescale_msess_' + variable + '_forecast-' + ref_forecast_flag + '_' + domain + '_' + dates[0] + '_' + dates[-1] + '.pdf'
+
+# read hr and lr files and combine
+path_in         = config.dirs['calc_forecast_daily']
+filename_hr     = 'timescale_msess_' + variable + '_forecast-' + ref_forecast_flag + '_0.25x0.25_' + domain + '_' + dates[0] + '_' + dates[-1] + '.nc'
+filename_lr     = 'timescale_msess_' + variable + '_forecast-' + ref_forecast_flag + '_0.5x0.5_' + domain + '_' + dates[0] + '_' + dates[-1] + '.nc'
+ds              = xr.open_mfdataset([path_in + filename_hr,path_in + filename_lr]).compute()
+
+# convert to daily for plotting purposes
+y        = np.zeros(46)
+y[0]     = np.nan
+y[1]     = ds['msess'][0,0].values
+y[2:4]   = ds['msess'][1,0].values
+y[4:8]   = ds['msess'][2,0].values
+y[8:16]  = ds['msess'][3,0].values
+y[16:29] = ds['msess'][4,0].values
+y[29:47] = ds['msess'][5,0].values
+x        = np.arange(1,47,1)
+
+temp1 = ds['msess'][:,1:].quantile(0.05,dim='number').values
+temp2 = ds['msess'][:,1:].quantile(0.95,dim='number').values 
+
+yerr1        = np.zeros(46)
+yerr1[0]     = np.nan
+yerr1[1]     = temp1[0]
+yerr1[2:4]   = temp1[1]
+yerr1[4:8]   = temp1[2]
+yerr1[8:16]  = temp1[3]
+yerr1[16:29] = temp1[4]
+yerr1[29:47] = temp1[5]
+
+yerr2        = np.zeros(46)
+yerr2[0]     = np.nan
+yerr2[1]     = temp2[0]
+yerr2[2:4]   = temp2[1]
+yerr2[4:8]   = temp2[2]
+yerr2[8:16]  = temp2[3]
+yerr2[16:29] = temp2[4]
+yerr2[29:47] = temp2[5]
+
+# plot       
+fontsize  = 11
+figsize   = np.array([4*1.61,4])
+fig,ax    = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
+
+ax.errorbar(x[0:2],y[0:2],yerr=[y[0:2]-yerr1[0:2],yerr2[0:2]-y[0:2]],fmt='s',c='k',ecolor='gray',markersize=3,elinewidth=2)
+
+ax.plot(x[2:4],y[2:4],color='k',linewidth=3)
+ax.fill_between(x[2:4],yerr1[2:4],yerr2[2:4],color='k',edgecolor='w',alpha=0.3)
+
+ax.plot(x[4:8],y[4:8],color='k',linewidth=3)
+ax.fill_between(x[4:8],yerr1[4:8],yerr2[4:8],color='k',edgecolor='w',alpha=0.3)
+
+ax.plot(x[8:16],y[8:16],color='k',linewidth=3)
+ax.fill_between(x[8:16],yerr1[8:16],yerr2[8:16],color='k',edgecolor='w',alpha=0.3)
+
+ax.plot(x[16:29],y[16:29],color='k',linewidth=3)
+ax.fill_between(x[16:29],yerr1[16:29],yerr2[16:29],color='k',edgecolor='w',alpha=0.3)
+
+ax.plot(x[29:47],y[29:47],color='k',linewidth=3)
+ax.fill_between(x[29:47],yerr1[29:47],yerr2[29:47],color='k',edgecolor='w',alpha=0.3)
+
+ax.set_xticks(np.arange(0,46,5))
+ax.set_xticklabels(np.arange(0,46,5))
+ax.set_yticks(np.round(np.arange(-1.0,1.2,0.2),2))
+ax.set_yticklabels(np.round(np.arange(-1.0,1.2,0.2),2))
+ax.set_xlim([0,46])
+ax.set_ylim([-0.25,1.0])
+
+ax.set_ylabel('msess',fontsize=fontsize)
+ax.set_xlabel('lead timescale',fontsize=fontsize)
+ax.axhline(y=0, color='k', linestyle='-',linewidth=0.75)
+
+plt.tight_layout()
+if write2file: plt.savefig(path_out + figname)
+plt.show()
+
+ds.close()
+
+        

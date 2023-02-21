@@ -11,9 +11,9 @@ from matplotlib  import pyplot as plt
 
 # INPUT -----------------------------------------------
 ref_forecast_flag = 'clim' 
-variable          = 'tp24'                      # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable          = 'mx24tp6'                      # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 dates             = ['2021-01-04','2021-12-30'] # first monday & thursday initialization date of forecast
-domain            = 'nordic'                    # nordic only or europe?
+domain            = 'europe'                    # nordic only or europe?
 comp_lev          = 5
 write2file        = True
 # -----------------------------------------------------      
@@ -39,7 +39,7 @@ fontsize  = 11
 figsize   = np.array([4*1.61,4])
 fig,ax    = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
 
-ax.errorbar(x,y,yerr=[yerr1,yerr2],fmt='o',c='k',elinewidth=2)
+ax.errorbar(x,y,yerr=[yerr1,yerr2],fmt='o',c='k',ecolor='gray',elinewidth=2)
 ax.set_xticks(np.arange(0,46,5))
 ax.set_xticklabels(np.arange(0,46,5))
 ax.set_yticks(np.round(np.arange(-1.0,1.2,0.2),2))
