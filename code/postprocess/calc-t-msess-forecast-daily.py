@@ -22,11 +22,11 @@ def preprocess(ds):
 
 # INPUT -----------------------------------------------
 ref_forecast_flag = 'clim'                   # clim or pers
-variable          = 'tp24'                # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domain            = 'nordic'                 # europe or norway only?
+variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+domain            = 'vestland'               # europe or norway only?
 mon_thu_start     = ['20210104','20210107']  # first monday & thursday initialization date of forecast
 num_i_weeks       = 52                       # number of weeks withe forecasts
-grid              = '0.25x0.25'              # '0.25x0.25' & '0.5x0.5'
+grid              = '0.5x0.5'              # '0.25x0.25' & '0.5x0.5'
 nshuffle          = 10000                    # number of times to shuffle initialization dates for error bars
 nsample           = 50
 comp_lev          = 5
@@ -62,7 +62,7 @@ ds_verification = xr.open_mfdataset(filenames_verification,preprocess=preprocess
 ds_forecast     = xr.open_mfdataset(filenames_forecast,preprocess=preprocess,combine='nested',concat_dim='chunks').mean(dim='number') # ensemble mean
 
 # sub-select specific domain
-dim             = misc.get_domain_dim(domain,dim)
+dim             = misc.get_domain_dim(domain,dim,grid)
 ds_ref_forecast = ds_ref_forecast.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 ds_forecast     = ds_forecast.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 ds_verification = ds_verification.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')

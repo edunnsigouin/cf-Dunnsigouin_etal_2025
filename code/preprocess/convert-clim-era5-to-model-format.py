@@ -17,13 +17,13 @@ import os
 from forsikring import config,misc,s2s
 
 # INPUT -----------------------------------------------
-variables        = ['mx24tpr']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variables        = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 years            = np.arange(2001,2021,1)  # years for climatology calculation
 mon_thu_start    = ['20210104','20210107'] # first monday & thursday initialization date of forecast
 num_i_weeks      = 52                      # number of weeks withe forecasts
-grids            = ['0.25x0.25','0.5x0.5']          # '0.25x0.25' or '0.5x0.5'
+grids            = ['0.25x0.25']          # '0.25x0.25' or '0.5x0.5'
 comp_lev         = 5
-write2file       = True
+write2file       = False
 # -----------------------------------------------------         
 
 # get all dates for monday and thursday forecast initializations
@@ -36,11 +36,11 @@ for variable in variables:
         path_in  = config.dirs['era5_cont_daily'] + variable + '/'
         path_out = config.dirs['era5_model_clim'] + variable + '/'
     
-        print('calculate climatology..')
+        print('calculate climatology (excluding 2021)..')
         filenames = [path_in + variable + '_' + grid + '_' + str(years[0]) + '.nc']
         for year in years[1:]:
             filenames = filenames + [path_in + variable + '_' + grid + '_' + str(year) + '.nc']
-
+            
         # is this the right way to calculate the climatology for this project?    
         with ProgressBar():
             ds_clim = xr.open_mfdataset(filenames).groupby('time.dayofyear').mean(dim='time').compute()

@@ -53,17 +53,29 @@ def convert_xyt_np_to_xr(array,name,description,units,dim):
     return ds
 
 
-def get_domain_dim(domain,dim):
+def get_domain_dim(domain,dim,grid):
     """
     outputs lat and lon array of domain
     given as a string
     """
     if domain == 'europe':
         dim = dim
-    elif domain == 'nordic':
-        dim.latitude   = np.flip(np.arange(53,73.75,0.25))
-        dim.longitude  = np.arange(0,35.25,0.25)
-        dim.nlatitude  = dim.latitude.size
-        dim.nlongitude = dim.longitude.size
+    elif grid == '0.25x0.25':     
+        if domain == 'nordic':
+            dim.latitude   = np.flip(np.arange(53,73.75,0.25))
+            dim.longitude  = np.arange(0,35.25,0.25)
+        elif domain == 'vestland':
+            dim.latitude   = np.flip(np.arange(59,62.75,0.25))
+            dim.longitude  = np.arange(4,8.75,0.25)
+    elif grid == '0.5x0.5':
+        if domain == 'nordic':
+            dim.latitude   = np.flip(np.arange(53,74,0.5))
+            dim.longitude  = np.arange(0,35.5,0.5)
+        elif domain == 'vestland':
+            dim.latitude   = np.flip(np.arange(59,63,0.5))
+            dim.longitude  = np.arange(4,9,0.5)
+            
+    dim.nlatitude  = dim.latitude.size
+    dim.nlongitude = dim.longitude.size
     
     return dim
