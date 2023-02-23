@@ -1,10 +1,11 @@
 """
-Converts era5 yearly files into the same format as ecmwf forecasts
-initialized on mondays and thursdays. i.e. for each lead time in a forecast
-file, we collect the analagous era5 dates and put them into a new file.
+Creates persistence forecast files corresponding to the forecast initialization dates.
+i.e. for each lead time in a forecast file, we collect the analagous 
+era5 dates and put them into a new file, except that the files only have the initialization
+date throughout so they can be used as a persistence reference forecast.
 example: tp24_CY47R1_0.25x0.25_2021-01-04.nc is the forecast file
 and the new era5 file is tp24_0.25x0.25_2021-01-04.nc with dates corresponding
-to jan 04 to jan 04 + 46 days.
+to jan 04.
 """
 
 import numpy  as np
@@ -15,10 +16,10 @@ import os
 from forsikring import config,misc,s2s
 
 # INPUT -----------------------------------------------
-variables        = ['mx24tpr']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variables        = ['tp24','mx24tp6']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 mon_thu_start    = ['20210104','20210107'] # first monday & thursday initialization date of forecast
 num_i_weeks      = 52                      # number of weeks withe forecasts
-grids            = ['0.25x0.25']             # '0.25x0.25' or '0.5x0.5'
+grids            = ['0.25x0.25','0.5x0.5']             # '0.25x0.25' or '0.5x0.5'
 comp_lev         = 5
 write2file       = True
 # -----------------------------------------------------         
@@ -39,7 +40,7 @@ for variable in variables:
             filename1_in = variable + '_' + grid + '_' + year + '.nc'
             filename2_in = variable + '_' + grid + '_' + str(int(year)+1) + '.nc'
         
-            path_out     = config.dirs['era5_model_daily'] + variable + '/'
+            path_out     = config.dirs['era5_model_pers'] + variable + '/'
             filename_out = '%s_%s_%s.nc'%(variable,grid,datestring)
 
             # read data & pick out specific dates (46 = # of days in ecmwf forecast)
@@ -53,6 +54,9 @@ for variable in variables:
             with ProgressBar():
                 ds = ds.compute()
 
+            # replace all lags with initialization value (or lag 1 value)    
+            ds[variable][:,:,:] = ds[variable][0,:,:]
+            
             if write2file:
                 print('writing to file..')
                 s2s.to_netcdf_pack64bit(ds[variable],path_out + filename_out)

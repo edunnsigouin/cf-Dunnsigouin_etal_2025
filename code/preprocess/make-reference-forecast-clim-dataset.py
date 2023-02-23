@@ -1,5 +1,6 @@
 """
-Creates era5 climatology files with same format as ecmwf forecast file.
+Creates era5 climatology files with same format as ecmwf forecast file
+for use as a reference forecast for verification.
 example: tp24_CY47R1_0.25x0.25_2021-01-04.nc is the forecast file
 and the new era5 clim file associated with this forecast is 
 tp24_clim_0.25x0.25_2021-01-04.nc with dates corresponding

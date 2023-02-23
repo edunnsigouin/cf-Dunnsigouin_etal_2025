@@ -13,20 +13,19 @@ from matplotlib  import pyplot as plt
 ref_forecast_flag = 'clim' 
 variable          = 'tp24'                      # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 dates             = ['2021-01-04','2021-12-30'] # first monday & thursday initialization date of forecast
-domain            = 'vestland'                    # nordic only or europe?
+domain            = 'europe'                    # nordic only or europe?
 comp_lev          = 5
-write2file        = True
+write2file        = False
 # -----------------------------------------------------      
 
 # define output filename
 path_out = config.dirs['fig'] + 'ecmwf/forecast/daily/'  
 figname = 'timescale_msess_' + variable + '_forecast-' + ref_forecast_flag + '_' + domain + '_' + dates[0] + '_' + dates[-1] + '.pdf'
 
-# read hr and lr files and combine
-path_in         = config.dirs['calc_forecast_daily']
-filename_hr     = 'timescale_msess_' + variable + '_forecast-' + ref_forecast_flag + '_0.25x0.25_' + domain + '_' + dates[0] + '_' + dates[-1] + '.nc'
-filename_lr     = 'timescale_msess_' + variable + '_forecast-' + ref_forecast_flag + '_0.5x0.5_' + domain + '_' + dates[0] + '_' + dates[-1] + '.nc'
-ds              = xr.open_mfdataset([path_in + filename_hr,path_in + filename_lr]).compute()
+# read data
+path_in   = config.dirs['calc_forecast_daily']
+filename  = 'timescale_msess_' + variable + '_forecast-' + ref_forecast_flag + '_' + domain + '_' + dates[0] + '_' + dates[-1] + '.nc'
+ds        = xr.open_mfdataset(path_in + filename)
 
 # convert to daily for plotting purposes
 y        = np.zeros(46)

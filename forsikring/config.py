@@ -20,6 +20,7 @@ era5_6hourly         = raw + "era5/6hourly/"
 era5_cont_daily      = processed + "cf-forsikring/era5/continuous-format/daily/"
 era5_model_clim      = processed + "cf-forsikring/era5/model-format/climatology/"
 era5_model_daily     = processed + "cf-forsikring/era5/model-format/daily/"
+era5_model_pers      = processed + "cf-forsikring/era5/model-format/persistence/"
 
 calc_forecast_daily  = calc + "cf-forsikring/ecmwf/forecast/daily/"
 
@@ -37,5 +38,6 @@ dirs = {"proj":proj,
         "era5_cont_daily":era5_cont_daily,
         "era5_model_clim":era5_model_clim,
         "era5_model_daily":era5_model_daily,
+        "era5_model_pers":era5_model_pers,
         "calc_forecast_daily":calc_forecast_daily
 }        
