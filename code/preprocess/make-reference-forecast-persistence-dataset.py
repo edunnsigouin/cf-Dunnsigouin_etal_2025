@@ -16,10 +16,10 @@ import os
 from forsikring import config,misc,s2s
 
 # INPUT -----------------------------------------------
-variables        = ['tp24','mx24tp6']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variables        = ['tp24']                # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 mon_thu_start    = ['20210104','20210107'] # first monday & thursday initialization date of forecast
 num_i_weeks      = 52                      # number of weeks withe forecasts
-grids            = ['0.25x0.25','0.5x0.5']             # '0.25x0.25' or '0.5x0.5'
+grids            = ['0.5x0.5']             # '0.25x0.25' or '0.5x0.5'
 comp_lev         = 5
 write2file       = True
 # -----------------------------------------------------         
@@ -39,22 +39,23 @@ for variable in variables:
             path_in      = config.dirs['era5_cont_daily'] + variable + '/'
             filename1_in = variable + '_' + grid + '_' + year + '.nc'
             filename2_in = variable + '_' + grid + '_' + str(int(year)+1) + '.nc'
-        
+                        
             path_out     = config.dirs['era5_model_pers'] + variable + '/'
             filename_out = '%s_%s_%s.nc'%(variable,grid,datestring)
 
             # read data & pick out specific dates (46 = # of days in ecmwf forecast)
+            # NOTE: here dates are just dummy dates. They will be changed below
             if grid == '0.25x0.25':
                 era5_dates = pd.date_range(date,periods=15,freq="D")
             elif grid == '0.5x0.5':
-                era5_dates = pd.date_range(date,periods=31,freq="D") + np.timedelta64(15,'D')
+                era5_dates = pd.date_range(date,periods=31,freq="D") # not shifted by 15 days!!! 
             ds = xr.open_mfdataset([path_in + filename1_in,path_in + filename2_in]).sel(time=era5_dates)
 
             # calculate explicitely
             with ProgressBar():
                 ds = ds.compute()
 
-            # replace all lags with initialization value (or lag 1 value)    
+            # replace all lags with day 1 value
             ds[variable][:,:,:] = ds[variable][0,:,:]
             
             if write2file:

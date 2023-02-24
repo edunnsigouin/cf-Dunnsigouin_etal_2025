@@ -22,8 +22,8 @@ def preprocess(ds):
     return ds
 
 # INPUT -----------------------------------------------
-ref_forecast_flag = 'clim'                   # clim or pers
-variable          = 'mx24tp6'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+ref_forecast_flag = 'pers'                   # clim or pers
+variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'               # europe or norway only?
 mon_thu_start     = ['20210104','20210107']  # first monday & thursday initialization date of forecast
 num_i_weeks       = 52                       # number of weeks withe forecasts
@@ -41,7 +41,7 @@ init_dates             = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks
 init_dates             = init_dates.strftime('%Y-%m-%d').values
 path_in_forecast       = config.dirs['forecast_daily'] + variable + '/'
 path_in_verification   = config.dirs['era5_model_daily'] + variable + '/'
-path_in_ref_forecast   = config.dirs['era5_model_clim'] + variable + '/'
+path_in_ref_forecast   = config.dirs['era5_model_' + ref_forecast_flag] + variable + '/'
 path_out               = config.dirs['calc_forecast_daily']
 
 for grid in grids:

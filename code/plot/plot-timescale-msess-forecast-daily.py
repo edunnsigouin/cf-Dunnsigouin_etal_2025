@@ -25,7 +25,7 @@ figname = 'timescale_msess_' + variable + '_forecast-' + ref_forecast_flag + '_'
 # read data
 path_in   = config.dirs['calc_forecast_daily']
 filename  = 'timescale_msess_' + variable + '_forecast-' + ref_forecast_flag + '_' + domain + '_' + dates[0] + '_' + dates[-1] + '.nc'
-ds        = xr.open_mfdataset(path_in + filename)
+ds        = xr.open_dataset(path_in + filename)
 
 # convert to daily for plotting purposes
 y        = np.zeros(46)

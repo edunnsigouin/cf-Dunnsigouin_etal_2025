@@ -13,7 +13,7 @@ from matplotlib  import pyplot as plt
 ref_forecast_flag = 'clim' 
 variable          = 'tp24'                      # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 dates             = ['2021-01-04','2021-12-30']    # first monday & thursday initialization date of forecast
-domain            = 'vestland'                     # nordic only or europe?
+domain            = 'europe'                     # nordic only or europe?
 comp_lev          = 5
 write2file        = False
 # -----------------------------------------------------      
