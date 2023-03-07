@@ -21,7 +21,7 @@ from datetime                    import datetime
 from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
-product       = 'forecast' # forecast/vr_forecast
+product       = 'vr_forecast' # forecast/vr_forecast
 mon_thu_start = ['20210104','20210107'] # first initialization date of forecast
 num_i_weeks   = 52 # number of forecasts intialization dates to download 
 grid          = '0.5/0.5' # degree lat/lon resolution
