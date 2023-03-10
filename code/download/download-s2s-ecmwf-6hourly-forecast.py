@@ -21,12 +21,12 @@ from datetime                    import datetime
 from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
-product       = 'vr_forecast' # forecast/vr_forecast
-mon_thu_start = ['20210104','20210107'] # first initialization date of forecast
-num_i_weeks   = 52 # number of forecasts intialization dates to download 
-grid          = '0.5/0.5' # degree lat/lon resolution
+product       = 'forecast' # forecast/vr_forecast
+mon_thu_start = ['20220103','20220106'] # first initialization date of forecast
+num_i_weeks   = 26 # number of forecasts intialization dates to download 
+grid          = '0.25/0.25' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var           = 'sf'
+var           = 'tp'
 comp_lev      = 5 # file compression level
 write2file    = True
 # -----------------------------------------
@@ -90,6 +90,7 @@ dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
 
 #dates_monday_thursday =dates_monday_thursday[1:]
 #print(dates_monday_thursday)
+
 
 # populate dictionary some more and download eachforcast one-by-one
 for date in dates_monday_thursday:
