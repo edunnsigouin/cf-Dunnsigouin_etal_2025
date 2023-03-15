@@ -1,0 +1,18 @@
+import numpy as np
+
+X = np.array([[1,1,1],[0,0,0],[0,0,0]])
+
+x = 3/9
+
+Y = np.array([[x,x,x],[x,x,x],[x,x,x]])
+
+print(X)
+print(Y)
+
+error = (X - Y)**2
+
+MSE = error.sum(axis=1).sum(axis=0)/9
+
+MSE_REF = np.sum(np.sum(X**2)) + np.sum(np.sum(X**2))
+
+print(MSE)

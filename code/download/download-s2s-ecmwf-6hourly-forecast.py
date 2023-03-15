@@ -126,3 +126,4 @@ for date in dates_monday_thursday:
     
         misc.toc()
 
+
