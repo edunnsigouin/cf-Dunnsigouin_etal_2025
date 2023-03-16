@@ -5,10 +5,37 @@ Lean 2008 MWR.
 """
 
 import numpy as np
+from matplotlib  import pyplot as plt
+
+def calc_frac(N,Nx,Ny,data):
+    """
+    Generates fractions following equations 2 and 3 from
+    Roberts and Lean 2008 MWR given binary input data
+    """
+
+    frac = np.zeros([2*N-1,Nx,Ny])
+    
+    for n in range(1,2*N,2):
+        for i in range(0,Nx):
+            for j in range(0,Ny):
+
+                k             = np.arange(0, n, dtype=int)
+                l             = np.arange(0, n, dtype=int)
+                ii            = (i + k  - (n-1)/2).astype(int)
+                jj            = (j + l  - (n-1)/2).astype(int)
+                temp_ii       = np.copy(ii)
+                temp_jj       = np.copy(jj)
+                ii            = ii[(temp_ii > -1) & (temp_ii < Nx)]
+                jj            = jj[(temp_jj > -1) & (temp_jj < Ny)]
+                frac[n-1,i,j] = data[ii[0]:ii[-1]+1,jj[0]:jj[-1]+1].sum(axis=0).sum(axis=0)/n**2
+    
+    return frac
+
+
 
 # INPUT -----------------------
-Nx         = 3
-Ny         = 3
+Nx         = 25
+Ny         = 25
 N          = np.maximum(Nx,Ny)
 write2file = False
 # -----------------------------
@@ -17,40 +44,35 @@ write2file = False
 Io      = np.zeros([Nx,Ny])
 Im      = np.zeros([Nx,Ny])
 Io[:,0] = 1
-Im[:,2] = 1
+Im[:,10] = 1
 
-print(Io)
+#print(Io)
 #print(Im)
 
-# generate fractions
-O = np.zeros([N,Nx,Ny])
-M = np.zeros([N,Nx,Ny])
+# calc fractions
+O = calc_frac(N,Nx,Ny,Io)
+M = calc_frac(N,Nx,Ny,Im)
 
-for n in range(3,5,2): #range(1,2*N,2):
-    for i in range(0,1):#range(0,Nx):
-        for j in range(0,1):#range(0,Ny):
+# calc MSE
+error   = (O - M)**2
+MSE     = error.sum(axis=2).sum(axis=1)/Nx/Ny
 
-            k        = np.arange(0, n, dtype=int)
-            l        = np.arange(0, n, dtype=int)
-            ii       = (i + k  - (n-1)/2).astype(int)
-            jj       = (j + l  - (n-1)/2).astype(int)
+MSE_REF = (1/Nx/Ny)*(np.sum(np.sum(O**2,axis=2),axis=1) + np.sum(np.sum(M**2,axis=2),axis=1))
 
-            print('n = ',n)
-            #print(i,j)
-            #print(k,l)
-            #print(ii,jj)
-            
-            temp_ii  = np.copy(ii)
-            temp_jj  = np.copy(jj)
-            ii       = ii[(temp_ii > -1) & (temp_ii < Nx)]
-            jj       = jj[(temp_jj > -1) & (temp_jj < Ny)]
 
-           
-            print(Io[ii[0]:ii[-1]+1,jj[0]:jj[-1]+1])
-            #print(ii.shape,jj.shape)
-            O[n,i,j] = Io[ii,jj].sum(axis=0).sum(axis=0)/n**2 
+# calc fractional skill score
+FSS =  1.0 - MSE/MSE_REF
 
-    
+# plot 
+fontsize  = 11
+figsize   = np.array([4*1.61,4])
+fig,ax    = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
+
+x = np.arange(0,2*N,2)
+ax.plot(x,FSS[x],'k*')
+plt.tight_layout()
+plt.show()
+
 
 """
 N      = 3     
