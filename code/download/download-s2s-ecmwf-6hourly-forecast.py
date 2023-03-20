@@ -22,8 +22,8 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product       = 'forecast' # forecast/vr_forecast
-mon_thu_start = ['20220103','20220106'] # first initialization date of forecast
-num_i_weeks   = 26 # number of forecasts intialization dates to download 
+mon_thu_start = ['20220801','20220804'] # first initialization date of forecast
+num_i_weeks   = 22 # number of forecasts intialization dates to download 
 grid          = '0.25/0.25' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var           = 'tp'
@@ -88,7 +88,7 @@ dic = {
 # get all dates for monday and thursday forecast initializations
 dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
 
-#dates_monday_thursday =dates_monday_thursday[1:]
+dates_monday_thursday = dates_monday_thursday[1:]
 #print(dates_monday_thursday)
 
 
