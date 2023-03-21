@@ -5,6 +5,7 @@ Collection of useful miscellaneous functions
 import time
 import numpy  as np
 import xarray as xr
+from scipy    import signal
 
 def tic():
     """
@@ -79,3 +80,5 @@ def get_domain_dim(domain,dim,grid):
     dim.nlongitude = dim.longitude.size
     
     return dim
+
+

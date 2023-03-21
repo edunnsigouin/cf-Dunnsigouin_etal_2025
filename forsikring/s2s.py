@@ -8,7 +8,7 @@ import xarray   as xr
 import pandas   as pd
 import os
 from datetime   import datetime
-
+from scipy      import signal
 
 # dictionary of model versions with (start,end)     
 model_version_specs = dict(
@@ -145,3 +145,85 @@ def get_dim(grid):
         from forsikring import dim_lr as dim
 
     return dim
+
+
+
+def calc_frac_RL08MWR(N,data):
+    """ 
+    Generates fractions following equations 2 and 3 from
+    Roberts and Lean 2008 MWR given binary input data.
+    Here I apply a 2-D convolution with a boxcar filter to
+    speed things up and simplify the code.
+    INPUT: data is 2d spatial data. N is neighborhood size.
+    """
+    Nx   = data.shape[0]
+    Ny   = data.shape[1]
+    frac = np.zeros([2*N-1,Nx,Ny])
+    for n in range(1,2*N,2):
+        win           = np.ones((n,n)) # boxcar window
+        frac[n-1,:,:] = signal.convolve2d(data, win, mode='same', boundary='fill',fillvalue=0.0)/n**2
+    return frac
+
+
+def calc_fss_RL08MWR(O,F,RF,method):
+    """
+    Calculates the fractions skill score following equations 5,6,7
+    from Roberts and Lean 2008 MWR given input fractions for observations,
+    forecast, and reference forecast.
+    INPUT: O, F and RF have shape [N,Nx,Ny], where N = neighborhood size, 
+    Nx and Ny are spatial dimensions. O,F and RF must have same dimension 
+    sizes.
+    If method = 'classic', then mse of reference forecast is calculated
+    as in equation 7 from RL08MWR. Else if method = 'default', mse of reference forecast defaults 
+    to regular mse for input reference forecast (like climatology or persistence)
+    """
+    Nx = O.shape[1]
+    Ny = O.shape[2]
+    
+    # calc MSE 
+    error_forecast     = (O - F)**2
+    error_ref_forecast = (O - RF)**2
+    mse_forecast       = error_forecast.sum(axis=2).sum(axis=1)/Nx/Ny
+
+    if method == 'classic':
+        mse_ref_forecast = (1/Nx/Ny)*(np.sum(np.sum(O**2,axis=2),axis=1) + np.sum(np.sum(F**2,axis=2),axis=1))
+    elif method == 'default':
+        mse_ref_forecast = error_ref_forecast.sum(axis=2).sum(axis=1)/Nx/Ny
+        
+    # fractions skill score                                 
+    fss = 1.0 - mse_forecast/mse_ref_forecast
+    
+    return fss
+
+
+def preprocess(ds):
+    '''change time dim from calendar dates to numbers'''
+    if ds.time.size == 15:
+        ds['time'] = np.arange(1,ds.time.size+1,1) # high resolution lead times
+    elif ds.time.size == 31:
+        ds['time'] = np.arange(16,47,1) # low resolution lead times
+    return ds
+
+
+def time_2_timescale(ds,time_flag):
+    """
+    resamples daily time into timescales following
+    Wheeler et al. 2016 QJRMS. For exmaple, 1d1d,2d2d etc..
+    Not exactly same since hr to lr data occurs on day 15 not 14.
+    """
+    if time_flag == 'timescale':
+        if ds.time.size == 15:
+            temp1 = ds.sel(time=2).drop_vars('time')
+            temp2 = ds.sel(time=slice(3,4)).mean(dim='time')
+            temp3 = ds.sel(time=slice(5,8)).mean(dim='time')
+            temp4 = ds.sel(time=slice(8,15)).mean(dim='time')
+            ds    = xr.concat([temp1,temp2,temp3,temp4], "timescale")
+            ds    = ds.assign(timescale=np.arange(1,5,1))
+        elif ds.time.size == 31:
+            temp1 = ds.sel(time=slice(16,28)).mean(dim='time')
+            temp2 = ds.sel(time=slice(29,46)).mean(dim='time')
+            ds    = xr.concat([temp1,temp2], "timescale")
+            ds    = ds.assign(timescale=np.arange(5,7,1))
+    elif time_flag == 'time':
+        ds = ds
+    return ds
