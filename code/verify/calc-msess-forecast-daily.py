@@ -85,18 +85,14 @@ elif time_flag == 'timescale':
     filename_out    = 'timescale_msess_' + variable + '_' + 'forecast-' + ref_forecast_flag + '_' + \
                       domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 
-    
+
 for grid in grids:
     
     # initialize msess array
-    dim = s2s.get_dim(grid)
-    if time_flag == 'time':
-        msess        = np.zeros((dim.ntime,nshuffle))
-        mse_forecast = np.zeros((dim.ntime,nshuffle))
-    elif time_flag == 'timescale':
-        msess        = np.zeros((dim.ntimescale,nshuffle))
-        mse_forecast = np.zeros((dim.ntimescale,nshuffle))
-        
+    dim          = s2s.get_dim(grid,time_flag)
+    msess        = np.zeros((dim.ntime,nshuffle))
+    mse_forecast = np.zeros((dim.ntime,nshuffle))
+            
     # define input filenames
     filenames_verification =  path_in_verification + variable + '_' + grid + '_' + init_dates + '.nc'
     filenames_forecast     =  path_in_forecast + variable + '_' + grid + '_' + init_dates + '.nc'
@@ -150,6 +146,7 @@ for grid in grids:
     
         # shuffle forecasts (chunks) randomly with replacement
         chunks_random = np.random.choice(chunks,nsample,replace='True')
+
     
     if write2file:    
         print('writing to file..')
@@ -202,4 +199,5 @@ if write2file:
     ds_hr.close()
     
 misc.toc()
+
 

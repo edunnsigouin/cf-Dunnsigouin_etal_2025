@@ -170,6 +170,8 @@ def calc_frac_RL08MWR(N,data):
     return frac
 
 
+
+
 def calc_fss_RL08MWR(O,F,RF,method):
     """
     Calculates the fractions skill score following equations 5,6,7

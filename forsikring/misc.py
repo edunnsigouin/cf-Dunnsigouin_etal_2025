@@ -30,11 +30,13 @@ def toc():
 def xy_mean(ds):
     """ 
     calculates xy mean over dims lat and lon
-    with cosine weighting in lat
+    with cosine weighting in lat. Input is xarray
+    dataarray or dataset
     """
     weights = np.cos(np.deg2rad(ds.latitude))
     ds      = ds.weighted(weights).mean(dim=('latitude','longitude'))
     return ds        
+
 
 
 def convert_xyt_np_to_xr(array,name,description,units,dim):

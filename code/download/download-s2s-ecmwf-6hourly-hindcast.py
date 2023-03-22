@@ -26,7 +26,7 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product       = 'hindcast' # hindcast/vr_hindcast
-mon_thu_start = ['20220103','20220106'] # first initialization date of forecast
+mon_thu_start = ['20220704','20220707'] # first initialization date of forecast
 num_i_weeks   = 26 # number of hindcast intialization dates to download 
 nhdates       = 20 # number of hindcast years  
 grid          = '0.25/0.25' # degree lat/lon resolution
