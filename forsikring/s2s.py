@@ -86,6 +86,17 @@ def get_monday_thursday_dates(mon_thu_start,num_i_weeks):
     return dates_monday_thursday
 
 
+def get_dates(date_start,n_init):
+    """
+    generate set of continuous dates on mondays and thursdays starting on date_start
+    """
+    dates_monday          = pd.date_range(date_start, periods=n_init, freq="W-MON") # forecasts that start monday
+    dates_thursday        = pd.date_range(date_start, periods=n_init, freq="W-THU")
+    dates_monday_thursday = dates_monday.union(dates_thursday)
+    return dates_monday_thursday
+
+
+
 def grib_to_netcdf(path,filename_grb,filename_nc):
     """
     wrapper for eccode's grib_to_netcdf function
@@ -152,21 +163,36 @@ def get_dim(grid,time_flag):
 
 
 
+
+def convert_2_binary_RL08MWR(data,threshold):
+    """
+    Converts forecast data into binary. 1 above a given 
+    threshold and zero below
+    """
+    # converts to true/false then 1's and 0's
+    binary_data = (data >= threshold).astype(int)
+    
+    return binary_data
+
+
+
 def calc_frac_RL08MWR(N,data):
     """ 
     Generates fractions following equations 2 and 3 from
     Roberts and Lean 2008 MWR given binary input data.
     Here I apply a 2-D convolution with a boxcar filter to
     speed things up and simplify the code.
-    INPUT: data is 2d spatial data. N is neighborhood size.
+    INPUT: data is 2d spatial data. N is maximum neighborhood size.
     """
     Nx   = data.shape[0]
     Ny   = data.shape[1]
-    frac = np.zeros([N,Nx,Ny])
+    NH   = np.arange(1,N+1,2,dtype=int)
+    frac = np.zeros([NH.size,Nx,Ny])
 
-    for n in range(1,N+1,2):
-        win           = np.ones((n,n)) # boxcar window
-        frac[n-1,:,:] = signal.convolve2d(data, win, mode='same', boundary='fill',fillvalue=0.0)/n**2
+    for n in NH:
+        win             = np.ones((n,n)) # boxcar window
+        dummy           = int(np.ceil(n/2)-1)
+        frac[dummy,:,:] = signal.convolve2d(data, win, mode='same', boundary='fill',fillvalue=0.0)/n**2
     return frac
 
 
@@ -222,13 +248,13 @@ def time_2_timescale(ds,time_flag):
             temp2 = ds.sel(time=slice(3,4)).mean(dim='time')
             temp3 = ds.sel(time=slice(5,8)).mean(dim='time')
             temp4 = ds.sel(time=slice(8,15)).mean(dim='time')
-            ds    = xr.concat([temp1,temp2,temp3,temp4], "timescale")
-            ds    = ds.assign(timescale=np.arange(1,5,1))
+            ds    = xr.concat([temp1,temp2,temp3,temp4], "time")
+            ds    = ds.assign(time=np.arange(1,5,1))
+            ds    = ds.transpose("chunks",...)
         elif ds.time.size == 31:
             temp1 = ds.sel(time=slice(16,28)).mean(dim='time')
             temp2 = ds.sel(time=slice(29,46)).mean(dim='time')
-            ds    = xr.concat([temp1,temp2], "timescale")
-            ds    = ds.assign(timescale=np.arange(5,7,1))
-    elif time_flag == 'time':
-        ds = ds
+            ds    = xr.concat([temp1,temp2], "time")
+            ds    = ds.assign(time=np.arange(5,7,1))
+            ds    = ds.transpose("chunks",...)
     return ds

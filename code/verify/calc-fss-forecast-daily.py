@@ -12,50 +12,58 @@ import os
 from dask.diagnostics  import ProgressBar
 from forsikring        import misc,s2s,config
 import random
+from matplotlib        import pyplot as plt
 
 
-def init_fraction_datarray(dim,chunks,nchunks):
+def init_frac(dim,chunks,nchunks):
     """
     Code to initialize fraction array used below.
     Written here to clean up code.
     """
-    frac = xr.DataArray(data=np.zeros((nchunks,dim.ntime,NHsize,dim.nlatitude,dim.nlongitude)),
-                        dims=["chunks","time","NHsize","latitude","longitude"],
-                        coords=dict(chunks=chunks,time=dim.time,NHsize=np.arange(0,NHsize),
+    NH   = np.arange(1,NHsize+1,2)
+    frac = xr.DataArray(data=np.zeros((nchunks,dim.ntime,NH.size,dim.nlatitude,dim.nlongitude)),
+                        dims=["chunks","time","neighborhood","latitude","longitude"],
+                        coords=dict(chunks=chunks,time=dim.time,neighborhood=NH,
                                     latitude=dim.latitude,longitude=dim.longitude),
                         name='frac')
     return frac
 
-def init_fss_datarray(dim,NHsize,nshuffle):
+
+def init_fss(dim,NHsize,nshuffle):
     """
     Code to initialize fss array used below.
     Written here to clean up code.
     """
-    fss = xr.DataArray(data=np.zeros((dim.ntime,NHsize,nshuffle)),
-                        dims=["time","NHsize","number"],
-                        coords=dict(time=dim.time,NHsize=np.arange(0,NHsize),
+    NH  = np.arange(1,NHsize+1,2)
+    fss = xr.DataArray(data=np.zeros((dim.ntime,NH.size,nshuffle)),
+                        dims=["time","neighborhood","number"],
+                        coords=dict(time=dim.time,neighborhood=NH,
                                     number=np.arange(0,nshuffle,1)),
                         attrs=dict(description='fractions skill score of forecast',units='unitless'),
                         name='fss')
     return fss
 
+
 # INPUT -----------------------------------------------
 RF_flag           = 'clim'                   # clim or pers
-time_flag         = 'time'                   # time or timescale
+time_flag         = 'time'              # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe or norway only?
 mon_thu_start     = ['20210104','20210107']  # first monday & thursday initialization date of forecast
-num_i_weeks       = 5                        # number of weeks withe forecasts
 grids             = ['0.25x0.25']            # '0.25x0.25' & '0.5x0.5'
+num_i_weeks       = 1                        # number of weeks with forecasts
+threshold         = 0.01
 NHsize            = 5                        # size of neighborhoods for fss calculation
-nshuffle          = 2                    # number of times to shuffle initialization dates for error bars
-nsample           = 2                       # number of sampled forecasts with replacement in each bootstrap member
+nshuffle          = 1                        # number of times to shuffle initialization dates for error bars
+nsample           = 1                        # number of sampled forecasts with replacement in each bootstrap member
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file
 write2file        = False
 # -----------------------------------------------------         
 
-misc.tic()
+init_dates = s2s.get_dates(date_start='20210104',n_init=3)
+print(init_dates)
 
+"""
 # define stuff  
 init_dates       = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
 init_dates       = init_dates.strftime('%Y-%m-%d').values
@@ -65,21 +73,23 @@ path_in_F        = config.dirs['forecast_daily'] + variable + '/'
 path_in_O        = config.dirs['era5_model_daily'] + variable + '/'
 path_in_RF       = config.dirs['era5_model_' + RF_flag] + variable + '/'
 path_out         = config.dirs['calc_forecast_daily']
-filename_hr_out  = time_flag + '_fss_' + variable + '_' + 'forecast-' + RF_flag + '_' + \
-                   '0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
-filename_lr_out  = time_flag + '_fss_' + variable + '_' + 'forecast-' + RF_flag + '_' + \
-                   '0.5x0.5_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
-filename_out     = time_flag + '_fss_' + variable + '_' + 'forecast-' + RF_flag + '_' + \
-                   domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+filename_hr_out  = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
+                   'thresh_' + str(threshold) + '_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+filename_lr_out  = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
+                   'thresh_' + str(threshold) + '_0.5x0.5_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+filename_out     = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
+                   'thresh_' + str(threshold) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 
 for grid in grids:
 
+    misc.tic()
+    
     # initialize arrays                                                                                                    
     dim     = s2s.get_dim(grid,time_flag)
-    fss     = init_fss_datarray(dim,NHsize,nshuffle)
-    O_frac  = init_fraction_datarray(dim,chunks,nchunks)
-    F_frac  = init_fraction_datarray(dim,chunks,nchunks)
-    RF_frac = init_fraction_datarray(dim,chunks,nchunks)
+    fss     = init_fss(dim,NHsize,nshuffle)
+    O_frac  = init_frac(dim,chunks,nchunks)
+    F_frac  = init_frac(dim,chunks,nchunks)
+    RF_frac = init_frac(dim,chunks,nchunks)
 
     # define input filenames
     filenames_O  =  path_in_O + variable + '_' + grid + '_' + init_dates + '.nc'
@@ -97,29 +107,38 @@ for grid in grids:
     ds_F  = ds_F.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
     ds_RF = ds_RF.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 
+    # resample time into timescales if required 
+    ds_O  = s2s.time_2_timescale(ds_O,time_flag)
+    ds_F  = s2s.time_2_timescale(ds_F,time_flag)
+    ds_RF = s2s.time_2_timescale(ds_RF,time_flag)
+
+    # convert to binary above (1) and below (0) threshold 
+    ds_O[variable]  = s2s.convert_2_binary_RL08MWR(ds_O[variable],threshold)
+    ds_F[variable]  = s2s.convert_2_binary_RL08MWR(ds_F[variable],threshold)
+    ds_RF[variable] = s2s.convert_2_binary_RL08MWR(ds_RF[variable],threshold)
+    
     # calculate explicitely
+    print('reading & postprocessing input data..')
     with ProgressBar():
         ds_O  = ds_O.compute()
         ds_F  = ds_F.compute()
         ds_RF = ds_RF.compute()
 
-    # resample time into timescales if required
-    ds_O  = s2s.time_2_timescale(ds_O,time_flag)
-    ds_F  = s2s.time_2_timescale(ds_F,time_flag)
-    ds_RF = s2s.time_2_timescale(ds_RF,time_flag)
-
+    misc.toc()
+    misc.tic()
     # calculate fractions
+    print('calculation fractions...')
     for t in range(0,dim.ntime,1):
-        print(t)
         for c in range(0,nchunks,1):
             O_frac[c,t,:,:,:]  = s2s.calc_frac_RL08MWR(NHsize,ds_O[variable][c,t,:,:].values)
             F_frac[c,t,:,:,:]  = s2s.calc_frac_RL08MWR(NHsize,ds_F[variable][c,t,:,:].values)
             RF_frac[c,t,:,:,:] = s2s.calc_frac_RL08MWR(NHsize,ds_RF[variable][c,t,:,:].values)
-
+    misc.toc()        
     ds_RF.close()
     ds_O.close()
     ds_F.close()
 
+    misc.tic()
     # calc squared error for all forecasts individually 
     error_F  = (F_frac - O_frac)**2
     error_RF = (RF_frac - O_frac)**2
@@ -128,7 +147,8 @@ for grid in grids:
     error_F  = misc.xy_mean(error_F)
     error_RF = misc.xy_mean(error_RF)
 
-    # bootstraped fss
+    # calc fss with bootstraping
+    print('calculating fss with bootstrapping..')
     chunks_random = chunks.copy()
     mse_RF        = (1/nchunks)*error_RF.sum(dim='chunks').values
     for i in range(nshuffle):
@@ -139,8 +159,33 @@ for grid in grids:
         # shuffle forecasts (chunks) randomly with replacement
         chunks_random = np.random.choice(chunks,nsample,replace='True')
 
+    if write2file:
+        print('writing to file..')
+        if grid == '0.25x0.25': fss.to_netcdf(path_out+filename_hr_out)
+        elif grid == '0.5x0.5': fss.to_netcdf(path_out+filename_lr_out)
 
-print(fss[:,2,0].values)
+    misc.toc()
+    
+if write2file:
+    print('combine high & low resolution files into one file..')
+    ds_hr           = xr.open_dataset(path_out + filename_hr_out)
+    ds_lr           = xr.open_dataset(path_out + filename_lr_out)
+    ds              = xr.concat([ds_hr,ds_lr], 'time')
+    ds.to_netcdf(path_out+filename_out)
+    os.system('rm ' + path_out + filename_hr_out + ' ' + path_out + filename_lr_out)
 
-misc.toc()
+    print('compress file to reduce space..')
+    s2s.compress_file(comp_lev,3,filename_out,path_out)
+    ds.close()
+    ds_lr.close()
+    ds_hr.close()        
 
+
+
+
+
+plt.plot(fss.neighborhood,fss[0,:,0],'k*')
+plt.plot(fss.neighborhood,fss[1,:,0],'b*')
+plt.plot(fss.neighborhood,fss[2,:,0],'r*')
+plt.show()
+"""
