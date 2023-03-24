@@ -86,13 +86,15 @@ def get_monday_thursday_dates(mon_thu_start,num_i_weeks):
     return dates_monday_thursday
 
 
-def get_dates(date_start,n_init):
+def get_init_dates(init_start,init_n):
     """
-    generate set of continuous dates on mondays and thursdays starting on date_start
+    generate set of continuous dates on mondays and thursdays starting on init_start
+    with length init_n
     """
-    dates_monday          = pd.date_range(date_start, periods=n_init, freq="W-MON") # forecasts that start monday
-    dates_thursday        = pd.date_range(date_start, periods=n_init, freq="W-THU")
+    dates_monday          = pd.date_range(init_start, periods=init_n, freq="W-MON") # forecasts that start monday
+    dates_thursday        = pd.date_range(init_start, periods=init_n, freq="W-THU")
     dates_monday_thursday = dates_monday.union(dates_thursday)
+    dates_monday_thursday = dates_monday_thursday[:init_n] 
     return dates_monday_thursday
 
 
@@ -176,6 +178,7 @@ def convert_2_binary_RL08MWR(data,threshold):
 
 
 
+
 def calc_frac_RL08MWR(N,data):
     """ 
     Generates fractions following equations 2 and 3 from
@@ -194,6 +197,11 @@ def calc_frac_RL08MWR(N,data):
         dummy           = int(np.ceil(n/2)-1)
         frac[dummy,:,:] = signal.convolve2d(data, win, mode='same', boundary='fill',fillvalue=0.0)/n**2
     return frac
+
+
+
+
+
 
 
 def calc_fss_RL08MWR(O,F,RF,method):
