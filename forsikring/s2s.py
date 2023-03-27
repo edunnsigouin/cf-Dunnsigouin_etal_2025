@@ -8,7 +8,7 @@ import xarray   as xr
 import pandas   as pd
 import os
 from datetime   import datetime
-from scipy      import signal
+from scipy      import signal, ndimage
 
 # dictionary of model versions with (start,end)     
 model_version_specs = dict(
@@ -172,7 +172,7 @@ def convert_2_binary_RL08MWR(data,threshold):
     threshold and zero below
     """
     # converts to true/false then 1's and 0's
-    binary_data = (data >= threshold).astype(int)
+    binary_data = (data >= threshold).astype(np.int32)
     
     return binary_data
 
@@ -200,6 +200,17 @@ def calc_frac_RL08MWR(N,data):
 
 
 
+def calc_frac_RL08MWR_v2(NH,data):
+
+    Nx   = data.shape[0]
+    Ny   = data.shape[1]
+    frac = np.zeros([NH.size,Nx,Ny])
+
+    for n in range(0,NH.size,1):
+        win         = np.ones((NH[n],NH[n]))
+        frac[n,:,:] = signal.convolve2d(data, win, mode='same', boundary='fill',fillvalue=0.0)/NH[n]**2
+        #frac[n,:,:] = ndimage.convolve(data, win, mode='constant', cval=0.0, origin=0)/NH[n]**2
+    return frac
 
 
 
@@ -233,6 +244,7 @@ def calc_fss_RL08MWR(O,F,RF,method):
     fss = 1.0 - mse_forecast/mse_ref_forecast
     
     return fss
+
 
 
 def preprocess(ds):
