@@ -177,40 +177,36 @@ def convert_2_binary_RL08MWR(data,threshold):
     return binary_data
 
 
-
-
-def calc_frac_RL08MWR(N,data):
-    """ 
-    Generates fractions following equations 2 and 3 from
-    Roberts and Lean 2008 MWR given binary input data.
-    Here I apply a 2-D convolution with a boxcar filter to
-    speed things up and simplify the code.
-    INPUT: data is 2d spatial data. N is maximum neighborhood size.
+def calc_frac_RL08MWR(NH,da):
     """
-    Nx   = data.shape[0]
-    Ny   = data.shape[1]
-    NH   = np.arange(1,N+1,2,dtype=int)
-    frac = np.zeros([NH.size,Nx,Ny])
-
-    for n in NH:
-        win             = np.ones((n,n)) # boxcar window
-        dummy           = int(np.ceil(n/2)-1)
-        frac[dummy,:,:] = signal.convolve2d(data, win, mode='same', boundary='fill',fillvalue=0.0)/n**2
-    return frac
-
-
-
-def calc_frac_RL08MWR_v2(NH,data):
-
-    Nx   = data.shape[0]
-    Ny   = data.shape[1]
-    frac = np.zeros([NH.size,Nx,Ny])
-
+    Generates fractions following equations 2 and 3 from 
+    Roberts and Lean 2008 MWR given binary input data.
+    Specifically, smooths 2D x,y fields using a boxcar smoother. 
+    Here, last two dimensions of 'da' are latitude and longitude. 
+    """
+    frac = np.zeros((NH.size,) + da.shape)
     for n in range(0,NH.size,1):
-        win         = np.ones((NH[n],NH[n]))
-        frac[n,:,:] = signal.convolve2d(data, win, mode='same', boundary='fill',fillvalue=0.0)/NH[n]**2
-        #frac[n,:,:] = ndimage.convolve(data, win, mode='constant', cval=0.0, origin=0)/NH[n]**2
+        kernel          = np.ones((NH[n],NH[n]))
+        kernel          = kernel[None,None,:,:]
+        frac[n,:,:,:,:] = ndimage.convolve(da.values, kernel, mode='constant', cval=0.0, origin=0)/NH[n]**2
     return frac
+
+
+def calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,chunks):
+    """
+    """
+    chunks_random = chunks.copy()
+    RF_mse        = (1/chunks.size)*RF_error.sum(dim='chunks').values
+    F_mse         = (1/chunks.size)*F_error.sum(dim='chunks').values
+    fss[:,:]      = 1.0 - F_mse/RF_mse
+    for i in range(nshuffle):
+        # calc mean square error of forecast       
+        F_mse_bs = (1/chunks_random.size)*F_error.sel(chunks=chunks_random).sum(dim='chunks').values
+        # calc fss
+        fss_bs[:,:,i] = 1.0 - F_mse_bs/RF_mse
+        # shuffle forecasts (chunks) randomly with replacement
+        chunks_random = np.random.choice(chunks,nsample,replace='True')    
+    return fss,fss_bs
 
 
 
@@ -264,17 +260,17 @@ def time_2_timescale(ds,time_flag):
     """
     if time_flag == 'timescale':
         if ds.time.size == 15:
-            temp1 = ds.sel(time=2).drop_vars('time')
-            temp2 = ds.sel(time=slice(3,4)).mean(dim='time')
-            temp3 = ds.sel(time=slice(5,8)).mean(dim='time')
-            temp4 = ds.sel(time=slice(8,15)).mean(dim='time')
-            ds    = xr.concat([temp1,temp2,temp3,temp4], "time")
-            ds    = ds.assign(time=np.arange(1,5,1))
-            ds    = ds.transpose("chunks",...)
+            temp1      = ds.sel(time=2).drop_vars('time')
+            temp2      = ds.sel(time=slice(3,4)).mean(dim='time')
+            temp3      = ds.sel(time=slice(5,8)).mean(dim='time')
+            temp4      = ds.sel(time=slice(8,15)).mean(dim='time')
+            ds         = xr.concat([temp1,temp2,temp3,temp4],"time")
+            ds['time'] = np.arange(1,5,1) 
+            ds         = ds.transpose("chunks",...)
         elif ds.time.size == 31:
-            temp1 = ds.sel(time=slice(16,28)).mean(dim='time')
-            temp2 = ds.sel(time=slice(29,46)).mean(dim='time')
-            ds    = xr.concat([temp1,temp2], "time")
-            ds    = ds.assign(time=np.arange(5,7,1))
-            ds    = ds.transpose("chunks",...)
+            temp1      = ds.sel(time=slice(16,28)).mean(dim='time')
+            temp2      = ds.sel(time=slice(29,46)).mean(dim='time')
+            ds         = xr.concat([temp1,temp2],"time")
+            ds['time'] = np.arange(1,5,1)
+            ds         = ds.transpose("chunks",...)
     return ds

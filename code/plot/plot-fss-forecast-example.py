@@ -10,17 +10,17 @@ from forsikring  import misc,s2s,config
 
 # INPUT -----------------------
 RF_flag           = 'clim'                   # clim or pers 
-time_flag         = 'timescale'              # time or timescale
+time_flag         = 'timescale'                   # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domain            = 'nordic'                 # europe/nordic/vestland                       
+domain            = 'europe'                 # europe/nordic/vestland                       
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
-init_n            = 1                        # number of weeks with forecasts
+init_n            = 104                        # number of weeks with forecasts
 grid              = '0.25x0.25'              # '0.25x0.25' & '0.5x0.5'                                                                                  
-threshold         = 0.005
+threshold         = 0.01
 write2file        = True
 # -----------------------------
 
-# define stuff                                                                                                                                                                                     
+# define stuff         
 init_dates       = s2s.get_init_dates(init_start,init_n)
 init_dates       = init_dates.strftime('%Y-%m-%d').values
 path_in          = config.dirs['calc_forecast_daily']
@@ -32,52 +32,41 @@ figname_out      = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag 
 
 # read in data
 ds  = xr.open_dataset(path_in + filename_in)
-fss = ds['fss']
+fss    = ds['fss']
+fss_bs = ds['fss_bs']
 ds.close()
 
+# define error bar quantities (mean + 5th and 95th percentiles) 
+y          = fss.values
+yerr1      = y - fss_bs.quantile(0.05,dim='number').values
+yerr2      = fss_bs.quantile(0.95,dim='number').values - y
+x          = fss.neighborhood
 # plot 
 fontsize = 11
 figsize  = np.array([4*1.61,4])
 fig,ax   = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
 
 if time_flag == 'time':
-    ax.plot(fss.neighborhood,fss[0,:,0],color='k',linewidth=1.5,label='1 day')
-    ax.plot(fss.neighborhood,fss[0,:,0],marker='o',markersize=fontsize-5,color='k')
-    
-    ax.plot(fss.neighborhood,fss[4,:,0],color='tab:blue',linewidth=1.5,label='5 day')
-    ax.plot(fss.neighborhood,fss[4,:,0],marker='o',markersize=fontsize-5,color='tab:blue')
-    
-    ax.plot(fss.neighborhood,fss[9,:,0],color='tab:red',linewidth=1.5,label='10 day')
-    ax.plot(fss.neighborhood,fss[9,:,0],marker='o',markersize=fontsize-5,color='tab:red')
-
-    ax.plot(fss.neighborhood,fss[14,:,0],color='tab:green',linewidth=1.5,label='15 day')
-    ax.plot(fss.neighborhood,fss[14,:,0],marker='o',markersize=fontsize-5,color='tab:green')
-
+    ax.errorbar(x-1.5,y[:,0],yerr=[yerr1[:,0],yerr2[:,0]],fmt='o',c='k',ecolor='k',elinewidth=2,label='1 day',linestyle='-')
+    ax.errorbar(x-0.75,y[:,4],yerr=[yerr1[:,4],yerr2[:,4]],fmt='o',c='tab:blue',ecolor='tab:blue',elinewidth=2,label='5 day',linestyle='-')
+    ax.errorbar(x,y[:,7],yerr=[yerr1[:,7],yerr2[:,7]],fmt='o',c='tab:green',ecolor='tab:green',elinewidth=2,label='8 day',linestyle='-')
+    ax.errorbar(x+0.75,y[:,9],yerr=[yerr1[:,9],yerr2[:,9]],fmt='o',c='tab:red',ecolor='tab:red',elinewidth=2,label='10 day',linestyle='-')
 elif time_flag == 'timescale':
+    ax.errorbar(x-1.5,y[:,0],yerr=[yerr1[:,0],yerr2[:,0]],fmt='o',c='k',ecolor='k',elinewidth=2,label='1d1d',linestyle='-')
+    ax.errorbar(x-0.75,y[:,1],yerr=[yerr1[:,1],yerr2[:,1]],fmt='o',c='tab:blue',ecolor='tab:blue',elinewidth=2,label='2d2d',linestyle='-')
+    ax.errorbar(x,y[:,2],yerr=[yerr1[:,2],yerr2[:,2]],fmt='o',c='tab:green',ecolor='tab:green',elinewidth=2,label='4d4d',linestyle='-')
+    ax.errorbar(x+0.75,y[:,3],yerr=[yerr1[:,3],yerr2[:,3]],fmt='o',c='tab:red',ecolor='tab:red',elinewidth=2,label='1w1w',linestyle='-')
     
-    ax.plot(fss.neighborhood,fss[0,:,0],color='k',linewidth=1.5,label='1d1d')
-    ax.plot(fss.neighborhood,fss[0,:,0],marker='o',markersize=fontsize-5,color='k')
-
-    ax.plot(fss.neighborhood,fss[1,:,0],color='tab:blue',linewidth=1.5,label='2d2d')
-    ax.plot(fss.neighborhood,fss[1,:,0],marker='o',markersize=fontsize-5,color='tab:blue')
-
-    ax.plot(fss.neighborhood,fss[2,:,0],color='tab:red',linewidth=1.5,label='4d4d')
-    ax.plot(fss.neighborhood,fss[2,:,0],marker='o',markersize=fontsize-5,color='tab:red')
-
-    ax.plot(fss.neighborhood,fss[3,:,0],color='tab:green',linewidth=1.5,label='1w1w')
-    ax.plot(fss.neighborhood,fss[3,:,0],marker='o',markersize=fontsize-5,color='tab:green')
-    
-ax.legend(frameon=False,fontsize=fontsize)
+ax.legend(frameon=False,ncol=4,fontsize=fontsize,loc='lower center')
 ax.axhline(y=0.0, color='k', linestyle='-',linewidth=0.75)
-ax.set_xticks([1,10,20,30,40,50])
-ax.set_xticklabels(['1/18','10/180','20/360','30/540','40/720','50/900'],fontsize=fontsize)
-ax.set_yticks(np.round(np.arange(0,1.2,0.2),2))
-ax.set_yticklabels(np.round(np.arange(0,1.2,0.2),2),fontsize=fontsize)
-ax.set_xlim([0,50])
-ax.set_ylim([-0.1,1.0])
-ax.set_xlabel(r'grid squares/km$^2$',fontsize=fontsize)
+ax.set_xticks(x)
+ax.set_xticklabels(['1/18','9/162','19/342','29/522','39/702','50/882'],fontsize=fontsize)
+ax.set_yticks(np.round(np.arange(-0.2,1.2,0.2),2))
+ax.set_yticklabels(np.round(np.arange(-0.2,1.2,0.2),2),fontsize=fontsize)
+ax.set_xlim([-2,52])
+ax.set_ylim([-0.3,1.0])
+ax.set_xlabel(r'spatial scale [grid squares/km$^2$]',fontsize=fontsize)
 ax.set_ylabel('fractions skill score',fontsize=fontsize)
-ax.set_title('forecast initialized 21-01-04')
     
 plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)
