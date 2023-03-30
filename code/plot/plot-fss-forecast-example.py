@@ -10,14 +10,14 @@ from forsikring  import misc,s2s,config
 
 # INPUT -----------------------
 RF_flag           = 'clim'                   # clim or pers 
-time_flag         = 'timescale'                   # time or timescale
+time_flag         = 'time'                   # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe/nordic/vestland                       
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                        # number of weeks with forecasts
 grid              = '0.25x0.25'              # '0.25x0.25' & '0.5x0.5'                                                                                  
 threshold         = 0.01
-write2file        = True
+write2file        = False
 # -----------------------------
 
 # define stuff         
@@ -31,7 +31,7 @@ figname_out      = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag 
                    'thresh_' + str(threshold) + '_' + grid +'_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.pdf'
 
 # read in data
-ds  = xr.open_dataset(path_in + filename_in)
+ds     = xr.open_dataset(path_in + filename_in)
 fss    = ds['fss']
 fss_bs = ds['fss_bs']
 ds.close()

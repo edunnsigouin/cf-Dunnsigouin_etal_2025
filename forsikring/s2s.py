@@ -182,13 +182,20 @@ def calc_frac_RL08MWR(NH,da):
     Generates fractions following equations 2 and 3 from 
     Roberts and Lean 2008 MWR given binary input data.
     Specifically, smooths 2D x,y fields using a boxcar smoother. 
-    Here, last two dimensions of 'da' are latitude and longitude. 
+    Here, last two dimensions of 'da' are latitude and longitude.
+    Note: only performs calculation on odd sized neighborhoods
     """
     frac = np.zeros((NH.size,) + da.shape)
+    
     for n in range(0,NH.size,1):
-        kernel          = np.ones((NH[n],NH[n]))
-        kernel          = kernel[None,None,:,:]
-        frac[n,:,:,:,:] = ndimage.convolve(da.values, kernel, mode='constant', cval=0.0, origin=0)/NH[n]**2
+        if NH[n] % 2 != 0: # odd
+            kernel          = np.ones((NH[n],NH[n]))
+            kernel          = kernel[None,None,:,:]
+            frac[n,:,:,:,:] = ndimage.convolve(da.values, kernel, mode='constant', cval=0.0, origin=0)/NH[n]**2
+        else: # even
+            frac[n,:,:,:,:] = np.nan
+            print(NH[n],NH)
+            
     return frac
 
 
@@ -274,3 +281,32 @@ def time_2_timescale(ds,time_flag):
             ds['time'] = np.arange(1,5,1)
             ds         = ds.transpose("chunks",...)
     return ds
+
+
+def get_new_dim(domain,ltime,dim,grid,time_flag):
+    """ 
+    outputs lat and lon array of domain 
+    given as a string 
+    """
+    if grid == '0.25x0.25':
+        if domain == 'nordic':
+            dim.latitude   = np.flip(np.arange(53,73.75,0.25))
+            dim.longitude  = np.arange(0,35.25,0.25)
+        elif domain == 'vestland':
+            dim.latitude   = np.flip(np.arange(59,62.75,0.25))
+            dim.longitude  = np.arange(4,8.75,0.25)
+    elif grid == '0.5x0.5':
+        if domain == 'nordic':
+            dim.latitude   = np.flip(np.arange(53,74,0.5))
+            dim.longitude  = np.arange(0,35.5,0.5)
+        elif domain == 'vestland':
+            dim.latitude   = np.flip(np.arange(59,63,0.5))
+            dim.longitude  = np.arange(4,9,0.5)
+
+    dim.nlatitude  = dim.latitude.size
+    dim.nlongitude = dim.longitude.size
+
+    if time_flag == 'time':
+        dim.time = ltime
+
+    return dim
