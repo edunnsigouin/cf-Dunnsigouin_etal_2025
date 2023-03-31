@@ -15,8 +15,7 @@ variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe/nordic/vestland                       
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                        # number of weeks with forecasts
-grid              = '0.25x0.25'              # '0.25x0.25' & '0.5x0.5'                                                                                  
-threshold         = 0.01
+threshold         = 0.005
 write2file        = False
 # -----------------------------
 
@@ -26,9 +25,9 @@ init_dates       = init_dates.strftime('%Y-%m-%d').values
 path_in          = config.dirs['calc_forecast_daily']
 path_out         = config.dirs['fig'] + 'ecmwf/forecast/daily/'
 filename_in      = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'thresh_' + str(threshold) + '_' + grid +'_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+                   'thresh_' + str(threshold) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 figname_out      = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'thresh_' + str(threshold) + '_' + grid +'_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.pdf'
+                   'thresh_' + str(threshold) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.pdf'
 
 # read in data
 ds     = xr.open_dataset(path_in + filename_in)
@@ -46,11 +45,13 @@ fontsize = 11
 figsize  = np.array([4*1.61,4])
 fig,ax   = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
 
+print(fss.time)
+
 if time_flag == 'time':
     ax.errorbar(x-1.5,y[:,0],yerr=[yerr1[:,0],yerr2[:,0]],fmt='o',c='k',ecolor='k',elinewidth=2,label='1 day',linestyle='-')
-    ax.errorbar(x-0.75,y[:,4],yerr=[yerr1[:,4],yerr2[:,4]],fmt='o',c='tab:blue',ecolor='tab:blue',elinewidth=2,label='5 day',linestyle='-')
-    ax.errorbar(x,y[:,7],yerr=[yerr1[:,7],yerr2[:,7]],fmt='o',c='tab:green',ecolor='tab:green',elinewidth=2,label='8 day',linestyle='-')
-    ax.errorbar(x+0.75,y[:,9],yerr=[yerr1[:,9],yerr2[:,9]],fmt='o',c='tab:red',ecolor='tab:red',elinewidth=2,label='10 day',linestyle='-')
+    ax.errorbar(x-0.75,y[:,1],yerr=[yerr1[:,1],yerr2[:,1]],fmt='o',c='tab:blue',ecolor='tab:blue',elinewidth=2,label='5 day',linestyle='-')
+    ax.errorbar(x,y[:,5],yerr=[yerr1[:,5],yerr2[:,5]],fmt='o',c='tab:green',ecolor='tab:green',elinewidth=2,label='8 day',linestyle='-')
+    ax.errorbar(x+0.75,y[:,8],yerr=[yerr1[:,8],yerr2[:,8]],fmt='o',c='tab:red',ecolor='tab:red',elinewidth=2,label='10 day',linestyle='-')
 elif time_flag == 'timescale':
     ax.errorbar(x-1.5,y[:,0],yerr=[yerr1[:,0],yerr2[:,0]],fmt='o',c='k',ecolor='k',elinewidth=2,label='1d1d',linestyle='-')
     ax.errorbar(x-0.75,y[:,1],yerr=[yerr1[:,1],yerr2[:,1]],fmt='o',c='tab:blue',ecolor='tab:blue',elinewidth=2,label='2d2d',linestyle='-')

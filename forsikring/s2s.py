@@ -185,8 +185,7 @@ def calc_frac_RL08MWR(NH,da):
     Here, last two dimensions of 'da' are latitude and longitude.
     Note: only performs calculation on odd sized neighborhoods
     """
-    frac = np.zeros((NH.size,) + da.shape)
-    
+    frac = np.zeros((NH.size,) + da.shape)    
     for n in range(0,NH.size,1):
         if NH[n] % 2 != 0: # odd
             kernel          = np.ones((NH[n],NH[n]))
@@ -194,26 +193,50 @@ def calc_frac_RL08MWR(NH,da):
             frac[n,:,:,:,:] = ndimage.convolve(da.values, kernel, mode='constant', cval=0.0, origin=0)/NH[n]**2
         else: # even
             frac[n,:,:,:,:] = np.nan
-            print(NH[n],NH)
-            
     return frac
 
 
-def calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,chunks):
+def calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,chunks,NH):
     """
+    calculates fractions skill score and generates bootstrapped estimates by boostrapping
+    subsampling the forecasts/mse_forecasts
     """
     chunks_random = chunks.copy()
     RF_mse        = (1/chunks.size)*RF_error.sum(dim='chunks').values
     F_mse         = (1/chunks.size)*F_error.sum(dim='chunks').values
-    fss[:,:]      = 1.0 - F_mse/RF_mse
     for i in range(nshuffle):
         # calc mean square error of forecast       
         F_mse_bs = (1/chunks_random.size)*F_error.sel(chunks=chunks_random).sum(dim='chunks').values
         # calc fss
-        fss_bs[:,:,i] = 1.0 - F_mse_bs/RF_mse
+        for n in range(0,NH.size,1):
+            if NH[n] % 2 != 0: # odd
+                fss[n,:]      = 1.0 - F_mse[n,:]/RF_mse[n,:]
+                fss_bs[n,:,i] = 1.0 - F_mse_bs[n,:]/RF_mse[n,:]
+            else: # even
+                fss_bs[n,:,i] = np.nan
+                fss[n,:]      = np.nan
         # shuffle forecasts (chunks) randomly with replacement
         chunks_random = np.random.choice(chunks,nsample,replace='True')    
     return fss,fss_bs
+
+
+def calc_msess_bootstrap(msess,msess_bs,RF_error,F_error,nshuffle,nsample,chunks):
+    """
+    calculates mean square error skill score and generates bootstrapped estimates by boostrapping
+    subsampling the forecasts/mse_forecasts
+    """
+    chunks_random  = chunks.copy()
+    RF_mse         = (1/chunks.size)*RF_error.sum(dim='chunks').values
+    F_mse          = (1/chunks.size)*F_error.sum(dim='chunks').values
+    msess[:]       =  1 - F_mse/RF_mse
+    for i in range(nshuffle):
+        # calc mean square error                                                                                                                                                           
+        F_mse_bs = (1/chunks_random.size)*F_error.sel(chunks=chunks_random).sum(dim='chunks').values
+        # calc msess
+        msess_bs[:,i] =  1 - F_mse_bs/RF_mse
+        # shuffle forecasts (chunks) randomly with replacement 
+        chunks_random = np.random.choice(chunks,nsample,replace='True')
+    return msess,msess_bs
 
 
 
@@ -282,44 +305,3 @@ def time_2_timescale(ds,time_flag):
             ds         = ds.transpose("chunks",...)
     return ds
 
-
-def subselect_dim(dim,domain,ltime,grid,NH,time_flag):
-    """ 
-    kitchen sink function to sub-select appropriate data                                                                                                                                                       
-    """
-    # subselect lat-lon grid given domain and grid resololution
-    if grid == '0.25x0.25':
-        if domain == 'nordic':
-            dim.latitude   = np.flip(np.arange(53,73.75,0.25))
-            dim.longitude  = np.arange(0,35.25,0.25)
-        elif domain == 'vestland':
-            dim.latitude   = np.flip(np.arange(59,62.75,0.25))
-            dim.longitude  = np.arange(4,8.75,0.25)
-    elif grid == '0.5x0.5':
-        if domain == 'nordic':
-            dim.latitude   = np.flip(np.arange(53,74,0.5))
-            dim.longitude  = np.arange(0,35.5,0.5)
-        elif domain == 'vestland':
-            dim.latitude   = np.flip(np.arange(59,63,0.5))
-            dim.longitude  = np.arange(4,9,0.5)
-    dim.nlatitude  = dim.latitude.size
-    dim.nlongitude = dim.longitude.size
-
-    # specify selected lead times if lead times are daily (not timescale)
-    # also subselect lead times corresponding to grid resolution
-    if time_flag == 'time':
-        dim.time = ltime
-        if grid == '0.5x0.5':
-            dim.time = dim.time[dim.time > 15]
-        elif grid == '0.25x0.25':
-            dim.time = dim.time[dim.time <= 15]
-        dim.ntime = dim.time.size
-            
-    # match neighborhood sizes between high and low resolution data
-    # i.e. grid neighborhood size 5 in hr data is equivalent to 3 in lr data.
-    if grid == '0.5x0.5':
-        NH_grid = np.copy(np.ceil(NH/2)).astype(int)
-    elif grid == '0.25x0.25':
-        NH_grid = np.copy(NH).astype(int)
-        
-    return dim,NH_grid

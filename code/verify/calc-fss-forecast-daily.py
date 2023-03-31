@@ -46,6 +46,48 @@ def init_fss(dim,NH,nshuffle):
     fss_bs    = xr.DataArray(data=data_bs,dims=dims_bs,coords=coords_bs,attrs=attrs_bs,name=name_bs)
     return fss,fss_bs
 
+def subselect_dim(dim,domain,ltime,grid,NH,time_flag):
+    """ 
+    kitchen sink function to sub-select appropriate data  
+    """
+    # subselect lat-lon grid given domain and grid resolution
+    if grid == '0.25x0.25':
+        if domain == 'nordic':
+            dim.latitude   = np.flip(np.arange(53,73.75,0.25))
+            dim.longitude  = np.arange(0,35.25,0.25)
+        elif domain == 'vestland':
+            dim.latitude   = np.flip(np.arange(59,62.75,0.25))
+            dim.longitude  = np.arange(4,8.75,0.25)
+    elif grid == '0.5x0.5':
+        if domain == 'nordic':
+            dim.latitude   = np.flip(np.arange(53,74,0.5))
+            dim.longitude  = np.arange(0,35.5,0.5)
+        elif domain == 'vestland':
+            dim.latitude   = np.flip(np.arange(59,63,0.5))
+            dim.longitude  = np.arange(4,9,0.5)
+    dim.nlatitude  = dim.latitude.size
+    dim.nlongitude = dim.longitude.size
+
+    # specify selected lead times if lead times are daily (not timescale)
+    # also subselect lead times corresponding to grid resolution
+    if time_flag == 'time':
+        dim.time = ltime
+        if grid == '0.5x0.5':
+            dim.time = dim.time[dim.time > 15]
+        elif grid == '0.25x0.25':
+            dim.time = dim.time[dim.time <= 15]
+        dim.ntime = dim.time.size
+
+    # match neighborhood sizes between high and low resolution data
+    # i.e. grid neighborhood size 5 in hr data is equivalent to 3 in lr data.
+    if grid == '0.5x0.5':
+        NH_grid = np.copy(np.ceil(NH/2)).astype(int)
+    elif grid == '0.25x0.25':
+        NH_grid = np.copy(NH).astype(int)
+
+    return dim,NH_grid
+
+
 
 # INPUT -----------------------------------------------
 RF_flag           = 'clim'                   # clim or pers
@@ -53,13 +95,13 @@ time_flag         = 'time'                   # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe or norway only?
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
-init_n            = 1                        # number of forecasts 
+init_n            = 104                        # number of forecasts 
 grids             = ['0.25x0.25','0.5x0.5']            # '0.25x0.25' & '0.5x0.5'
-threshold         = 0.01
-NH                = np.array([1,3,5,7,9]) #np.array([1,9,19,29,39,49])
-ltime             = np.array([1,5,10,15,20,25,30,35])     # forecast lead times to calculate
-nshuffle          = 1                        # number of times to shuffle initialization dates for error bars
-nsample           = 1                        # number of sampled forecasts with replacement in each bootstrap member
+threshold         = 0.005
+NH                = np.array([1,9,19,29,39,49])
+ltime             = np.array([1,5,10,15,20,25,30,35,45]) # forecast lead times to calculate
+nshuffle          = 10000                        # number of times to shuffle initialization dates for error bars
+nsample           = 50                        # number of sampled forecasts with replacement in each bootstrap member
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file
 write2file        = True
 # -----------------------------------------------------
@@ -82,17 +124,16 @@ filename_lr_out  = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag 
 filename_out     = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
                    'thresh_' + str(threshold) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 
-filename_hr_out  = 'hr_test.nc'
-filename_lr_out  = 'lr_test.nc'
-
 for grid in grids:
 
-    # get numpy style data dimensions
+    print('\ncalculating fss for ' + grid + '...')
+    
+    # get data dimensions
     dim = s2s.get_dim(grid,time_flag)
 
-    # kitchen sink function to sub-select appropriate data
+    # kitchen sink function to sub-select appropriate data dimensions
     # given input options above
-    [dim,NH_grid] = s2s.subselect_dim(dim,domain,ltime,grid,NH,time_flag)
+    [dim,NH_grid] = subselect_dim(dim,domain,ltime,grid,NH,time_flag)
 
     if dim.time.size > 0: # only calc stuff if lead time is in lr or hr data
 
@@ -158,11 +199,11 @@ for grid in grids:
 
         # calc fss with bootstraping
         print('calculating fss with bootstrapping..')
-        [fss,fss_bs] = s2s.calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,chunks)
+        [fss,fss_bs] = s2s.calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,chunks,NH_grid)
 
         # postprocessing
         ds = xr.merge([fss,fss_bs])
-        #if grid == '0.5x0.5': ds['neighborhood'] = NH
+        if grid == '0.5x0.5': ds['neighborhood'] = NH
         
         if write2file:
             print('writing to file..')
@@ -173,23 +214,23 @@ for grid in grids:
             if grid == '0.25x0.25': s2s.compress_file(comp_lev,3,filename_hr_out,path_out) 
             elif grid == '0.5x0.5': s2s.compress_file(comp_lev,3,filename_lr_out,path_out)
 
-    
-# Need to figure out how to integrate low res forecast here.        
-"""        
-if write2file:
-    print('combine high & low resolution files into one file..')
-    ds_hr           = xr.open_dataset(path_out + filename_hr_out)
-    ds_lr           = xr.open_dataset(path_out + filename_lr_out)
-    ds              = xr.concat([ds_hr,ds_lr], 'time')
-    ds.to_netcdf(path_out+filename_out)
-    os.system('rm ' + path_out + filename_hr_out + ' ' + path_out + filename_lr_out)
+            
+# combine low and high resolution files into one file if both exist
+if (os.path.exists(path_out + filename_hr_out)) and (os.path.exists(path_out + filename_lr_out)):
+    if write2file:
+        print('combine high & low resolution files into one file..')
+        ds_hr           = xr.open_dataset(path_out + filename_hr_out)
+        ds_lr           = xr.open_dataset(path_out + filename_lr_out)
+        ds              = xr.concat([ds_hr,ds_lr], 'time')
+        ds.to_netcdf(path_out+filename_out)
+        os.system('rm ' + path_out + filename_hr_out + ' ' + path_out + filename_lr_out)
 
-#    print('compress file to reduce space..')
-#    s2s.compress_file(comp_lev,3,filename_out,path_out)
-#    ds.close()
-#    ds_lr.close()
-#    ds_hr.close()        
-"""
+        print('compress file to reduce space..')
+        s2s.compress_file(comp_lev,3,filename_out,path_out)
+        ds.close()
+        ds_lr.close()
+        ds_hr.close()        
+
 
 misc.toc()
 
