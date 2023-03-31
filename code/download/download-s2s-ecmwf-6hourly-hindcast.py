@@ -26,8 +26,8 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product       = 'hindcast' # hindcast/vr_hindcast
-mon_thu_start = ['20220425','20220428'] # first initialization date of forecast
-num_i_weeks   = 10 # number of hindcast intialization dates to download 
+mon_thu_start = ['20220919','20220922'] # first initialization date of forecast
+num_i_weeks   = 15 # number of hindcast intialization dates to download 
 nhdates       = 20 # number of hindcast years  
 grid          = '0.25/0.25' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
@@ -93,7 +93,7 @@ dic1 = {
 # get all dates for monday and thursday forecast initializations
 dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
 
-#dates_monday_thursday = dates_monday_thursday[:1]
+#dates_monday_thursday = dates_monday_thursday[1:]
 #print(dates_monday_thursday)
 
 

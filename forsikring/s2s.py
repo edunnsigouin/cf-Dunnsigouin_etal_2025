@@ -283,11 +283,11 @@ def time_2_timescale(ds,time_flag):
     return ds
 
 
-def get_new_dim(domain,ltime,dim,grid,time_flag):
+def subselect_dim(dim,domain,ltime,grid,NH,time_flag):
     """ 
-    outputs lat and lon array of domain 
-    given as a string 
+    kitchen sink function to sub-select appropriate data                                                                                                                                                       
     """
+    # subselect lat-lon grid given domain and grid resololution
     if grid == '0.25x0.25':
         if domain == 'nordic':
             dim.latitude   = np.flip(np.arange(53,73.75,0.25))
@@ -302,11 +302,24 @@ def get_new_dim(domain,ltime,dim,grid,time_flag):
         elif domain == 'vestland':
             dim.latitude   = np.flip(np.arange(59,63,0.5))
             dim.longitude  = np.arange(4,9,0.5)
-
     dim.nlatitude  = dim.latitude.size
     dim.nlongitude = dim.longitude.size
 
+    # specify selected lead times if lead times are daily (not timescale)
+    # also subselect lead times corresponding to grid resolution
     if time_flag == 'time':
         dim.time = ltime
-
-    return dim
+        if grid == '0.5x0.5':
+            dim.time = dim.time[dim.time > 15]
+        elif grid == '0.25x0.25':
+            dim.time = dim.time[dim.time <= 15]
+        dim.ntime = dim.time.size
+            
+    # match neighborhood sizes between high and low resolution data
+    # i.e. grid neighborhood size 5 in hr data is equivalent to 3 in lr data.
+    if grid == '0.5x0.5':
+        NH_grid = np.copy(np.ceil(NH/2)).astype(int)
+    elif grid == '0.25x0.25':
+        NH_grid = np.copy(NH).astype(int)
+        
+    return dim,NH_grid

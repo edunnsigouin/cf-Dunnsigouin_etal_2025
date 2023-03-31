@@ -57,7 +57,7 @@ init_n            = 1                        # number of forecasts
 grids             = ['0.25x0.25','0.5x0.5']            # '0.25x0.25' & '0.5x0.5'
 threshold         = 0.01
 NH                = np.array([1,3,5,7,9]) #np.array([1,9,19,29,39,49])
-ltime             = np.array([1,2])     # forecast lead times to calculate
+ltime             = np.array([1,5,10,15,20,25,30,35])     # forecast lead times to calculate
 nshuffle          = 1                        # number of times to shuffle initialization dates for error bars
 nsample           = 1                        # number of sampled forecasts with replacement in each bootstrap member
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file
@@ -82,96 +82,96 @@ filename_lr_out  = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag 
 filename_out     = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
                    'thresh_' + str(threshold) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 
+filename_hr_out  = 'hr_test.nc'
+filename_lr_out  = 'lr_test.nc'
+
 for grid in grids:
 
-    # match neighborhood sizes between high and low resolution data
-    if grid == '0.5x0.5': NHgrid = np.copy(np.ceil(NH/2))
-    else: NHgrid = np.copy(NH)
-    NHgrid = NHgrid.astype(int)
+    # get numpy style data dimensions
+    dim = s2s.get_dim(grid,time_flag)
+
+    # kitchen sink function to sub-select appropriate data
+    # given input options above
+    [dim,NH_grid] = s2s.subselect_dim(dim,domain,ltime,grid,NH,time_flag)
+
+    if dim.time.size > 0: # only calc stuff if lead time is in lr or hr data
+
+        # initialize arrays                                                                                                    
+        [fss,fss_bs] = init_fss(dim,NH_grid,nshuffle)
+        O_frac       = init_frac(dim,NH_grid,chunks)
+        F_frac       = init_frac(dim,NH_grid,chunks)
+        RF_frac      = init_frac(dim,NH_grid,chunks)
+
+        # define input filenames
+        filenames_O  =  path_in_O + variable + '_' + grid + '_' + init_dates + '.nc'
+        filenames_F  =  path_in_F + variable + '_' + grid + '_' + init_dates + '.nc'
+        filenames_RF =  path_in_RF + variable + '_' + grid + '_' + init_dates + '.nc'
+
+        # read in files to dataarray
+        O  = xr.open_mfdataset(filenames_O,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable]
+        F  = xr.open_mfdataset(filenames_F,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks').mean(dim='number')[variable] # ensemble mean 
+        RF = xr.open_mfdataset(filenames_RF,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable]
+
+        # sub-select specific domain and lead times
+        O       = O.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
+        F       = F.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
+        RF      = RF.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
+
+        # resample time into timescales if required 
+        O  = s2s.time_2_timescale(O,time_flag)
+        F  = s2s.time_2_timescale(F,time_flag)
+        RF = s2s.time_2_timescale(RF,time_flag)
+
+        # convert to binary above (1) and below (0) threshold 
+        O  = s2s.convert_2_binary_RL08MWR(O,threshold)
+        F  = s2s.convert_2_binary_RL08MWR(F,threshold)
+        RF = s2s.convert_2_binary_RL08MWR(RF,threshold)
     
-    # initialize arrays                                                                                                    
-    dim          = s2s.get_dim(grid,time_flag)
-    [fss,fss_bs] = init_fss(dim,NHgrid,nshuffle)
-    O_frac       = init_frac(dim,NHgrid,chunks)
-    F_frac       = init_frac(dim,NHgrid,chunks)
-    RF_frac      = init_frac(dim,NHgrid,chunks)
+        # calculate dask arrays explicitely
+        print('reading & postprocessing input data..')
+        with ProgressBar():
+            O  = O.compute()
+            F  = F.compute()
+            RF = RF.compute()
 
-    # define input filenames
-    filenames_O  =  path_in_O + variable + '_' + grid + '_' + init_dates + '.nc'
-    filenames_F  =  path_in_F + variable + '_' + grid + '_' + init_dates + '.nc'
-    filenames_RF =  path_in_RF + variable + '_' + grid + '_' + init_dates + '.nc'
-
-    # read in files to dataarray
-    O  = xr.open_mfdataset(filenames_O,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable]
-    F  = xr.open_mfdataset(filenames_F,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks').mean(dim='number')[variable] # ensemble mean 
-    RF = xr.open_mfdataset(filenames_RF,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable]
-
-    # sub-select specific domain and lead times
-    dim     = s2s.get_new_dim(domain,ltime,dim,grid,time_flag)
-    O       = O.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
-    F       = F.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
-    RF      = RF.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
-    O_frac  = O_frac.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
-    F_frac  = F_frac.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
-    RF_frac = RF_frac.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
-    fss     = fss.sel(time=dim.time,method='nearest')
-    fss_bs  = fss_bs.sel(time=dim.time,method='nearest')
-
-    # resample time into timescales if required 
-    O  = s2s.time_2_timescale(O,time_flag)
-    F  = s2s.time_2_timescale(F,time_flag)
-    RF = s2s.time_2_timescale(RF,time_flag)
-
-    # convert to binary above (1) and below (0) threshold 
-    O  = s2s.convert_2_binary_RL08MWR(O,threshold)
-    F  = s2s.convert_2_binary_RL08MWR(F,threshold)
-    RF = s2s.convert_2_binary_RL08MWR(RF,threshold)
+        # calculate fractions
+        # Should there be a cosine weighting when applying filter in y?
+        print('calculating observation fractions...')
+        O_frac[:,:,:,:,:]  = s2s.calc_frac_RL08MWR(NH_grid,O)
+        print('calculating forecast fractions...')
+        F_frac[:,:,:,:,:]  = s2s.calc_frac_RL08MWR(NH_grid,F)
+        print('calculating reference forecast fractions...')
+        RF_frac[:,:,:,:,:] = s2s.calc_frac_RL08MWR(NH_grid,RF)
     
-    # calculate dask arrays explicitely
-    print('reading & postprocessing input data..')
-    with ProgressBar():
-        O  = O.compute()
-        F  = F.compute()
-        RF = RF.compute()
+        O.close()
+        F.close()
+        RF.close()
 
-    # calculate fractions
-    # Should there be a cosine weighting when applying filter in y?
-    print('calculating observation fractions...')
-    O_frac[:,:,:,:,:]  = s2s.calc_frac_RL08MWR(NHgrid,O)
-    print('calculating forecast fractions...')
-    F_frac[:,:,:,:,:]  = s2s.calc_frac_RL08MWR(NHgrid,F)
-    print('calculating reference forecast fractions...')
-    RF_frac[:,:,:,:,:] = s2s.calc_frac_RL08MWR(NHgrid,RF)
-    
-    O.close()
-    F.close()
-    RF.close()
+        print('calculating errors..')
+        # calc squared error for all forecasts individually 
+        F_error  = (F_frac - O_frac)**2
+        RF_error = (RF_frac - O_frac)**2
 
-    print('calculating errors..')
-    # calc squared error for all forecasts individually 
-    F_error  = (F_frac - O_frac)**2
-    RF_error = (RF_frac - O_frac)**2
+        # weighted spatial (x,y) mean
+        F_error  = misc.xy_mean(F_error)
+        RF_error = misc.xy_mean(RF_error)
 
-    # weighted spatial (x,y) mean
-    F_error  = misc.xy_mean(F_error)
-    RF_error = misc.xy_mean(RF_error)
+        # calc fss with bootstraping
+        print('calculating fss with bootstrapping..')
+        [fss,fss_bs] = s2s.calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,chunks)
 
-    # calc fss with bootstraping
-    print('calculating fss with bootstrapping..')
-    [fss,fss_bs] = s2s.calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,chunks)
-
-    # postprocessing
-    ds = xr.merge([fss,fss_bs])
-    if grid == '0.5x0.5': ds['neighborhood'] = NH
+        # postprocessing
+        ds = xr.merge([fss,fss_bs])
+        #if grid == '0.5x0.5': ds['neighborhood'] = NH
         
-    if write2file:
-        print('writing to file..')
-        if grid == '0.25x0.25': ds.to_netcdf(path_out+filename_hr_out)
-        elif grid == '0.5x0.5': ds.to_netcdf(path_out+filename_lr_out)
+        if write2file:
+            print('writing to file..')
+            if grid == '0.25x0.25': ds.to_netcdf(path_out+filename_hr_out)
+            elif grid == '0.5x0.5': ds.to_netcdf(path_out+filename_lr_out)
 
-        print('compress file to reduce space..') 
-        if grid == '0.25x0.25': s2s.compress_file(comp_lev,3,filename_hr_out,path_out) 
-        elif grid == '0.5x0.5': s2s.compress_file(comp_lev,3,filename_lr_out,path_out)
+            print('compress file to reduce space..') 
+            if grid == '0.25x0.25': s2s.compress_file(comp_lev,3,filename_hr_out,path_out) 
+            elif grid == '0.5x0.5': s2s.compress_file(comp_lev,3,filename_lr_out,path_out)
 
     
 # Need to figure out how to integrate low res forecast here.        

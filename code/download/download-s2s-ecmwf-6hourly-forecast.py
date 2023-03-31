@@ -28,7 +28,7 @@ grid          = '0.25/0.25' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var           = 'tp'
 comp_lev      = 5 # file compression level
-write2file    = True
+write2file    = False
 # -----------------------------------------
 
 # initialize mars server
