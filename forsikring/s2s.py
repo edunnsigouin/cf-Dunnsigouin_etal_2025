@@ -301,7 +301,7 @@ def time_2_timescale(ds,time_flag):
             temp1      = ds.sel(time=slice(16,28)).mean(dim='time')
             temp2      = ds.sel(time=slice(29,46)).mean(dim='time')
             ds         = xr.concat([temp1,temp2],"time")
-            ds['time'] = np.arange(1,5,1)
+            ds['time'] = np.arange(1,3,1)
             ds         = ds.transpose("chunks",...)
     return ds
 

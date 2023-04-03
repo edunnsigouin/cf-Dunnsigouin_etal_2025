@@ -20,15 +20,15 @@ from forsikring import config,misc,s2s
 # INPUT -----------------------------------------------
 variables        = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 years            = np.arange(2001,2021,1)  # years for climatology calculation
-mon_thu_start    = ['20210104','20210107'] # first monday & thursday initialization date of forecast
-num_i_weeks      = 52                      # number of weeks withe forecasts
+init_start       = '20210104' # first initialization date of forecast (either a monday or thursday)  
+init_n           = 104        # number of forecast initializations 
 grids            = ['0.25x0.25']          # '0.25x0.25' or '0.5x0.5'
 comp_lev         = 5
 write2file       = False
 # -----------------------------------------------------         
 
 # get all dates for monday and thursday forecast initializations
-dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
+init_dates = s2s.get_init_dates(init_start,init_n)
 
 for variable in variables:
     for grid in grids:
@@ -49,7 +49,7 @@ for variable in variables:
         ds_clim = ds_clim.rename({'dayofyear':'time'}) 
     
         print('picking out dates corresponding to forecast/hindcast..')
-        for date in dates_monday_thursday:
+        for date in init_dates:
 
             datestring = date.strftime('%Y-%m-%d')
             print('\nvariable: ' + variable + ', date: ' + datestring,', grid: ' + grid)

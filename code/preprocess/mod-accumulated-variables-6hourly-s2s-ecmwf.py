@@ -17,20 +17,19 @@ from matplotlib  import pyplot as plt
 # INPUT ----------------------------------------------- 
 variables     = ['tp']                  
 dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcasts
-product       = 'hindcast'              # hindcast or forecast ?
-mon_thu_start = ['20210104','20210107'] # first monday & thursday initialization date of forecast
-num_i_weeks   = 2                      # number of forecasts/hindcast intialization dates to download
+product       = 'hindcast'              # hindcast or forecast
+init_start    = '20210104' # first initialization date of forecast (either a monday or thursday) 
+init_n        = 104        # number of forecast initializations 
 grid          = '0.5/0.5'             # '0.25/0.25' or '0.5/0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)
 write2file    = True
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
-dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
-
+init_dates = s2s.get_init_dates(init_start,init_n)
 
 for variable in variables:
-    for date in dates_monday_thursday:
+    for date in init_dates:
         for dtype in dtypes:
 
             misc.tic()

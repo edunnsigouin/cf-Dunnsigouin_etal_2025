@@ -22,8 +22,8 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product       = 'forecast' # forecast/vr_forecast
-mon_thu_start = ['20220801','20220804'] # first initialization date of forecast
-num_i_weeks   = 22 # number of forecasts intialization dates to download 
+init_start    = '20210104' # first initialization date of forecast (either a monday or thursday)
+init_n        = 104        # number of forecast initializations   
 grid          = '0.25/0.25' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var           = 'tp'
@@ -86,34 +86,31 @@ dic = {
 }    
 
 # get all dates for monday and thursday forecast initializations
-dates_monday_thursday = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
-
-dates_monday_thursday = dates_monday_thursday[1:]
-#print(dates_monday_thursday)
-
+init_dates = s2s.get_init_dates(init_start,init_n)
+print(init_dates)
 
 # populate dictionary some more and download eachforcast one-by-one
-for date in dates_monday_thursday:
-    for dtype in dtypes:
+if write2file:
+    for date in init_dates:
+        for dtype in dtypes:
 
-        misc.tic()
-
-        # define filenames & variables
-        datestring       = date.strftime('%Y-%m-%d')
-        refyear          = int(datestring[:4])
-        forcastcycle     = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
+            misc.tic()
+            
+            # define filenames & variables
+            datestring       = date.strftime('%Y-%m-%d')
+            refyear          = int(datestring[:4])
+            forcastcycle     = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
         
-        if product == 'forecast': base_name = '%s_%s_%s_%s_%s'%(var,forcastcycle,gridstring,datestring,dtype)
-        elif product == 'vr_forecast': base_name = '%s_%s_%s_%s_%s_%s'%(var,forcastcycle,'vr',gridstring,datestring,dtype)
+            if product == 'forecast': base_name = '%s_%s_%s_%s_%s'%(var,forcastcycle,gridstring,datestring,dtype)
+            elif product == 'vr_forecast': base_name = '%s_%s_%s_%s_%s_%s'%(var,forcastcycle,'vr',gridstring,datestring,dtype)
 
-        filename_grb     = base_name + '.grb'
-        filename_nc      = base_name + '.nc'
+            filename_grb     = base_name + '.grb'
+            filename_nc      = base_name + '.nc'
 
-        # populate dictionary some more
-        dic['date']  = datestring
-        dic['type']  = dtype
-        
-        if write2file:
+            # populate dictionary some more
+            dic['date']  = datestring
+            dic['type']  = dtype
+
             print('downloading: ' + path + filename_grb)
             print(dic)
             server.execute(dic, path + filename_grb)
@@ -124,6 +121,6 @@ for date in dates_monday_thursday:
             print('compress files to reduce space..')
             s2s.compress_file(comp_lev,4,filename_nc,path)
     
-        misc.toc()
+            misc.toc()
 
 

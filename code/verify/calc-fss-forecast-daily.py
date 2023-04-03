@@ -93,19 +93,18 @@ def subselect_dim(dim,domain,ltime,grid,NH,time_flag):
 RF_flag           = 'clim'                   # clim or pers
 time_flag         = 'time'                   # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domain            = 'europe'                 # europe or norway only?
+domain            = 'nordic'                 # europe or norway only?
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                        # number of forecasts 
 grids             = ['0.25x0.25','0.5x0.5']            # '0.25x0.25' & '0.5x0.5'
-threshold         = 0.005
-NH                = np.array([1,9,19,29,39,49])
+threshold         = 0.01
+NH                = np.array([1,9,19,29,39,49])  # neighborhood size in grid points per side
 ltime             = np.array([1,5,10,15,20,25,30,35,45]) # forecast lead times to calculate
 nshuffle          = 10000                        # number of times to shuffle initialization dates for error bars
 nsample           = 50                        # number of sampled forecasts with replacement in each bootstrap member
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file
 write2file        = True
 # -----------------------------------------------------
-
 
 misc.tic()
 
