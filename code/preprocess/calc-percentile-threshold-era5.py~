@@ -7,7 +7,7 @@ import numpy           as np
 import xarray          as xr
 from dask.diagnostics  import ProgressBar
 from forsikring        import misc,s2s,config
-
+from scipy             import ndimage
 
 def init_percentile(variable,units,dim,pval):
     """ 
@@ -24,12 +24,12 @@ def init_percentile(variable,units,dim,pval):
 
 
 # input ----------------------------------------------
-variables        = ['rn24']                 # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variables        = ['tp24']                 # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 years            = np.arange(2001,2021,1)   # years for climatology calculation
 grids            = ['0.25x0.25']            # '0.25x0.25' or '0.5x0.5'
-pval             = np.array([0.5,0.75,0.90,0.95,0.99]) # percentile values
+pval             = np.array([0.9]) # percentile values
 comp_lev         = 5
-write2file       = True
+write2file       = False
 # ----------------------------------------------------
 
 for variable in variables:
@@ -46,8 +46,30 @@ for variable in variables:
         # read files
         filenames_in = [path_in + variable + '_' + grid + '_' + str(years[0]) + '.nc']
         for year in years[1:]: filenames_in = filenames_in + [path_in + variable + '_' + grid + '_' + str(year) + '.nc']
-        with ProgressBar(): ds = xr.open_mfdataset(filenames_in).compute()
-            
+        with ProgressBar(): da = xr.open_mfdataset(filenames_in)[variable].sel(latitude=50,longitude=30,method='nearest').compute()
+
+#        print(da)
+        """
+        for i in (0,da.lon.size):
+            for j in (0,da.lat.size):
+                temp = np.zeros((da.time.size,11))
+                for t in range(0,da.time.size):
+                    temp[t,:] = da[i,j,:].sel(time=slice(da[time][t]-5,da[time][t]+5)).values 
+        """
+
+        temp = xr.cftime_range(start='2000-01-01', periods=2, freq="D")
+        print(temp)
+        
+#        temp = np.zeros((da.time.size,11))
+#        for t in range(0,1):#da.time.size):
+#            start = da.time[t] - np.timedelta64(5,'D')
+#            end = da.time[t] + np.timedelta64(5,'D')
+#            dates     = xr.cftime_range(start=start.values, periods=11, freq="D", calendar="leap")
+#            print(dates)
+            #temp[t,:] = da.sel(time=slice(start_t,end_t),method='pad').values
+
+
+        """
         # calculate percentiles
         units      = ds[variable].attrs['units']
         percentile = init_percentile(variable,units,dim,pval)
@@ -58,5 +80,6 @@ for variable in variables:
         if write2file:
             percentile.to_netcdf(path_out + filename_out)
             s2s.compress_file(comp_lev,3,filename_out,path_out)
-            
+        """
         misc.toc()
+
