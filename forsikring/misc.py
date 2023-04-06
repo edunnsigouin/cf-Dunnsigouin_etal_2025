@@ -38,3 +38,9 @@ def xy_mean(ds):
     return ds        
 
 
+def rm_lpyr_days(data):
+    """ 
+    removes leap-year days from daily xrray dataset
+    """
+    return data.sel(time=~((data.time.dt.month == 2) & (data.time.dt.day == 29)))
+
