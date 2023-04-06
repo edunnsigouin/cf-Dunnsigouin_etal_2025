@@ -25,34 +25,58 @@ def init_percentile(variable,units,dim,pval):
     return percentile
 
 
-def calc_percentile(da,pval,window,years):
+def get_sample_dates(time,window):
+    """
+    creates array of sample dates to get percentile thresholds
+    for each 365 day of the year. For example, if day of year = 30,
+    then function makes a sample of day 30 +- window for each year, 
+    giving a sample of window*years days for each day of the year.
+    Sample is used to calculate climatological percentiles.
+    """
+    window_half = int(np.floor(window/2))
+    start       = time - np.timedelta64(window_half,'D')
+    
+    if (start.dt.month == 2) & (start.dt.day == 29): # skip leap year day
+        start  = start - np.timedelta64(1,'D')
+        
+    start = np.datetime_as_string(start, unit='D') 
+    dates = xr.cftime_range(start=start, periods=window, freq="D", calendar="noleap").strftime('%Y-%m-%d')
+
+    return dates
+
+
+def calc_percentile(da,pval,window):
     """
     Calculates climatological percentiles for a given grid point
     for each day of year (365)
     """
-    ntime       = da.shape[0]
-    half_window = int(np.floor(window/2))
-    temp        = np.zeros((ntime,window),dtype='float32') # should be nans? also np.nanquantile?
 
-    for t in range(half_window,ntime-half_window):
-        temp[t,:] = da[t-half_window:t+half_window+1]
+    half_window = int(np.floor(window/2))
+    # SHOULD THIS BE ZEROS OR NANS? THEN MODIFY QUANTILE TO NAN.QUANTILE?
+    temp        = np.zeros((da.time.size,window),dtype='float32')
+    
+    for t in range(half_window,da.time.size-half_window):
+        dates     = get_sample_dates(da.time[t],window)
+        temp[t,:] = da.sel(time=dates).values
         
     temp       = np.reshape(temp,(years.size,365,window))
     temp       = np.transpose(temp, (1, 0, 2))
     temp       = np.reshape(temp,(365,years.size*window))
     percentile = np.quantile(temp,pval,axis=1)
+
+    #percentile = np.zeros((pval.size,365))
     
     return percentile
 
 
 # input ----------------------------------------------
 variables        = ['tp24']                 # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-years            = np.arange(2001,2021,1)   # years for climatology calculation
-grids            = ['0.5x0.5']            # '0.25x0.25' or '0.5x0.5'
+years            = np.arange(2001,2002,1)   # years for climatology calculation
+grids            = ['0.25x0.25']            # '0.25x0.25' or '0.5x0.5'
 pval             = np.array([0.75,0.9,0.95,0.99]) # percentile values
 comp_lev         = 5
 window           = 11
-write2file       = True
+write2file       = False
 # ----------------------------------------------------
 
 for variable in variables:
@@ -74,14 +98,16 @@ for variable in variables:
         
         # calculate dask array explicitely
         with ProgressBar():
-            da = da.compute().values
+            da = da.compute()
 
         # calculate percentiles for each grid point
-        percentile = init_percentile(variable,'m',dim,pval)
+        percentile = init_percentile(variable,da.attrs['units'],dim,pval)
         for i in range(0,dim.nlongitude):
-            print('\n percent complete: ' + str(i/dim.nlongitude*100))
             for j in range(0,dim.nlatitude):
-                percentile[:,:,j,i] = calc_percentile(da[:,j,i],pval,window,years)
+                misc.tic()
+                da_temp             = da.sel(latitude=dim.latitude[j],longitude=dim.longitude[i],method='nearest')
+                percentile[:,:,j,i] = calc_percentile(da_temp,pval,window)
+                misc.toc()
                 
         if write2file:
             percentile.to_netcdf(path_out + filename_out)
