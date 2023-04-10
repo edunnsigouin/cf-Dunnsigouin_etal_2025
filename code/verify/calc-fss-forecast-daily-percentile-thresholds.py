@@ -97,7 +97,7 @@ domain            = 'europe'                 # europe or norway only?
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 5                        # number of forecasts 
 grids             = ['0.25x0.25']            # '0.25x0.25' & '0.5x0.5'
-threshold         = 0.01
+threshold         = 0.9
 NH                = np.array([1,9,19,29,39,49])  # neighborhood size in grid points per side
 ltime             = np.array([1,5,10]) # forecast lead times to calculate
 nshuffle          = 1                        # number of times to shuffle initialization dates for error bars
@@ -152,6 +152,8 @@ for grid in grids:
         F  = xr.open_mfdataset(filenames_F,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks').mean(dim='number')[variable] # ensemble mean 
         RF = xr.open_mfdataset(filenames_RF,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable]
 
+        print(O)
+"""        
         # sub-select specific domain and lead times
         O  = O.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
         F  = F.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
@@ -229,7 +231,7 @@ if (os.path.exists(path_out + filename_hr_out)) and (os.path.exists(path_out + f
         ds.close()
         ds_lr.close()
         ds_hr.close()        
-
+"""
 
 misc.toc()
 

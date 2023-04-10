@@ -165,7 +165,6 @@ def get_dim(grid,time_flag):
 
 
 
-
 def convert_2_binary_RL08MWR(data,threshold):
     """
     Converts forecast data into binary. 1 above a given 
@@ -175,6 +174,7 @@ def convert_2_binary_RL08MWR(data,threshold):
     binary_data = (data >= threshold).astype(np.int32)
     
     return binary_data
+
 
 
 def calc_frac_RL08MWR(NH,da):

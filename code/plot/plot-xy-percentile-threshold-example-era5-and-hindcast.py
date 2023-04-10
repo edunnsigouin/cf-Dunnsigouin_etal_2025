@@ -18,8 +18,8 @@ years             = np.arange(2001,2021,1)   # years for threshold data
 init_start        = '2021-01-04'               # initialization date
 ltime             = 5                        # lead time in days
 grid              = '0.25x0.25'              # '0.25x0.25' or '0.5x0.5'
-pval              = 0.90
-write2file        = True
+pval              = 0.95
+write2file        = False
 # -----------------------------
 
 # define stuff
