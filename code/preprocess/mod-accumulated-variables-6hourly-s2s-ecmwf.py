@@ -15,7 +15,7 @@ from forsikring import config,misc,s2s
 from matplotlib  import pyplot as plt
 
 # INPUT ----------------------------------------------- 
-variables     = ['tp']                  
+variables     = ['sf']                  
 dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcasts
 product       = 'hindcast'              # hindcast or forecast
 init_start    = '20210104' # first initialization date of forecast (either a monday or thursday) 
