@@ -18,8 +18,8 @@ from matplotlib  import pyplot as plt
 variables     = ['sf']                  
 dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcasts
 product       = 'hindcast'              # hindcast or forecast
-init_start    = '20210104' # first initialization date of forecast (either a monday or thursday) 
-init_n        = 104        # number of forecast initializations 
+init_start    = '20210527' # first initialization date of forecast (either a monday or thursday) 
+init_n        = 63        # number of forecast initializations 
 grid          = '0.5/0.5'             # '0.25/0.25' or '0.5/0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)
 write2file    = True
