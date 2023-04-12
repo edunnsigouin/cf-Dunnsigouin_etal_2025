@@ -1,9 +1,13 @@
 """
 Calculates the fractional skill score as a function of                                                                                                        
 lead time and neighborhood size for ecmwf forecasts. 
+
 Reference forecasts are either era5 climatology or era5 persistence. 
 Verification is era5. Code includes bootstrapping of 
-forecast mse to put error bars on fss.
+forecast mse to put error bars on fss. 
+
+Input is pre-processed
+data in model-format converted to binary.
 """
 
 import numpy  as np
@@ -95,13 +99,13 @@ time_flag         = 'time'                   # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe or norway only?
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
-init_n            = 5                        # number of forecasts 
-grids             = ['0.25x0.25']            # '0.25x0.25' & '0.5x0.5'
-threshold         = 0.9
-NH                = np.array([1,9,19,29,39,49])  # neighborhood size in grid points per side
-ltime             = np.array([1,5,10]) # forecast lead times to calculate
-nshuffle          = 1                        # number of times to shuffle initialization dates for error bars
-nsample           = 1                        # number of sampled forecasts with replacement in each bootstrap member
+init_n            = 104                        # number of forecasts 
+grids             = ['0.25x0.25','0.5x0.5']            # '0.25x0.25' & '0.5x0.5'
+pval              = 0.9                      # percentile threshold
+NH                = np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
+ltime             = np.arange(1,16,1)  # forecast lead times to calculate
+nshuffle          = 10000                        # number of times to shuffle initialization dates for error bars
+nsample           = 50                        # number of sampled forecasts with replacement in each bootstrap member
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file
 write2file        = False
 # -----------------------------------------------------
@@ -112,16 +116,16 @@ misc.tic()
 init_dates       = s2s.get_init_dates(init_start,init_n)
 init_dates       = init_dates.strftime('%Y-%m-%d').values
 chunks           = np.arange(0,init_n,1)
-path_in_F        = config.dirs['forecast_model_daily'] + variable + '/'
-path_in_O        = config.dirs['era5_model_daily'] + variable + '/'
-path_in_RF       = config.dirs['era5_model_' + RF_flag] + variable + '/'
+path_in_F        = config.dirs['forecast_binary_daily'] + variable + '/'
+path_in_O        = config.dirs['era5_binary_daily'] + variable + '/'
+path_in_RF       = config.dirs['era5_binary_' + RF_flag] + variable + '/'
 path_out         = config.dirs['verify_forecast_daily']
 filename_hr_out  = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'thresh_' + str(threshold) + '_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+                   'pval_' + str(pval) + '_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 filename_lr_out  = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'thresh_' + str(threshold) + '_0.5x0.5_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+                   'pval_' + str(pval) + '_0.5x0.5_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 filename_out     = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'thresh_' + str(threshold) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+                   'pval_' + str(pval) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 
 for grid in grids:
 
@@ -149,26 +153,19 @@ for grid in grids:
 
         # read in files to dataarray
         O  = xr.open_mfdataset(filenames_O,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable]
-        F  = xr.open_mfdataset(filenames_F,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks').mean(dim='number')[variable] # ensemble mean 
+        F  = xr.open_mfdataset(filenames_F,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable] # ensemble mean 
         RF = xr.open_mfdataset(filenames_RF,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable]
 
-        print(O)
-"""        
-        # sub-select specific domain and lead times
-        O  = O.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
-        F  = F.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
-        RF = RF.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
+        # sub-select specific domain, lead times and percentile threshold
+        O  = O.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,pval=pval,method='nearest')
+        F  = F.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,pval=pval,method='nearest')
+        RF = RF.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,pval=pval,method='nearest')
 
         # resample time into timescales if required 
         O  = s2s.time_2_timescale(O,time_flag)
         F  = s2s.time_2_timescale(F,time_flag)
         RF = s2s.time_2_timescale(RF,time_flag)
 
-        # convert to binary above (1) and below (0) threshold 
-        O  = s2s.convert_2_binary_RL08MWR(O,threshold)
-        F  = s2s.convert_2_binary_RL08MWR(F,threshold)
-        RF = s2s.convert_2_binary_RL08MWR(RF,threshold)
-    
         # calculate dask arrays explicitely
         print('reading & postprocessing input data..')
         with ProgressBar():
@@ -231,7 +228,7 @@ if (os.path.exists(path_out + filename_hr_out)) and (os.path.exists(path_out + f
         ds.close()
         ds_lr.close()
         ds_hr.close()        
-"""
+
 
 misc.toc()
 
