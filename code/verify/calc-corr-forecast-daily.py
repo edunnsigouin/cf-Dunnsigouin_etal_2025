@@ -66,9 +66,9 @@ misc.tic()
 # define stuff
 init_dates             = s2s.get_monday_thursday_dates(mon_thu_start,num_i_weeks)
 init_dates             = init_dates.strftime('%Y-%m-%d').values
-path_in_forecast       = config.dirs['forecast_daily'] + variable + '/'
+path_in_forecast       = config.dirs['forecast_model_daily'] + variable + '/'
 path_in_verification   = config.dirs['era5_model_daily'] + variable + '/'
-path_out               = config.dirs['calc_forecast_daily']
+path_out               = config.dirs['verify_forecast_daily']
 if time_flag == 'time':
     filename_hr_out = 't_corr_' + variable + '_' + 'forecast-' + ref_forecast_flag + '_' + \
                       '0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'

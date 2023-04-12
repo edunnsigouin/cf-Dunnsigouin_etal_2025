@@ -77,10 +77,10 @@ misc.tic()
 init_dates       = s2s.get_init_dates(init_start,init_n)
 init_dates       = init_dates.strftime('%Y-%m-%d').values
 chunks           = np.arange(0,init_n,1)
-path_in_F        = config.dirs['forecast_daily'] + variable + '/'
+path_in_F        = config.dirs['forecast_model_daily'] + variable + '/'
 path_in_O        = config.dirs['era5_model_daily'] + variable + '/'
 path_in_RF       = config.dirs['era5_model_' + RF_flag] + variable + '/'
-path_out         = config.dirs['calc_forecast_daily']
+path_out         = config.dirs['verify_forecast_daily']
 filename_hr_out  = time_flag + '_msess_' + variable + '_' + 'forecast_' + RF_flag + \
                    '_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 filename_lr_out  = time_flag + '_msess_' + variable + '_' + 'forecast_' + RF_flag + \

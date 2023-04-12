@@ -12,9 +12,9 @@ from forsikring import config,misc,s2s
 from matplotlib  import pyplot as plt
 
 # INPUT ----------------------------------------------- 
-variables     = ['mx24tp6']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+variables     = ['mx24rn6']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcasts
-product       = 'hindcast'              # hindcast or forecast ?
+product       = 'forecast'              # hindcast or forecast ?
 init_start    = '20210104' # first initialization date of forecast (either a monday or thursday)
 init_n        = 104        # number of forecast initializations  
 grid          = '0.5/0.5'             # '0.25/0.25' or '0.5/0.5'
@@ -43,7 +43,7 @@ for variable in variables:
             if variable == 'tp24': # daily accumulated precip (m)
 
                 path_in                          = config.dirs[product + '_6hourly'] + 'tp6/'
-                path_out                         = config.dirs[product + '_daily'] + variable + '/'
+                path_out                         = config.dirs[product + '_model_daily'] + variable + '/'
                 filename_in                      = 'tp6_' + basename + '.nc'
                 filename_out                     = variable + '_' + basename + '.nc'
                 ds                               = xr.open_dataset(path_in + filename_in)
@@ -71,7 +71,7 @@ for variable in variables:
 
                 path1_in                         = config.dirs[product + '_6hourly'] + 'tp6/'
                 path2_in                         = config.dirs[product + '_6hourly'] + 'sf6/'
-                path_out                         = config.dirs[product + '_daily'] + variable + '/'
+                path_out                         = config.dirs[product + '_model_daily'] + variable + '/'
                 filename1_in                     = 'tp6' + '_' + basename + '.nc'
                 filename2_in                     = 'sf6' + '_' + basename + '.nc'
                 filename_out                     = variable + '_' + basename + '.nc'
@@ -100,7 +100,7 @@ for variable in variables:
             elif variable == 'mx24tp6': # daily maximum 6 hour accumulated precip (m)
 
                 path_in                          = config.dirs[product + '_6hourly'] + 'tp6/'
-                path_out                         = config.dirs[product + '_daily'] + variable + '/'
+                path_out                         = config.dirs[product + '_model_daily'] + variable + '/'
                 filename_in                      = 'tp6' + '_' + basename + '.nc'
                 filename_out                     = variable + '_' + basename + '.nc'
                 ds                               = xr.open_dataset(path_in + filename_in)
@@ -123,7 +123,7 @@ for variable in variables:
 
                 path1_in                         = config.dirs[product + '_6hourly'] + 'tp6/'
                 path2_in                         = config.dirs[product + '_6hourly'] + 'sf6/'
-                path_out                         = config.dirs[product + '_daily'] + variable + '/'
+                path_out                         = config.dirs[product + '_model_daily'] + variable + '/'
                 
                 filename1_in                     = 'tp6_' + basename + '.nc'
                 filename2_in                     = 'sf6_' + basename + '.nc'
@@ -152,7 +152,7 @@ for variable in variables:
             elif variable == 'mx24tpr': # daily maximum timestep precipitation rate (kgm-2s-1)
 
                 path_in                             = config.dirs[product + '_6hourly'] + 'mxtpr/'
-                path_out                            = config.dirs[product + '_daily'] + variable + '/'
+                path_out                            = config.dirs[product + '_model_daily'] + variable + '/'
                 filename_in                         = 'mxtpr_' + basename + '.nc'
                 filename_out                        = variable + '_' + basename + '.nc'
                 ds                                  = xr.open_dataset(path_in + filename_in)

@@ -48,7 +48,7 @@ for date in init_dates:
         datestring      = date.strftime('%Y-%m-%d')
         filename_in     = variable + '_' + grid + '_' + datestring + '.nc'
         filename_out    = 'xyt_percentile_' + variable + '_' + grid + '_' + datestring + '.nc'
-        path_in         = config.dirs[product + '_daily'] + variable + '/'
+        path_in         = config.dirs[product + '_model_daily'] + variable + '/'
         path_out        = config.dirs[product + '_percentile'] + variable + '/'
         ds              = xr.open_dataset(path_in + filename_in)
 

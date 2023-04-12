@@ -9,13 +9,14 @@ fig                  = proj + "fig/"
 
 raw                  = cf_space + "raw/"
 processed            = cf_space + "processed/"
-calc                 = cf_space + "calc/"
+verify               = cf_space + "verify/"
 
-hindcast_6hourly     = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
-forecast_6hourly     = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
-hindcast_daily       = processed + "cf-forsikring/ecmwf/hindcast/daily/"
-forecast_daily       = processed + "cf-forsikring/ecmwf/forecast/daily/"
-hindcast_percentile  = processed + "cf-forsikring/ecmwf/hindcast/percentile/"
+hindcast_6hourly      = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
+forecast_6hourly      = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
+hindcast_model_daily  = processed + "cf-forsikring/ecmwf/hindcast/model-format/daily/"
+forecast_model_daily  = processed + "cf-forsikring/ecmwf/forecast/model-format/daily/"
+forecast_binary_daily = processed + "cf-forsikring/ecmwf/forecast/model-format/binary/daily/"
+hindcast_percentile   = processed + "cf-forsikring/ecmwf/hindcast/percentile/"
 
 era5_6hourly         = raw + "era5/6hourly/"
 era5_cont_daily      = processed + "cf-forsikring/era5/continuous-format/daily/"
@@ -23,9 +24,10 @@ era5_model_clim      = processed + "cf-forsikring/era5/model-format/climatology/
 era5_model_daily     = processed + "cf-forsikring/era5/model-format/daily/"
 era5_model_pers      = processed + "cf-forsikring/era5/model-format/persistence/"
 era5_percentile      = processed + "cf-forsikring/era5/percentile/"
-era5_binary_daily    = processed + "cf-forsikring/era5/binary-format/daily/"
+era5_binary_daily    = processed + "cf-forsikring/era5/model-format/binary/daily/"
+era5_binary_clim     = processed + "cf-forsikring/era5/model-format/binary/climatology/"
 
-calc_forecast_daily  = calc + "cf-forsikring/ecmwf/forecast/daily/"
+verify_forecast_daily = verify + "cf-forsikring/ecmwf/forecast/daily/"
 
 
 dirs = {"proj":proj,
@@ -35,8 +37,9 @@ dirs = {"proj":proj,
         "processed":processed,
         "hindcast_6hourly":hindcast_6hourly,
         "forecast_6hourly":forecast_6hourly,
-        "hindcast_daily":hindcast_daily,
-        "forecast_daily":forecast_daily,
+        "hindcast_model_daily":hindcast_model_daily,
+        "forecast_model_daily":forecast_model_daily,
+        "forecast_binary_daily":forecast_binary_daily,
         "hindcast_percentile":hindcast_percentile,
         "era5_6hourly":era5_6hourly,
         "era5_cont_daily":era5_cont_daily,
@@ -45,5 +48,6 @@ dirs = {"proj":proj,
         "era5_model_pers":era5_model_pers,
         "era5_percentile":era5_percentile,
         "era5_binary_daily":era5_binary_daily,
-        "calc_forecast_daily":calc_forecast_daily
+        "era5_binary_clim":era5_binary_clim,
+        "verify_forecast_daily":verify_forecast_daily
 }        
