@@ -16,7 +16,7 @@ domain            = 'europe'                 # europe/nordic/vestland
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                        # number of weeks with forecasts
 pval              = 0.9
-write2file        = True
+write2file        = False
 # -----------------------------
 
 # define stuff         
@@ -60,7 +60,7 @@ elif time_flag == 'timescale':
 ax.legend(frameon=False,ncol=4,fontsize=fontsize,loc='lower center')
 ax.axhline(y=0.0, color='k', linestyle='-',linewidth=0.75)
 ax.set_xticks(x)
-ax.set_xticklabels(['1/18','9/162','19/342','29/522','39/702','50/882'],fontsize=fontsize)
+ax.set_xticklabels(['1/18','9/162','19/342','29/522','39/702','49/882','59/1062'],fontsize=fontsize)
 ax.set_yticks(np.round(np.arange(-0.2,1.2,0.2),2))
 ax.set_yticklabels(np.round(np.arange(-0.2,1.2,0.2),2),fontsize=fontsize)
 ax.set_xlim([-2,52])

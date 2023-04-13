@@ -102,12 +102,12 @@ init_start        = '20210104'               # first initialization date of fore
 init_n            = 104                        # number of forecasts 
 grids             = ['0.25x0.25','0.5x0.5']            # '0.25x0.25' & '0.5x0.5'
 pval              = 0.9                      # percentile threshold
-NH                = np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
+NH                = np.array([1,9,19,29,39,49,59,69,79,89,99])  # neighborhood size in grid points per side
 ltime             = np.arange(1,16,1)  # forecast lead times to calculate
 nshuffle          = 10000                        # number of times to shuffle initialization dates for error bars
 nsample           = 50                        # number of sampled forecasts with replacement in each bootstrap member
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file
-write2file        = False
+write2file        = True
 # -----------------------------------------------------
 
 misc.tic()
