@@ -15,7 +15,7 @@ variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe/nordic/vestland                       
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                      # number of weeks with forecasts
-pval              = 0.9
+pval              = 0.95
 write2file        = True
 # -----------------------------
 
@@ -25,9 +25,9 @@ init_dates       = init_dates.strftime('%Y-%m-%d').values
 path_in          = config.dirs['verify_forecast_daily']
 path_out         = config.dirs['fig'] + 'ecmwf/forecast/daily/'
 filename_in      = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'pval_' + str(0.9) + '_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+                   'pval_' + str(pval) + '_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 figname_out      = 'cmap_' + time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'pval_' + str(0.9) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.pdf'
+                   'pval_' + str(pval) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.pdf'
 
 # read in data
 ds   = xr.open_dataset(path_in + filename_in)
