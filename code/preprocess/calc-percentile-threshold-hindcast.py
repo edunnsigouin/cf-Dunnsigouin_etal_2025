@@ -23,7 +23,6 @@ def init_percentile(variable,time,units,dim,pval):
 
 # input ----------------------------------------------
 variable      = 'rn24'                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-product       = 'hindcast'              # hindcast or forecast
 init_start    = '20210104'              # first initialization date of forecast (either a monday or thursday)   
 init_n        = 104                     # number of forecast initializations 
 grids         = ['0.25x0.25']           # '0.25x0.25' or '0.5x0.5'
@@ -48,8 +47,8 @@ for date in init_dates:
         datestring      = date.strftime('%Y-%m-%d')
         filename_in     = variable + '_' + grid + '_' + datestring + '.nc'
         filename_out    = 'xyt_percentile_' + variable + '_' + grid + '_' + datestring + '.nc'
-        path_in         = config.dirs[product + '_model_daily'] + variable + '/'
-        path_out        = config.dirs[product + '_percentile'] + variable + '/'
+        path_in         = config.dirs['hindcast_daily'] + variable + '/'
+        path_out        = config.dirs['hindcast_percentile'] + variable + '/'
         ds              = xr.open_dataset(path_in + filename_in)
 
         # calculate percentiles
@@ -63,5 +62,4 @@ for date in init_dates:
             s2s.to_netcdf_pack64bit(percentile,path_out + filename_out)
             s2s.compress_file(comp_lev,3,filename_out,path_out)
             
-
     misc.toc()

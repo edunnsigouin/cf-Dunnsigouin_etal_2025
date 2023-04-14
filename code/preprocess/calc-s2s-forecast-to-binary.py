@@ -38,9 +38,9 @@ misc.tic()
 # define stuff  
 init_dates   = s2s.get_init_dates(init_start,init_n)
 init_dates   = init_dates.strftime('%Y-%m-%d').values
-path_in_F    = config.dirs['forecast_model_daily'] + variable + '/'
+path_in_F    = config.dirs['forecast_daily'] + variable + '/'
 path_in_pval = config.dirs['hindcast_percentile'] + variable + '/'
-path_out     = config.dirs['forecast_binary_daily'] + variable + '/'
+path_out     = config.dirs['forecast_daily_binary'] + variable + '/'
 
 for grid in grids:
     for date in init_dates:

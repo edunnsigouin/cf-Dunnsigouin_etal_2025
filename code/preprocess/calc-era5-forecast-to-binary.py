@@ -50,13 +50,13 @@ misc.tic()
 # define stuff  
 init_dates   = s2s.get_init_dates(init_start,init_n)
 init_dates   = init_dates.strftime('%Y-%m-%d').values
-path_in_O    = config.dirs['era5_model_' + data_flag] + variable + '/'
+path_in_O    = config.dirs['era5_forecast_' + data_flag] + variable + '/'
 path_in_pval = config.dirs['era5_percentile'] + variable + '/'
-path_out     = config.dirs['era5_binary_' + data_flag] + variable + '/'
+path_out     = config.dirs['era5_forecast_' + data_flag + '_binary'] + variable + '/'
 
 for grid in grids:
 
-    # read in thresholds                                                                                                                                                                               
+    # read in thresholds 
     filename_pval = 'xyt_percentile_' + variable + '_' + grid + '_' + str(years[0]) + '-' + str(years[-1]) + '.nc'
     da_pval       = xr.open_dataset(path_in_pval + filename_pval)['percentile']
 

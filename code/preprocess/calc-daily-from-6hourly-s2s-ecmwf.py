@@ -43,7 +43,7 @@ for variable in variables:
             if variable == 'tp24': # daily accumulated precip (m)
 
                 path_in                          = config.dirs[product + '_6hourly'] + 'tp6/'
-                path_out                         = config.dirs[product + '_model_daily'] + variable + '/'
+                path_out                         = config.dirs[product + '_daily'] + variable + '/'
                 filename_in                      = 'tp6_' + basename + '.nc'
                 filename_out                     = variable + '_' + basename + '.nc'
                 ds                               = xr.open_dataset(path_in + filename_in)
@@ -71,7 +71,7 @@ for variable in variables:
 
                 path1_in                         = config.dirs[product + '_6hourly'] + 'tp6/'
                 path2_in                         = config.dirs[product + '_6hourly'] + 'sf6/'
-                path_out                         = config.dirs[product + '_model_daily'] + variable + '/'
+                path_out                         = config.dirs[product + '_daily'] + variable + '/'
                 filename1_in                     = 'tp6' + '_' + basename + '.nc'
                 filename2_in                     = 'sf6' + '_' + basename + '.nc'
                 filename_out                     = variable + '_' + basename + '.nc'
@@ -100,7 +100,7 @@ for variable in variables:
             elif variable == 'mx24tp6': # daily maximum 6 hour accumulated precip (m)
 
                 path_in                          = config.dirs[product + '_6hourly'] + 'tp6/'
-                path_out                         = config.dirs[product + '_model_daily'] + variable + '/'
+                path_out                         = config.dirs[product + '_daily'] + variable + '/'
                 filename_in                      = 'tp6' + '_' + basename + '.nc'
                 filename_out                     = variable + '_' + basename + '.nc'
                 ds                               = xr.open_dataset(path_in + filename_in)
@@ -123,7 +123,7 @@ for variable in variables:
 
                 path1_in                         = config.dirs[product + '_6hourly'] + 'tp6/'
                 path2_in                         = config.dirs[product + '_6hourly'] + 'sf6/'
-                path_out                         = config.dirs[product + '_model_daily'] + variable + '/'
+                path_out                         = config.dirs[product + '_daily'] + variable + '/'
                 
                 filename1_in                     = 'tp6_' + basename + '.nc'
                 filename2_in                     = 'sf6_' + basename + '.nc'
@@ -152,7 +152,7 @@ for variable in variables:
             elif variable == 'mx24tpr': # daily maximum timestep precipitation rate (kgm-2s-1)
 
                 path_in                             = config.dirs[product + '_6hourly'] + 'mxtpr/'
-                path_out                            = config.dirs[product + '_model_daily'] + variable + '/'
+                path_out                            = config.dirs[product + '_daily'] + variable + '/'
                 filename_in                         = 'mxtpr_' + basename + '.nc'
                 filename_out                        = variable + '_' + basename + '.nc'
                 ds                                  = xr.open_dataset(path_in + filename_in)
