@@ -22,8 +22,8 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product       = 'forecast' # forecast/vr_forecast
-init_start    = '20200702' # first initialization date of forecast (either a monday or thursday)
-init_n        = 53        # number of forecast initializations   
+init_start    = '20220630' # first initialization date of forecast (either a monday or thursday)
+init_n        = 1        # number of forecast initializations   
 grid          = '0.25/0.25' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var           = 'tp'
