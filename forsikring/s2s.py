@@ -230,7 +230,7 @@ def calc_msess_bootstrap(msess,msess_bs,RF_error,F_error,nshuffle,nsample,chunks
     F_mse          = (1/chunks.size)*F_error.sum(dim='chunks').values
     msess[:]       =  1 - F_mse/RF_mse
     for i in range(nshuffle):
-        # calc mean square error                                                                                                                                                           
+        # calc mean square error                          
         F_mse_bs = (1/chunks_random.size)*F_error.sel(chunks=chunks_random).sum(dim='chunks').values
         # calc msess
         msess_bs[:,i] =  1 - F_mse_bs/RF_mse
@@ -296,12 +296,10 @@ def time_2_timescale(ds,time_flag):
             temp4      = ds.sel(time=slice(8,15)).mean(dim='time')
             ds         = xr.concat([temp1,temp2,temp3,temp4],"time")
             ds['time'] = np.arange(1,5,1) 
-            ds         = ds.transpose("chunks",...)
         elif ds.time.size == 31:
             temp1      = ds.sel(time=slice(16,28)).mean(dim='time')
             temp2      = ds.sel(time=slice(29,46)).mean(dim='time')
             ds         = xr.concat([temp1,temp2],"time")
             ds['time'] = np.arange(1,3,1)
-            ds         = ds.transpose("chunks",...)
     return ds
 

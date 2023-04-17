@@ -49,15 +49,11 @@ def calc_percentile(da,pval,window,years):
 variables        = ['tp24']                 # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 years            = np.arange(2001,2021,1)   # years for climatology calculation
 grids            = ['0.25x0.25']            # '0.25x0.25' or '0.5x0.5'
-pval             = np.array([0.9]) # percentile values
+pval             = np.array([0.75,0.8,0.85,0.9,0.95,0.99]) # percentile values
 comp_lev         = 5                        # compression level for output file
 window           = 11                       # sample window in days around calendar day
 write2file       = False
 # ----------------------------------------------------
-
-def moving_average(x, w):
-    x = np.pad(x,pad_width=w-1,mode='constant',constant_values=(0.0, 0.0))[w-1:]
-    return np.convolve(x, np.ones(w), 'valid') / w
 
 for variable in variables:
     for grid in grids:
@@ -67,7 +63,7 @@ for variable in variables:
         # define stuff
         dim          = s2s.get_dim(grid,'time')
         path_in      = config.dirs['era5_cont_daily'] + variable + '/'
-        path_out     = config.dirs['era5_cont_percentile'] + variable + '/'
+        path_out     = config.dirs['era5_percentile'] + variable + '/'
         filename_out = 'xyt_percentile_' + variable + '_' + grid + '_' + str(years[0]) + '-' + str(years[-1]) + '.nc'
         
         # read files and remove leap year days
@@ -81,12 +77,6 @@ for variable in variables:
         with ProgressBar():
             da = da.compute().values
 
-        # aggregation step
-        print(da.shape)
-        averaging_period = 1 # need to loop over this
-        test = np.apply_along_axis(moving_average,0,da[:,0,0],averaging_period)
-        print(test.shape)
-"""        
         # calculate percentiles for each grid point
         percentile = init_percentile(variable,units,dim,pval,years[-1])
         for i in range(0,dim.nlongitude):
@@ -99,5 +89,5 @@ for variable in variables:
             s2s.compress_file(comp_lev,3,filename_out,path_out)
 
         misc.toc()
-"""
+
 

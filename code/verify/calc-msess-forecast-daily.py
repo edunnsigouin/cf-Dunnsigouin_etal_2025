@@ -108,7 +108,12 @@ for grid in grids:
     O  = xr.open_mfdataset(filenames_O,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable]
     F  = xr.open_mfdataset(filenames_F,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks').mean(dim='number')[variable] # ensemble mean
     RF = xr.open_mfdataset(filenames_RF,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable]
-    
+
+    # organize arrays so that chunks is first dimension
+    O  = O.transpose("chunks",...)
+    F  = F.transpose("chunks",...)
+    RF = RF.transpose("chunks",...)
+        
     # sub-select specific domain
     O  = O.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
     F  = F.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')

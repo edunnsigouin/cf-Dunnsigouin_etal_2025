@@ -156,6 +156,11 @@ for grid in grids:
         F  = xr.open_mfdataset(filenames_F,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable] # ensemble mean 
         RF = xr.open_mfdataset(filenames_RF,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable]
 
+        # organize arrays so that chunks is first dimension
+        O  = O.transpose("chunks",...)
+        F  = F.transpose("chunks",...)
+        RF = RF.transpose("chunks",...)
+        
         # sub-select specific domain, lead times and percentile threshold
         O  = O.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,pval=pval,method='nearest')
         F  = F.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,pval=pval,method='nearest')

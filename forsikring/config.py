@@ -21,6 +21,7 @@ hindcast_percentile   = processed + "cf-forsikring/ecmwf/hindcast/percentile/"
 
 era5_6hourly               = raw + "era5/6hourly/"
 era5_cont_daily            = processed + "cf-forsikring/era5/continuous-format/daily/"
+era5_cont_percentile       = processed + "cf-forsikring/era5/continuous-format/percentile/"
 era5_forecast_daily        = processed + "cf-forsikring/era5/model-format/forecast/daily/values/"
 era5_forecast_daily_binary = processed + "cf-forsikring/era5/model-format/forecast/daily/binary/"
 era5_forecast_clim         = processed + "cf-forsikring/era5/model-format/forecast/climatology/values/"
@@ -46,6 +47,7 @@ dirs = {"proj":proj,
         "hindcast_percentile":hindcast_percentile,
         "era5_6hourly":era5_6hourly,
         "era5_cont_daily":era5_cont_daily,
+        "era5_cont_percentile":era5_cont_percentile,
         "era5_forecast_daily":era5_forecast_daily,
         "era5_forecast_daily_binary":era5_forecast_daily_binary,
         "era5_forecast_clim":era5_forecast_clim,
