@@ -9,7 +9,6 @@ from dask.diagnostics  import ProgressBar
 from forsikring        import misc,s2s,config
 from scipy             import ndimage
 
-
 def init_percentile(variable,units,dim,pval,year):
     """ 
     Initializes output array used below.  
@@ -54,10 +53,10 @@ def calc_percentile(data,pval,window,years):
 # input ----------------------------------------------
 variables        = ['tp24']                 # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 years            = np.arange(2001,2021,1)   # years for climatology calculation
-grids            = ['0.25x0.25']            # '0.25x0.25' or '0.5x0.5'
+grids            = ['0.5x0.5']            # '0.25x0.25' or '0.5x0.5'
 pval             = np.array([0.75,0.8,0.85,0.9,0.95,0.99]) # percentile values
 comp_lev         = 5                        # compression level for output file
-aggregation      = 2
+aggregation      = 1
 window           = 11                       # sample window in days around calendar day
 write2file       = True
 # ----------------------------------------------------

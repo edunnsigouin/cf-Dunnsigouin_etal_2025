@@ -25,8 +25,8 @@ def init_percentile(variable,time,units,dim,pval):
 time_flag     = 'timescale'                # time or timescale
 variable      = 'tp24'                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 init_start    = '20210104'              # first initialization date of forecast (either a monday or thursday)   
-init_n        = 1                    # number of forecast initializations 
-grids         = ['0.25x0.25']           # '0.25x0.25' or '0.5x0.5'
+init_n        = 104                    # number of forecast initializations 
+grids         = ['0.25x0.25','0.5x0.5']           # '0.25x0.25' or '0.5x0.5'
 pval          = np.array([0.75,0.8,0.85,0.9,0.95,0.99]) # percentile values  
 comp_lev      = 5                       # level of compression with nccopy (1-10)
 write2file    = True
@@ -49,14 +49,12 @@ for grid in grids:
         path_in         = config.dirs['hindcast_daily'] + variable + '/'
         path_out        = config.dirs['hindcast_percentile'] + variable + '/'
         da              = xr.open_dataset(path_in + filename_in)[variable]
-
+        units           = da.attrs['units']
+        
         # convert time to timescale if applicable
-        if time_flag == 'timescale':
-            da['time'] = dim.time # convert time from datetime64 to integer (1-15 or 16-45)
-            da         = s2s.time_2_timescale(da,time_flag)
-
+        da = s2s.time_2_timescale(da,time_flag,datetime64=True)
+        
         # calculate percentiles
-        units               = da.attrs['units']
         time                = da.time
         da                  = da.stack(temp_index=("number", "hdate")) # form sample out of number and hdate dims
         percentile          = init_percentile(variable,time,units,dim,pval)
