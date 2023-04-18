@@ -293,7 +293,7 @@ def time_2_timescale(ds,time_flag):
             temp1      = ds.sel(time=2).drop_vars('time')
             temp2      = ds.sel(time=slice(3,4)).mean(dim='time')
             temp3      = ds.sel(time=slice(5,8)).mean(dim='time')
-            temp4      = ds.sel(time=slice(8,15)).mean(dim='time')
+            temp4      = ds.sel(time=slice(8,14)).mean(dim='time')
             ds         = xr.concat([temp1,temp2,temp3,temp4],"time")
             ds['time'] = np.arange(1,5,1) 
         elif ds.time.size == 31:
@@ -302,4 +302,5 @@ def time_2_timescale(ds,time_flag):
             ds         = xr.concat([temp1,temp2],"time")
             ds['time'] = np.arange(1,3,1)
     return ds
+
 
