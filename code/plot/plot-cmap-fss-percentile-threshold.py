@@ -7,15 +7,16 @@ import numpy     as np
 import xarray    as xr
 from matplotlib  import pyplot as plt
 from forsikring  import misc,s2s,config
+import matplotlib as mpl
 
 # INPUT -----------------------
 RF_flag           = 'clim'                   # clim or pers 
-time_flag         = 'time'                   # time or timescale
+time_flag         = 'time'              # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe/nordic/vestland                       
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                      # number of weeks with forecasts
-pval              = 0.95
+pval              = 0.75
 write2file        = True
 # -----------------------------
 
@@ -24,44 +25,60 @@ init_dates       = s2s.get_init_dates(init_start,init_n)
 init_dates       = init_dates.strftime('%Y-%m-%d').values
 path_in          = config.dirs['verify_forecast_daily']
 path_out         = config.dirs['fig'] + 'ecmwf/forecast/daily/'
-filename_in      = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'pval_' + str(pval) + '_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
-figname_out      = 'cmap_' + time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'pval_' + str(pval) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.pdf'
+if time_flag == 'timescale':
+    filename_in      = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
+        'pval_' + str(pval) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+else:
+    filename_in      = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
+        'pval_' + str(pval) + '_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+
+figname_out = 'cmap_' + time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
+    'pval_' + str(pval) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.pdf'
 
 # read in data
 ds   = xr.open_dataset(path_in + filename_in)
 fss  = ds['fss'].values
-sig  = (ds['fss_bs'].quantile(0.05,dim='number').values < 0).astype(np.int32) # when 5th percentile crosses zero
 x    = ds['neighborhood'].values
 t    = ds['time'].values
+
+# calculate significance
+temp = ds['fss_bs'].quantile(0.05,dim='number',skipna=True).values
+sig  = (temp < 0).astype(np.int32) # when 5th percentile crosses zero
+sig  = np.ma.masked_less(sig, 0.5)
+
+# mark where lr grid does not match hr grid (and so doesn't exist)
+sig2 = np.nan_to_num(fss,nan=1000.0)
+sig2  = np.ma.masked_less(sig2,100)
 ds.close()
 
 # plot 
 fontsize = 11
-clevs    = np.arange(-1.0,1.1,0.1)
+clevs    = np.arange(0.0, 1.1, 0.1)
 cmap     = 'RdBu_r'
 figsize  = np.array([4*1.61,4])
 fig,ax   = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
 
-if time_flag == 'time':
-    p = ax.contourf(t,x,fss,levels=clevs,cmap=cmap,extend='both')
-    ax.contour(t,x,fss,levels=clevs,colors='grey',linewidths=1.0)
-    ax.contourf(t,x,sig,levels=1,colors='none',hatches=["", "///"])
-    plt.rcParams['hatch.linewidth'] = 0.25
-    ax.set_xticks(t)
-    ax.set_xticklabels(t,fontsize=fontsize)
-    ax.set_xlabel(r'lead time [days]',fontsize=fontsize)
+p = ax.pcolor(t,x,fss,cmap=cmap,vmin=0.0,vmax=1.0)
+ax.pcolor(t, x, sig, hatch='//',cmap=mpl.colors.ListedColormap(['none']),edgecolor=[0.8,0.8,0.8],lw=0)
+ax.pcolor(t, x, sig2, hatch='..',cmap=mpl.colors.ListedColormap(['none']),edgecolor=[0.8,0.8,0.8],lw=0)
 
+if time_flag == 'time':
+    ax.set_xticks(t)
+    ax.set_xticklabels(['1','','','','5','','','','','10','','','','','15'],fontsize=fontsize)
+    ax.set_xlabel(r'lead time [days]',fontsize=fontsize)
 elif time_flag == 'timescale':
-    print('needs to be coded..')
-    
-cb = fig.colorbar(p, ax=ax, orientation='vertical',ticks=clevs[0::2],pad=0.025,aspect=15)
+    ax.set_xticks(t)
+    ax.set_xticklabels(['1d1d','2d2d','4d4d','1w1w','2w2w','4w3w'],fontsize=fontsize)
+    ax.set_xlabel(r'lead time [timescale]',fontsize=fontsize)
+
+ax.set_yticks(x)
+ax.set_yticklabels(['0.25/18','2.25/162','4.75/342','7.25/522','9.75/702','12.25/882','14.75/1062'],fontsize=fontsize)
+ax.set_ylabel(r'spatial scale [degrees$^{\circ}$/km$^2$]',fontsize=fontsize)
+
+cb = fig.colorbar(p, ax=ax, orientation='vertical',ticks=clevs[::2],pad=0.025,aspect=15)
 cb.ax.set_title('fss',fontsize=fontsize)
 cb.ax.tick_params(labelsize=fontsize,size=0)
-ax.set_yticks(x)
-ax.set_yticklabels(['1/18','9/162','19/342','29/522','39/702','49/882','59/1062'],fontsize=fontsize)
-ax.set_ylabel(r'spatial scale [grid points/km$^2$]',fontsize=fontsize)
+
 
 plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)

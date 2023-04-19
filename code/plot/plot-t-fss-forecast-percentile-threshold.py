@@ -10,7 +10,7 @@ from forsikring  import misc,s2s,config
 
 # INPUT -----------------------
 RF_flag           = 'clim'                   # clim or pers 
-time_flag         = 'time'                   # time or timescale
+time_flag         = 'timescale'                   # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe/nordic/vestland                       
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
