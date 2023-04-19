@@ -17,7 +17,7 @@ from dask.diagnostics  import ProgressBar
 from forsikring        import misc,s2s,config
 import random
 from matplotlib        import pyplot as plt
-
+from functools         import partial
 
 def init_frac(dim,NH,chunks):
     """
@@ -50,28 +50,10 @@ def init_fss(dim,NH,nshuffle):
     fss_bs    = xr.DataArray(data=data_bs,dims=dims_bs,coords=coords_bs,attrs=attrs_bs,name=name_bs)
     return fss,fss_bs
 
-def subselect_dim(dim,domain,ltime,grid,NH,time_flag):
+def subselect_time_and_neighborhood_from_dim(dim,ltime,grid,NH,time_flag):
     """ 
     kitchen sink function to sub-select appropriate data  
     """
-    # subselect lat-lon grid given domain and grid resolution
-    if grid == '0.25x0.25':
-        if domain == 'nordic':
-            dim.latitude   = np.flip(np.arange(53,73.75,0.25))
-            dim.longitude  = np.arange(0,35.25,0.25)
-        elif domain == 'vestland':
-            dim.latitude   = np.flip(np.arange(59,62.75,0.25))
-            dim.longitude  = np.arange(4,8.75,0.25)
-    elif grid == '0.5x0.5':
-        if domain == 'nordic':
-            dim.latitude   = np.flip(np.arange(53,74,0.5))
-            dim.longitude  = np.arange(0,35.5,0.5)
-        elif domain == 'vestland':
-            dim.latitude   = np.flip(np.arange(59,63,0.5))
-            dim.longitude  = np.arange(4,9,0.5)
-    dim.nlatitude  = dim.latitude.size
-    dim.nlongitude = dim.longitude.size
-
     # specify selected lead times if lead times are daily (not timescale)
     # also subselect lead times corresponding to grid resolution
     if time_flag == 'time':
@@ -95,13 +77,13 @@ def subselect_dim(dim,domain,ltime,grid,NH,time_flag):
 
 # INPUT -----------------------------------------------
 RF_flag           = 'clim'                   # clim or pers
-time_flag         = 'time'                   # time or timescale
+time_flag         = 'timescale'                   # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe or norway only?
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                        # number of forecasts 
 grids             = ['0.25x0.25','0.5x0.5']            # '0.25x0.25' & '0.5x0.5'
-pval              = 0.95                      # percentile threshold
+pval              = 0.90                      # percentile threshold
 NH                = np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
 ltime             = np.arange(1,16,1)  # forecast lead times to calculate
 nshuffle          = 10000                        # number of times to shuffle initialization dates for error bars
@@ -136,7 +118,8 @@ for grid in grids:
 
     # kitchen sink function to sub-select appropriate data dimensions
     # given input options above
-    [dim,NH_grid] = subselect_dim(dim,domain,ltime,grid,NH,time_flag)
+    dim           = misc.subselect_xy_domain_from_dim(dim,domain,grid)
+    [dim,NH_grid] = subselect_time_and_neighborhood_from_dim(dim,ltime,grid,NH,time_flag)
 
     if dim.time.size > 0: # only calc stuff if lead time is in lr or hr data
 
@@ -146,30 +129,23 @@ for grid in grids:
         F_frac       = init_frac(dim,NH_grid,chunks)
         RF_frac      = init_frac(dim,NH_grid,chunks)
 
-        # define input filenames
-        filenames_O  =  path_in_O + variable + '_' + grid + '_' + init_dates + '.nc'
-        filenames_F  =  path_in_F + variable + '_' + grid + '_' + init_dates + '.nc'
-        filenames_RF =  path_in_RF + variable + '_' + grid + '_' + init_dates + '.nc'
-
-        # read in files to dataarray
-        O  = xr.open_mfdataset(filenames_O,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable]
-        F  = xr.open_mfdataset(filenames_F,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable] # ensemble mean 
-        RF = xr.open_mfdataset(filenames_RF,preprocess=s2s.preprocess,combine='nested',concat_dim='chunks')[variable]
-
-        # organize arrays so that chunks is first dimension
-        O  = O.transpose("chunks",...)
-        F  = F.transpose("chunks",...)
-        RF = RF.transpose("chunks",...)
+        # define input filenames of binary data
+        filenames_O  =  path_in_O + variable + '_' + time_flag + '_' + grid + '_' + init_dates + '.nc'
+        filenames_F  =  path_in_F + variable + '_' + time_flag + '_' + grid + '_' + init_dates + '.nc'
+        filenames_RF =  path_in_RF + variable + '_' + time_flag + '_' + grid + '_' + init_dates + '.nc'
         
+        # read in files to dataarray
+        # use partial_func here to allow preprocess function to accept extra input params like 'grid'.
+        # see mfopen_dataset documentation.
+        partial_func = partial(s2s.preprocess,grid=grid,time_flag=time_flag) 
+        O            = xr.open_mfdataset(filenames_O,preprocess=partial_func,combine='nested',concat_dim='chunks')[variable]
+        F            = xr.open_mfdataset(filenames_F,preprocess=partial_func,combine='nested',concat_dim='chunks')[variable] 
+        RF           = xr.open_mfdataset(filenames_RF,preprocess=partial_func,combine='nested',concat_dim='chunks')[variable]
+
         # sub-select specific domain, lead times and percentile threshold
         O  = O.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,pval=pval,method='nearest')
         F  = F.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,pval=pval,method='nearest')
         RF = RF.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,pval=pval,method='nearest')
-
-        # resample time into timescales if required 
-        O  = s2s.time_2_timescale(O,time_flag)
-        F  = s2s.time_2_timescale(F,time_flag)
-        RF = s2s.time_2_timescale(RF,time_flag)
 
         # calculate dask arrays explicitely
         print('reading & postprocessing input data..')

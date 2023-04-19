@@ -24,10 +24,10 @@ def init_binary(variable,dim,time,pvals):
     return binary
 
 # INPUT -----------------------------------------------
-time_flag         = 'time'              # time or timescale
+time_flag         = 'timescale'              # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
-init_n            = 1                        # number of forecasts 
+init_n            = 104                        # number of forecasts 
 grids             = ['0.25x0.25','0.5x0.5']            # '0.25x0.25' & '0.5x0.5'
 pvals             = np.array([0.75,0.8,0.85,0.9,0.95,0.99]) # percentile thresholds
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file

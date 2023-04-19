@@ -273,12 +273,18 @@ def calc_fss_RL08MWR(O,F,RF,method):
 
 
 
-def preprocess(ds):
+def preprocess(ds,grid,time_flag):
     '''change time dim from calendar dates to numbers'''
-    if ds.time.size == 15:
-        ds['time'] = np.arange(1,ds.time.size+1,1) # high resolution lead times
-    elif ds.time.size == 31:
-        ds['time'] = np.arange(16,47,1) # low resolution lead times
+    if time_flag == 'time':
+        if grid == '0.25x0.25':
+            ds['time'] = np.arange(1,16,1) 
+        elif grid == '0.5x0.5':
+            ds['time'] = np.arange(16,47,1) 
+    elif time_flag == 'timescale':
+        if grid == '0.25x0.25':
+            ds['time'] = np.arange(1,5,1)
+        elif grid == '0.5x0.5':
+            ds['time'] = np.arange(1,3,1)
     return ds
 
 
