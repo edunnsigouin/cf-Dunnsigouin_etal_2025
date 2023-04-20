@@ -11,12 +11,12 @@ import matplotlib as mpl
 
 # INPUT -----------------------
 RF_flag           = 'clim'                   # clim or pers 
-time_flag         = 'time'              # time or timescale
+time_flag         = 'timescale'              # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe/nordic/vestland                       
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                      # number of weeks with forecasts
-pval              = 0.75
+pval              = 0.99
 write2file        = True
 # -----------------------------
 
@@ -46,21 +46,16 @@ temp = ds['fss_bs'].quantile(0.05,dim='number',skipna=True).values
 sig  = (temp < 0).astype(np.int32) # when 5th percentile crosses zero
 sig  = np.ma.masked_less(sig, 0.5)
 
-# mark where lr grid does not match hr grid (and so doesn't exist)
-sig2 = np.nan_to_num(fss,nan=1000.0)
-sig2  = np.ma.masked_less(sig2,100)
-ds.close()
-
 # plot 
 fontsize = 11
 clevs    = np.arange(0.0, 1.1, 0.1)
-cmap     = 'RdBu_r'
+cmap     = mpl.cm.get_cmap("RdBu_r").copy()
+cmap.set_bad(color=[0.8,0.8,0.8]) # set nans to specified color
 figsize  = np.array([4*1.61,4])
 fig,ax   = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
 
-p = ax.pcolor(t,x,fss,cmap=cmap,vmin=0.0,vmax=1.0)
+p = ax.pcolormesh(t,x,fss,cmap=cmap,vmin=0.0,vmax=1.0)
 ax.pcolor(t, x, sig, hatch='//',cmap=mpl.colors.ListedColormap(['none']),edgecolor=[0.8,0.8,0.8],lw=0)
-ax.pcolor(t, x, sig2, hatch='..',cmap=mpl.colors.ListedColormap(['none']),edgecolor=[0.8,0.8,0.8],lw=0)
 
 if time_flag == 'time':
     ax.set_xticks(t)
