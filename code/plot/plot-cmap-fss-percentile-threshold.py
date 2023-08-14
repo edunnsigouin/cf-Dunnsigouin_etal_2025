@@ -13,10 +13,10 @@ import matplotlib as mpl
 RF_flag           = 'clim'                   # clim or pers 
 time_flag         = 'timescale'              # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domain            = 'europe'                 # europe/nordic/vestland                       
+domain            = 'nordic'                 # europe/nordic/vestland                       
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                      # number of weeks with forecasts
-pval              = 0.99
+pval              = 0.95
 write2file        = True
 # -----------------------------
 

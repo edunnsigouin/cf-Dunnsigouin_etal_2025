@@ -26,12 +26,12 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product       = 'hindcast' # hindcast/vr_hindcast
-init_start    = '20210527' # first initialization date of forecast (either a monday or thursday)
-init_n        = 1          # number of forecast initializations      
+init_start    = '20210701' # first initialization date of forecast (either a monday or thursday)
+init_n        = 53          # number of forecast initializations      
 nhdates       = 20 # number of hindcast years  
 grid          = '0.5/0.5' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var           = 'sf'
+var           = 't2m'
 comp_lev      = 5 # file compression level
 write2file    = True
 # -----------------------------------------
@@ -72,7 +72,10 @@ elif var == 'sf': # snowfall per 6 hours (m)
         param = '144.230' # note different variable for variable resolution
 elif var == 'mx6tpr': # maximum 6-hourly precipitation rate after last post-processing (kgm-2s-1)
     param = '226.228'
+elif var =='t2m': # 2 meter temperature
+    param = '167.128'
 
+    
 # populate API dictionary
 dic1 = {
     'class': 'od',

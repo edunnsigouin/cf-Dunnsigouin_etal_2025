@@ -21,7 +21,7 @@ area       = '73.5/-27/33/45' # or 'E' for europe
 grid       = '0.25/0.25' # '0.25/0.25' or '0.5/0.5'
 variables  = ['sf6','mx6tpr'] # tp6,sf6,mx6tpr
 date_start = '2022-01-01'
-date_end   = '2022-10-01'
+date_end   = '2023-02-28'
 comp_lev   = 5 # file compression level
 write2file = True
 # -----------------------------------------------------
@@ -126,7 +126,7 @@ for variable in variables:
                                 ds = ds.compute()
                         ds.to_netcdf(path + filename_out)
                         ds.close()
-                        os.system('rm ' + path + filenames)
+                        #os.system('rm ' + path + filenames)
 
                         print('compress files to reduce space..')
                         print('')

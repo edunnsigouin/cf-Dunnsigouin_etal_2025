@@ -15,7 +15,6 @@ def tic():
     startTime_for_tictoc = time.time()
     return
 
-
 def toc():
     """
     matlab style toc function
@@ -25,7 +24,6 @@ def toc():
     else:
         print("Toc: start time not set")
     return
-
 
 def xy_mean(ds):
     """ 
@@ -37,13 +35,11 @@ def xy_mean(ds):
     ds      = ds.weighted(weights).mean(dim=('latitude','longitude'))
     return ds        
 
-
 def rm_lpyr_days(data):
     """ 
     removes leap-year days from daily xrray dataset
     """
     return data.sel(time=~((data.time.dt.month == 2) & (data.time.dt.day == 29)))
-
 
 def get_season(ds,season):
     """
@@ -60,7 +56,6 @@ def get_season(ds,season):
     elif season == 'son': index = (months >= 9) & (months <= 11)
     elif season == 'jfm': index = (months >= 1) & (months <= 3)
     return ds.sel(time=index)
-
 
 def subselect_xy_domain_from_dim(dim,domain,grid):
     """  
@@ -83,3 +78,4 @@ def subselect_xy_domain_from_dim(dim,domain,grid):
     dim.nlatitude  = dim.latitude.size
     dim.nlongitude = dim.longitude.size
     return dim
+

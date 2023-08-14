@@ -19,6 +19,9 @@ hindcast_6hourly      = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
 hindcast_daily        = processed + "cf-forsikring/ecmwf/hindcast/daily/"
 hindcast_percentile   = processed + "cf-forsikring/ecmwf/hindcast/percentile/"
 
+hindcast_monthly      = raw + "seasonal/ecmwf/hindcast/monthly/"
+forecast_monthly      =	raw + "seasonal/ecmwf/forecast/monthly/"
+
 era5_6hourly               = raw + "era5/6hourly/"
 era5_cont_daily            = processed + "cf-forsikring/era5/continuous-format/daily/"
 era5_cont_percentile       = processed + "cf-forsikring/era5/continuous-format/percentile/"
@@ -45,6 +48,8 @@ dirs = {"proj":proj,
         "hindcast_6hourly":hindcast_6hourly,
         "hindcast_daily":hindcast_daily,
         "hindcast_percentile":hindcast_percentile,
+        "hindcast_monthly":hindcast_monthly,
+        "forecast_monthly":forecast_monthly,
         "era5_6hourly":era5_6hourly,
         "era5_cont_daily":era5_cont_daily,
         "era5_cont_percentile":era5_cont_percentile,

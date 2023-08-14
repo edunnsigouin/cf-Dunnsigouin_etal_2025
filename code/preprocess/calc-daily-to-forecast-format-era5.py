@@ -16,12 +16,12 @@ import os
 from forsikring import config,misc,s2s
 
 # INPUT -----------------------------------------------
-variables        = ['mx24tpr']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-init_start       = '20210104'              # first initialization date of forecast (either a monday or thursday)
-init_n           = 104                     # number of forecasts   
+variables        = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+init_start       = '20220103'              # first initialization date of forecast (either a monday or thursday)
+init_n           = 104                    # number of forecasts   
 grids            = ['0.25x0.25']           # '0.25x0.25' or '0.5x0.5'
 comp_lev         = 5
-write2file       = False
+write2file       = True
 # -----------------------------------------------------         
 
 # get all dates for monday and thursday forecast initializations 

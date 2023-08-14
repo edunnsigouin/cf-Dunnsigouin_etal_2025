@@ -21,14 +21,14 @@ from datetime                    import datetime
 from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
-product       = 'forecast' # forecast/vr_forecast
-init_start    = '20220630' # first initialization date of forecast (either a monday or thursday)
-init_n        = 1        # number of forecast initializations   
-grid          = '0.25/0.25' # degree lat/lon resolution
+product       = 'vr_forecast' # forecast/vr_forecast
+init_start    = '20210114' # first initialization date of forecast (either a monday or thursday)
+init_n        = 104        # number of forecast initializations   
+grid          = '0.5/0.5' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var           = 'tp'
+var           = 't2m'
 comp_lev      = 5 # file compression level
-write2file    = True
+write2file    = False
 # -----------------------------------------
 
 # initialize mars server
@@ -67,6 +67,8 @@ elif var == 'sf': # snowfall per 6 hours (m)
         param = '144.230' # note different variable for variable resolution
 elif var == 'mx6tpr': # maximum 6-hourly precipitation rate after last post-processing (kgm-2s-1)
     param = '226.228'
+elif var =='t2m': # 2 meter temperature
+    param = '167.128'
 
 # populate API dictionary
 dic = {

@@ -77,13 +77,13 @@ def subselect_time_and_neighborhood_from_dim(dim,ltime,grid,NH,time_flag):
 
 # INPUT -----------------------------------------------
 RF_flag           = 'clim'                   # clim or pers
-time_flag         = 'time'                   # time or timescale
+time_flag         = 'timescale'                   # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domain            = 'europe'                 # europe or norway only?
+domain            = 'nordic'                 # europe or norway only?
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                        # number of forecasts 
 grids             = ['0.25x0.25','0.5x0.5']            # '0.25x0.25' & '0.5x0.5'
-pval              = 0.99                      # percentile threshold
+pval              = 0.95                      # percentile threshold
 NH                = np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
 ltime             = np.arange(1,16,1)  # forecast lead times to calculate
 nshuffle          = 10000                        # number of times to shuffle initialization dates for error bars
