@@ -1,6 +1,11 @@
 """
 Downloads seas5.1 monthly seasonal hindcast data produced 
 by ecmwf from the copernicus data store 
+
+NOTE: When downloading total precipitation, the units are m/s. You need to 
+multiply the values by the number of seconds in a month to get m units as
+shown here:
+https://confluence.ecmwf.int/pages/viewpage.action?pageId=197702790
 """
 
 import numpy  as np
@@ -43,11 +48,12 @@ def seconds_in_month(date_string,leadtime_months):
 
 # INPUT -----------------------------------------------
 area            = '74/-27/33/45' # or 'E' for europe
-variables       = ['tp'] 
-data_type       = 'hindcast' # forecast or hindcast
-years           = np.arange(2017,2018,1)
-months          = np.arange(1,3,1)
-leadtime_months = np.arange(1,3,1)
+variables       = ['tp','t2m'] 
+data_type       = 'forecast' # forecast or hindcast
+system          = '51' # model version (4,5 or 51)
+years           = np.arange(2017,2023,1)
+months          = np.arange(1,13,1)
+leadtime_months = np.arange(1,7,1)
 comp_lev        = 5 # file compression level
 write2file      = True
 # -----------------------------------------------------
@@ -74,8 +80,8 @@ for variable in variables:
         dic = {
                 'format':'grib',
                 'originating_centre':'ecmwf',
-                'system':'51',
-                'product_type':'hindcast_climate_mean',
+                'system':system,
+                'product_type':'monthly_mean',
                 'year':[str(year)],
                 'month':months_string,
                 'leadtime_month':leadtime_months_string,
@@ -97,28 +103,29 @@ for variable in variables:
                 # read in data 
                 ds = xr.open_dataset(path+filename_grib, engine='cfgrib', backend_kwargs=dict(time_dims=('forecastMonth', 'time')))
 
-                # ensemble mean
-                ds = ds.mean(dim='number')
-                ds = ds.drop('surface')
-
                 # modify metadata
                 if variable == 'tp':
                         # rename stuff
                         ds                              = ds.rename({'tprate':variable})
                         ds[variable].attrs['long_name'] = 'total accumulated monthly precipitation'
                         ds[variable].attrs['units']     = 'm'
-
+                        ds                              = ds.drop('surface')
+                        del ds[variable].attrs['GRIB_name']
+                        del ds[variable].attrs['GRIB_shortName']
+                        del ds[variable].attrs['GRIB_units']
+                        
                         # units => m/s to m
                         for t in range(0,ds['time'].size): # initialization dates
                                 date_string = str(ds['time'][t].values)[:10]
                                 seconds     = seconds_in_month(date_string,leadtime_months)
                                 for lt in range(0,leadtime_months.size): # lead times
-                                        ds[variable][lt,t,:,:] = ds[variable][lt,t,:,:]*seconds[lt]
+                                        ds[variable][:,lt,t,:,:] = ds[variable][:,lt,t,:,:]*seconds[lt]
                                         
                 if variable == 't2m':
                         ds[variable].attrs['long_name'] = '2m temperature'
                         ds[variable].attrs['units']     = 'K'
-
+                        ds                              = ds.drop('surface')
+                        
                 # write to file
                 ds.to_netcdf(path+filename_nc)
                 os.system('rm ' + path + filename_grib)
@@ -126,6 +133,6 @@ for variable in variables:
                 
                 # compress netcdf
                 s2s.compress_file(comp_lev,3,filename_nc,path)     
-
+                
 
                 
