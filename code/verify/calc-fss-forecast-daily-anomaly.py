@@ -2,7 +2,7 @@
 Calculates the fractional skill score as a function of                                                                                                        
 lead time and neighborhood size for ecmwf forecasts. 
 
-Reference forecast os era5 climatology. Verification is era5. 
+Reference forecast is era5 climatology. Verification is era5. 
 
 Code includes bootstrapping of 
 forecast mse to put error bars on fss. 
@@ -14,7 +14,8 @@ NOTE: Here I don't need to read in reference era5 clim forecast
 because when using anomalies, the equation fss = 1 - mse_forecast/mse_reference
 simplifies to fss = 1 - mse_forecast/variance(obs). This is not the case for binary
 data where mse_reference = (obs - obs_clim)**2 does not equal obs**2. This is because of 
-the clim mean can be higher than certain percentile thresholds (e.g. 75).  
+the clim mean can be higher than certain percentile thresholds (e.g. 75). 
+See chapter 5.4.2 of Joliffe and Stephenson text book  
 """
 
 import numpy  as np
@@ -84,19 +85,18 @@ def subselect_time_and_neighborhood_from_dim(dim,ltime,grid,NH,time_flag):
 
 # INPUT -----------------------------------------------
 RF_flag           = 'clim'                   # clim or pers
-time_flag         = 'timescale'                   # time or timescale
+time_flag         = 'time'                   # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domain            = 'nordic'                 # europe or norway only?
+domain            = 'europe'                 # europe or norway only?
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
-init_n            = 104                        # number of forecasts 
-grids             = ['0.25x0.25','0.5x0.5']            # '0.25x0.25' & '0.5x0.5'
-pval              = 0.95                      # percentile threshold
+init_n            = 2                      # number of forecasts 
+grids             = ['0.25x0.25']            # '0.25x0.25' & '0.5x0.5'
 NH                = np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
 ltime             = np.arange(1,16,1)  # forecast lead times to calculate
 nshuffle          = 10000                        # number of times to shuffle initialization dates for error bars
 nsample           = 50                        # number of sampled forecasts with replacement in each bootstrap member
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file
-write2file        = True
+write2file        = False
 # -----------------------------------------------------
 
 misc.tic()
@@ -105,16 +105,16 @@ misc.tic()
 init_dates       = s2s.get_init_dates(init_start,init_n)
 init_dates       = init_dates.strftime('%Y-%m-%d').values
 chunks           = np.arange(0,init_n,1)
-path_in_F        = config.dirs['forecast_daily_binary'] + variable + '/'
-path_in_O        = config.dirs['era5_forecast_daily_binary'] + variable + '/'
-path_in_RF       = config.dirs['era5_forecast_' + RF_flag + '_binary'] + variable + '/'
+path_in_F        = config.dirs['forecast_daily_anomaly'] + variable + '/'
+path_in_O        = config.dirs['era5_forecast_anomaly'] + variable + '/'
 path_out         = config.dirs['verify_forecast_daily']
+
 filename_hr_out  = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'pval_' + str(pval) + '_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+                   'anomaly_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 filename_lr_out  = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'pval_' + str(pval) + '_0.5x0.5_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+                   'anomaly_0.5x0.5_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 filename_out     = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'pval_' + str(pval) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+                   'anomaly_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 
 for grid in grids:
 
@@ -134,12 +134,10 @@ for grid in grids:
         [fss,fss_bs] = init_fss(dim,NH_grid,nshuffle)
         O_frac       = init_frac(dim,NH_grid,chunks)
         F_frac       = init_frac(dim,NH_grid,chunks)
-        RF_frac      = init_frac(dim,NH_grid,chunks)
 
         # define input filenames of binary data
         filenames_O  =  path_in_O + variable + '_' + time_flag + '_' + grid + '_' + init_dates + '.nc'
         filenames_F  =  path_in_F + variable + '_' + time_flag + '_' + grid + '_' + init_dates + '.nc'
-        filenames_RF =  path_in_RF + variable + '_' + time_flag + '_' + grid + '_' + init_dates + '.nc'
         
         # read in files to dataarray
         # use partial_func here to allow preprocess function to accept extra input params like 'grid'.
@@ -147,19 +145,16 @@ for grid in grids:
         partial_func = partial(s2s.preprocess,grid=grid,time_flag=time_flag) 
         O            = xr.open_mfdataset(filenames_O,preprocess=partial_func,combine='nested',concat_dim='chunks')[variable]
         F            = xr.open_mfdataset(filenames_F,preprocess=partial_func,combine='nested',concat_dim='chunks')[variable] 
-        RF           = xr.open_mfdataset(filenames_RF,preprocess=partial_func,combine='nested',concat_dim='chunks')[variable]
 
         # sub-select specific domain, lead times and percentile threshold
-        O  = O.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,pval=pval,method='nearest')
-        F  = F.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,pval=pval,method='nearest')
-        RF = RF.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,pval=pval,method='nearest')
+        O  = O.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
+        F  = F.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
 
         # calculate dask arrays explicitely
         print('reading & postprocessing input data..')
         with ProgressBar():
             O  = O.compute()
             F  = F.compute()
-            RF = RF.compute()
 
         # calculate fractions
         # Should there be a cosine weighting when applying filter in y?
@@ -168,16 +163,14 @@ for grid in grids:
         print('calculating forecast fractions...')
         F_frac[:,:,:,:,:]  = s2s.calc_frac_RL08MWR(NH_grid,F)
         print('calculating reference forecast fractions...')
-        RF_frac[:,:,:,:,:] = s2s.calc_frac_RL08MWR(NH_grid,RF)
     
         O.close()
         F.close()
-        RF.close()
 
         print('calculating errors..')
         # calc squared error for all forecasts individually 
         F_error  = (F_frac - O_frac)**2
-        RF_error = (RF_frac - O_frac)**2
+        RF_error = (O_frac)**2
 
         # weighted spatial (x,y) mean
         F_error  = misc.xy_mean(F_error)

@@ -1,6 +1,6 @@
 """
 Plots an example of the fraction skill score calculated 
-for one forecast with one threshold for tp24
+for anomalous forecasts 
 """
 
 import numpy     as np
@@ -11,12 +11,11 @@ import matplotlib as mpl
 
 # INPUT -----------------------
 RF_flag           = 'clim'                   # clim or pers 
-time_flag         = 'timescale'              # time or timescale
+time_flag         = 'time'              # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domain            = 'nordic'                 # europe/nordic/vestland                       
+domain            = 'europe'                 # europe/nordic/vestland                       
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                      # number of weeks with forecasts
-pval              = 0.95
 write2file        = True
 # -----------------------------
 
@@ -27,13 +26,13 @@ path_in          = config.dirs['verify_forecast_daily']
 path_out         = config.dirs['fig'] + 'ecmwf/forecast/daily/'
 if time_flag == 'timescale':
     filename_in      = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-        'pval_' + str(pval) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+        'anomaly_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 else:
     filename_in      = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-        'pval_' + str(pval) + '_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
+        'anomaly_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 
 figname_out = 'cmap_' + time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-    'pval_' + str(pval) + '_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.pdf'
+    'anomaly_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.pdf'
 
 # read in data
 ds   = xr.open_dataset(path_in + filename_in)

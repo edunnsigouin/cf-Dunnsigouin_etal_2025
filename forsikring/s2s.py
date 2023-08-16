@@ -180,7 +180,7 @@ def convert_2_binary_RL08MWR(data,threshold):
 def calc_frac_RL08MWR(NH,da):
     """
     Generates fractions following equations 2 and 3 from 
-    Roberts and Lean 2008 MWR given binary input data.
+    Roberts and Lean 2008 MWR.
     Specifically, smooths 2D x,y fields using a boxcar smoother. 
     Here, last two dimensions of 'da' are latitude and longitude.
     Note: only performs calculation on odd sized neighborhoods
