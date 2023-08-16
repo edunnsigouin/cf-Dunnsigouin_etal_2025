@@ -22,9 +22,9 @@ variables        = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 years            = np.arange(2001,2021,1)  # years for climatology calculation
 init_start       = '20210104' # first initialization date of forecast (either a monday or thursday)  
 init_n           = 104        # number of forecast initializations 
-grids            = ['0.25x0.25']          # '0.25x0.25' or '0.5x0.5'
+grids            = ['0.25x0.25','0.5x0.5']          # '0.25x0.25' or '0.5x0.5'
 comp_lev         = 5
-write2file       = False
+write2file       = True
 # -----------------------------------------------------         
 
 # get all dates for monday and thursday forecast initializations
@@ -63,6 +63,23 @@ for variable in variables:
                 ds         = ds_clim.sel(time=era5_dates)
                 ds['time'] = pd.date_range(date,periods=31,freq="D") + np.timedelta64(15,'D') # make dates correspond to forecast for convenience later on
                 
+            # modify metadata
+            if variable == 'tp24':
+                ds[variable].attrs['units']     = 'm'
+                ds[variable].attrs['long_name'] = 'climatological mean daily accumulated precipitation'
+            if variable == 'rn24':
+                ds[variable].attrs['units']     = 'm'
+                ds[variable].attrs['long_name'] = 'climatological mean daily accumulated rainfall'
+            if variable == 'mx24tpr':
+                ds[variable].attrs['units']     = 'kg m**-2 s**-1'
+                ds[variable].attrs['long_name'] = 'climatological mean daily maximum timestep precipitation rate'
+            if variable == 'mx24tp6':
+                ds[variable].attrs['units']     = 'm'
+                ds[variable].attrs['long_name'] = 'climatological mean daily maximum 6 hour accumulated precipitation'
+            if variable == 'mx24rn6':
+                ds[variable].attrs['units']     = 'm'
+                ds[variable].attrs['long_name'] = 'climatological mean daily maximum 6 hour accumulated rainfall'
+            
             if write2file:
                 print('writing to file..')
                 filename_out = '%s_%s_%s.nc'%(variable,grid,datestring)
@@ -72,6 +89,5 @@ for variable in variables:
                 print('')
 
             ds.close()
-        
         ds_clim.close()
 

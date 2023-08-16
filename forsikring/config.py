@@ -11,9 +11,10 @@ raw                  = cf_space + "raw/"
 processed            = cf_space + "processed/"
 verify               = cf_space + "verify/"
 
-forecast_6hourly      = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
-forecast_daily        = processed + "cf-forsikring/ecmwf/forecast/daily/values/"
-forecast_daily_binary = processed + "cf-forsikring/ecmwf/forecast/daily/binary/"
+forecast_6hourly       = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
+forecast_daily         = processed + "cf-forsikring/ecmwf/forecast/daily/values/"
+forecast_daily_binary  = processed + "cf-forsikring/ecmwf/forecast/daily/binary/"
+forecast_daily_anomaly = processed + "cf-forsikring/ecmwf/forecast/daily/anomaly/"
 
 hindcast_6hourly      = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
 hindcast_daily        = processed + "cf-forsikring/ecmwf/hindcast/daily/"
@@ -47,6 +48,7 @@ dirs = {"proj":proj,
         "forecast_6hourly":forecast_6hourly,
         "forecast_daily":forecast_daily,
         "forecast_daily_binary":forecast_daily_binary,
+        "forecast_daily_anomaly":forecast_daily_anomaly,
         "hindcast_6hourly":hindcast_6hourly,
         "hindcast_daily":hindcast_daily,
         "hindcast_percentile":hindcast_percentile,

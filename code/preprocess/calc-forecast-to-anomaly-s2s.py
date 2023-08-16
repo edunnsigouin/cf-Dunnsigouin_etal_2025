@@ -1,17 +1,6 @@
 """
-Converts era5 model format data into anomaly relative
-to climatological mean derived from previous years
-e.g., converts era5 model format data (lead time,lat,lon) for year 2021
-into anomaly derived from years 2001-2020
-in format (dayofyear,lat,lon).
- 
-NOTE: this is done for both era5 daily data in model format
-(files structured per initialization date of forecast)
-
-NOTE2: Currrently, clim mean is simple mean by calendar day
-of the past twently years. Should each calendar day mean be calculated
-in a way similar to percentile thresholds? i.e. each calendar day +-15 days around
-that day? 
+Converts ecmwf forecast data into anoamlies relative to 
+corresponding hindcast climatology.
 """
 
 import numpy  as np
@@ -29,13 +18,13 @@ def init_anomaly(variable,dim,time):
     data       = np.zeros((time.size,dim.nlatitude,dim.nlongitude),dtype=np.int16)
     dims       = ["time","latitude","longitude"]
     coords     = dict(time=time,latitude=dim.latitude,longitude=dim.longitude)
+    attrs      = dict(description='forecast anomalies relative to hindcast climatology',units='unitless')
     name       = variable
-    anomaly    = xr.DataArray(data=data,dims=dims,coords=coords,name=name)
+    anomaly     = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
     return anomaly
 
 # INPUT -----------------------------------------------
-time_flag         = 'time'                   # time or timescale
-data_flag         = 'daily'                  # daily,clim,pers
+time_flag         = 'time'              # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                      # number of forecasts 
@@ -47,35 +36,34 @@ write2file        = True
 misc.tic()
 
 # define stuff  
-years        = np.arange(int(init_start[:4])-20,int(init_start[:4])) # hindcast years for forecasts
 init_dates   = s2s.get_init_dates(init_start,init_n)
 init_dates   = init_dates.strftime('%Y-%m-%d').values
-path_in_O    = config.dirs['era5_forecast_' + data_flag] + variable + '/'
-path_in_C    = config.dirs['era5_forecast_clim'] + variable + '/'
-path_out     = config.dirs['era5_forecast_anomaly'] + variable + '/'
+path_in_F    = config.dirs['forecast_daily'] + variable + '/'
+path_in_HC   = config.dirs['hindcast_clim'] + variable + '/'
+path_out     = config.dirs['forecast_daily_anomaly'] + variable + '/'
 
 for grid in grids:
     for date in init_dates:
 
-        print('\nconverting forecast to anomaly ' + variable + ' for ' + grid + ' and initialization ' + date)
+        print('\nconverting forecast to anomaly for ' + grid + ' and initialization ' + date)
         
         # define stuff
-        dim           = s2s.get_dim(grid,'daily')
-        filename_O    = variable + '_' + grid + '_' + date + '.nc'
-        filename_C    = variable + '_' + grid + '_' + date + '.nc'
+        dim           = s2s.get_dim(grid,'time')
+        filename_F    = variable + '_' + grid + '_' + date + '.nc'
+        filename_HC   = variable + '_' + grid + '_' + date + '.nc'
         filename_out  = variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
         
-        # read forecast and climatology in forecast format
-        da_O = xr.open_dataset(path_in_O + filename_O)[variable]
-        da_C = xr.open_dataset(path_in_C + filename_C)[variable]
+        # read data
+        da_F    = xr.open_dataset(path_in_F + filename_F)[variable].mean(dim='number') # ensemble mean
+        da_HC   = xr.open_dataset(path_in_HC + filename_HC)[variable]
 
         # resample time into timescales if required
-        da_O = s2s.time_2_timescale(da_O,time_flag,datetime64=True)
-        da_C = s2s.time_2_timescale(da_C,time_flag,datetime64=True)
-
-        # calculate anomalies from climatology
-        anomaly = init_anomaly(variable,dim,da_O.time)
-        anomaly = da_O - da_C
+        da_F  = s2s.time_2_timescale(da_F,time_flag,datetime64=True)
+        da_HC = s2s.time_2_timescale(da_HC,time_flag,datetime64=True)
+        
+	# calculate anomalies from climatology
+        anomaly = init_anomaly(variable,dim,da_F.time)
+        anomaly = da_F - da_HC
 
         # modify metadata
         if variable == 'tp24':
@@ -98,9 +86,9 @@ for grid in grids:
         if write2file:
             anomaly.to_netcdf(path_out + filename_out)
             s2s.compress_file(comp_lev,3,filename_out,path_out) 
-        
-        da_O.close()
-        da_C.close()
+
+        da_F.close()
+        da_HC.close()
 
 misc.toc()
 

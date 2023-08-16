@@ -16,17 +16,15 @@ def init_clim(variable,time,units,dim):
     data       = np.zeros((time.size,dim.nlatitude,dim.nlongitude),dtype=np.float32)
     dims       = ["time","latitude","longitude"]
     coords     = dict(time=time,latitude=dim.latitude,longitude=dim.longitude)
-    attrs      = dict(description='climatological mean',units=units)
-    name       = 'clim'
-    percentile = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
+    name       = variable
+    percentile = xr.DataArray(data=data,dims=dims,coords=coords,name=name)
     return percentile
 
 # input ----------------------------------------------
-time_flag     = 'time'                # time or timescale
-variable      = 'tp24'                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-init_start    = '20210104'            # first initialization date of forecast (either a monday or thursday)   
+variable      = 'tp24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+init_start    = '20210104'              # first initialization date of forecast (either a monday or thursday)   
 init_n        = 104                     # number of forecast initializations 
-grids         = ['0.25x0.25','0.5x0.5']           # '0.25x0.25' or '0.5x0.5'
+grids         = ['0.25x0.25','0.5x0.5'] # '0.25x0.25' or '0.5x0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)
 write2file    = True
 # ----------------------------------------------------
@@ -44,21 +42,35 @@ for grid in grids:
         dim             = s2s.get_dim(grid,'time')
         datestring      = date.strftime('%Y-%m-%d')
         filename_in     = variable + '_' + grid + '_' + datestring + '.nc'
-        filename_out    = 'xy_' + time_flag + '_clim_' + variable + '_' + grid + '_' + datestring + '.nc'
+        filename_out    = variable + '_' + grid + '_' + datestring + '.nc'
         path_in         = config.dirs['hindcast_daily'] + variable + '/'
         path_out        = config.dirs['hindcast_clim'] + variable + '/'
         da              = xr.open_dataset(path_in + filename_in)[variable]
         units           = da.attrs['units']
 
-        # convert time to timescale if applicable
-        da = s2s.time_2_timescale(da,time_flag,datetime64=True)
-        
-        # calculate percentiles
+        # calculate climatological and ensemble mean
         time                = da.time
         da                  = da.stack(temp_index=("number", "hdate")) # form sample out of number and hdate dims
         clim                = init_clim(variable,time,units,dim)
         clim[:,:,:]         = da.mean(dim='temp_index').values
-                    
+
+        # modify metadata
+        if variable == 'tp24':
+            clim.attrs['units']     = 'm'
+            clim.attrs['long_name'] = 'climatological mean daily accumulated precipitation'
+        if variable == 'rn24':
+            clim.attrs['units']     = 'm'
+            clim.attrs['long_name'] = 'climatological mean daily accumulated rainfall'
+        if variable == 'mx24tpr':
+            clim.attrs['units']     = 'kg m**-2 s**-1'
+            clim.attrs['long_name'] = 'climatological mean daily maximum timestep precipitation rate'
+        if variable == 'mx24tp6':
+            clim.attrs['units']     = 'm'
+            clim.attrs['long_name'] = 'climatological mean daily maximum 6 hour accumulated precipitation'
+        if variable == 'mx24rn6':
+            clim.attrs['units']     = 'm'
+            clim.attrs['long_name'] = 'climatological mean daily maximum 6 hour accumulated rainfall'
+        
         if write2file:
             s2s.to_netcdf_pack64bit(clim,path_out + filename_out)
             s2s.compress_file(comp_lev,3,filename_out,path_out)
