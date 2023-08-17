@@ -18,8 +18,8 @@ from matplotlib  import pyplot as plt
 variables     = ['tp']                  
 dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcasts
 product       = 'forecast'              # hindcast or forecast
-init_start    = '20220630' # first initialization date of forecast (either a monday or thursday) 
-init_n        = 53        # number of forecast initializations 
+init_start    = '20230807' # first initialization date of forecast (either a monday or thursday) 
+init_n        = 1        # number of forecast initializations 
 grid          = '0.25/0.25'             # '0.25/0.25' or '0.5/0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)
 write2file    = True
@@ -27,6 +27,9 @@ write2file    = True
 
 # get all dates for monday and thursday forecast initializations
 init_dates = s2s.get_init_dates(init_start,init_n)
+
+#init_dates  = pd.date_range(init_start, periods=init_n) 
+#print(init_dates)
 
 for variable in variables:
     for date in init_dates:

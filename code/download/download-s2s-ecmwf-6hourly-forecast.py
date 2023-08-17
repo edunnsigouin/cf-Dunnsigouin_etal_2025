@@ -21,12 +21,12 @@ from datetime                    import datetime
 from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
-product       = 'vr_forecast' # forecast/vr_forecast
-init_start    = '20210114' # first initialization date of forecast (either a monday or thursday)
-init_n        = 104        # number of forecast initializations   
-grid          = '0.5/0.5' # degree lat/lon resolution
+product       = 'forecast' # forecast/vr_forecast
+init_start    = '20230803' # first initialization date of forecast (either a monday or thursday)
+init_n        = 1        # number of forecast initializations   
+grid          = '0.25/0.25' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var           = 't2m'
+var           = 'tp'
 comp_lev      = 5 # file compression level
 write2file    = False
 # -----------------------------------------
@@ -38,6 +38,7 @@ server = ECMWFService("mars")
 if product == 'forecast':
     if grid == '0.25/0.25':
         step = '0/to/360/by/6'
+        #step = '0/to/168/by/6'
     elif grid == '0.5/0.5':
         step = '366/to/1104/by/6'
     number = '1/to/50'
@@ -89,6 +90,8 @@ dic = {
 
 # get all dates for monday and thursday forecast initializations
 init_dates = s2s.get_init_dates(init_start,init_n)
+
+#init_dates  = pd.date_range(init_start, periods=init_n)
 print(init_dates)
 
 # populate dictionary some more and download eachforcast one-by-one
