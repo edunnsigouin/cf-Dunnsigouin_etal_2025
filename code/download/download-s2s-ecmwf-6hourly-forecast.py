@@ -90,9 +90,9 @@ dic = {
 
 # get all dates for monday and thursday forecast initializations
 init_dates = s2s.get_init_dates(init_start,init_n)
+print(init_dates)
 
 #init_dates  = pd.date_range(init_start, periods=init_n)
-print(init_dates)
 
 # populate dictionary some more and download eachforcast one-by-one
 if write2file:

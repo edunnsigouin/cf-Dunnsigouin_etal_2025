@@ -32,8 +32,8 @@ def calc_frac_RL08MWR(NH,da):
 time_flag         = 'time'              # time or timescale
 variable          = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'            # europe/nordic/vestland                       
-init_start        = '2023-08-05'        # initialization date
-leadtime_day      = 3                   # lead time in days
+init_start        = '2023-08-07'        # initialization date
+date              = '2023-08-07'        # forecast day
 grid              = '0.25x0.25'         # '0.25x0.25' or '0.5x0.5'
 NH                = np.array([1,9,19,29,39,49,59])
 write2file        = False
@@ -44,10 +44,10 @@ dim         = s2s.get_dim(grid,'time')
 path_in     = config.dirs['forecast_daily'] + variable + '/'
 path_out    = config.dirs['fig'] + 'ecmwf/forecast/daily/' + variable + '/'
 filename_in = variable + '_' + grid + '_' + init_start + '.nc'
-figname_out = 'xy_' + variable + '_' + grid + '_' + domain + '_init_' + init_start + '_leadtimeday_' + str(leadtime_day) + '_NH_' + str(NH[0]) + '.pdf'
+figname_out = 'xy_' + variable + '_' + grid + '_' + domain + '_init_' + init_start + '_date_' + date + '_NH_' + str(NH[0]) + '.pdf'
 
 # read in data & take ensemble mean
-da    = xr.open_dataset(path_in + filename_in).isel(time=leadtime_day).mean(dim='number')[variable] # lead time indexing starts at day 0 (lead time 1 day)
+da    = xr.open_dataset(path_in + filename_in).sel(time=date).mean(dim='number')[variable] # lead time indexing starts at day 0 (lead time 1 day)
 
 print(da.time)
 
@@ -60,9 +60,9 @@ if variable == 'tp24':
 da_frac = calc_frac_RL08MWR(NH,da)
 
 # extract specified domain
-dim     = misc.subselect_xy_domain_from_dim(dim,domain,grid)
-da      = da.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
-da_frac = da_frac.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
+#dim     = misc.subselect_xy_domain_from_dim(dim,domain,grid)
+#da      = da.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
+#da_frac = da_frac.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 
 # plot 
 fontsize = 11
@@ -73,27 +73,21 @@ fig,axes = plt.subplots(nrows=2,ncols=1,figsize=(figsize[0],figsize[1]),\
                         subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 axes = axes.ravel()
 
-p0 = axes[0].contourf(dim.longitude,dim.latitude,da,levels=clevs,cmap=cmap,extend='both',transform=ccrs.PlateCarree())
+p0 = axes[0].contourf(dim.longitude,dim.latitude,da,levels=clevs,cmap=cmap,extend='max',transform=ccrs.PlateCarree())
 axes[0].contour(dim.longitude,dim.latitude,da,levels=clevs,colors='grey',linewidths=0.5,linestyles='-',transform=ccrs.PlateCarree())
 axes[0].coastlines()
 axes[0].set_aspect('auto')
-cb0 = fig.colorbar(p0, ax=axes[0], orientation='vertical',ticks=clevs[::2].astype(int),pad=0.025,aspect=15)
+cb0 = fig.colorbar(p0, ax=axes[0], orientation='vertical',ticks=clevs.astype(int),pad=0.025,aspect=15)
 cb0.ax.set_title('[' + units + ']',fontsize=fontsize)
 cb0.ax.tick_params(labelsize=fontsize,size=0)
-#axes[0].set_title('era5 date = ' + date,fontsize=fontsize)
 
-#p0.cmap.set_under('white')
-
-p1 = axes[1].contourf(dim.longitude,dim.latitude,da_frac[3,:,:],levels=clevs,cmap=cmap,extend='both',transform=ccrs.PlateCarree())
+p1 = axes[1].contourf(dim.longitude,dim.latitude,da_frac[3,:,:],levels=clevs,cmap=cmap,extend='max',transform=ccrs.PlateCarree())
 axes[1].contour(dim.longitude,dim.latitude,da_frac[3,:,:],levels=clevs,colors='grey',linewidths=0.5,linestyles='-',transform=ccrs.PlateCarree())
 axes[1].coastlines()
 axes[1].set_aspect('auto')
-cb1 = fig.colorbar(p1, ax=axes[1], orientation='vertical',ticks=clevs[::2].astype(int),pad=0.025,aspect=15)
+cb1 = fig.colorbar(p1, ax=axes[1], orientation='vertical',ticks=clevs.astype(int),pad=0.025,aspect=15)
 cb1.ax.set_title('[' + units + ']',fontsize=fontsize)
 cb1.ax.tick_params(labelsize=fontsize,size=0)
-#axes[0].set_title('era5 date = ' + date,fontsize=fontsize)
-
-p1.cmap.set_under('red')
 
 plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)

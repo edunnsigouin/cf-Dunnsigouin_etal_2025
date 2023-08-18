@@ -11,7 +11,7 @@ from forsikring import config,misc,s2s
 # INPUT ----------------------------------------------- 
 variables  = ['tp24'] # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 years      = np.arange(2023,2024,1)
-grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
+grid       = '0.25/0.25' # '0.25/0.25' or '0.5/0.5'
 comp_lev   = 5
 write2file = True
 # -----------------------------------------------------            

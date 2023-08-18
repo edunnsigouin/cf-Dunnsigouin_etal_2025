@@ -15,7 +15,7 @@ from matplotlib  import pyplot as plt
 variables     = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcasts
 product       = 'forecast'              # hindcast or forecast ?
-init_start    = '20230807' # first initialization date of forecast (either a monday or thursday)
+init_start    = '20230803' # first initialization date of forecast (either a monday or thursday)
 init_n        = 1        # number of forecast initializations  
 grid          = '0.25/0.25'             # '0.25/0.25' or '0.5/0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)

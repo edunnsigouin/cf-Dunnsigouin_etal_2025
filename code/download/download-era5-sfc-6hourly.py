@@ -20,10 +20,10 @@ from forsikring import config,s2s
 area       = '73.5/-27/33/45' # or 'E' for europe
 grid       = '0.25/0.25' # '0.25/0.25' or '0.5/0.5'
 variables  = ['tp6'] # tp6,sf6,mx6tpr
-date_start = '2023-06-02'
-date_end   = '2023-08-11'
+date_start = '2023-01-01'
+date_end   = '2023-08-12'
 comp_lev   = 5 # file compression level
-write2file = True
+write2file = False
 # -----------------------------------------------------
 
 c         = cdsapi.Client()
@@ -87,7 +87,6 @@ for variable in variables:
 
                 c.retrieve(data_type,dic1,path + filename1)
                 c.retrieve(data_type,dic2,path + filename2)
-
                 
                 ds         = xr.open_mfdataset([path + filename1,path + filename2])
                 ds['time'] = ds.time - np.timedelta64(1,'h') # shift time to put all required data on same day
