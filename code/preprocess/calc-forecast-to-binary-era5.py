@@ -65,7 +65,7 @@ init_n            = 104                      # number of forecasts
 grids             = ['0.25x0.25']            # '0.25x0.25' & '0.5x0.5'
 pvals             = np.array([0.75,0.8,0.85,0.9,0.95,0.99]) # percentile thresholds
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file
-write2file        = False
+write2file        = True
 # -----------------------------------------------------
 
 misc.tic()

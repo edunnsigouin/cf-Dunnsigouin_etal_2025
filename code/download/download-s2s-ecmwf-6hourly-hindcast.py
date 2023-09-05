@@ -26,8 +26,8 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product       = 'hindcast' # hindcast/vr_hindcast
-init_start    = '20210719' # first initialization date of forecast (either a monday or thursday)
-init_n        = 48          # number of forecast initializations      
+init_start    = '20210830' # first initialization date of forecast (either a monday or thursday)
+init_n        = 36          # number of forecast initializations      
 nhdates       = 20 # number of hindcast years  
 grid          = '0.5/0.5' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
@@ -43,6 +43,7 @@ server = ECMWFService("mars")
 if product == 'hindcast':
     if grid == '0.25/0.25':
         step = '0/to/360/by/6'
+        #step = '0/to/168/by/6'
     elif grid == '0.5/0.5':
         step = '366/to/1104/by/6'
     number = '1/to/10'
@@ -96,6 +97,9 @@ dic1 = {
 # get all dates for monday and thursday forecast initializations
 init_dates = s2s.get_init_dates(init_start,init_n)
 print(init_dates)
+
+#init_dates  = pd.date_range(init_start, periods=init_n)
+#print(init_dates)
 
 # populate dictionary some more and download each hindcast/forcast one-by-one
 if write2file:

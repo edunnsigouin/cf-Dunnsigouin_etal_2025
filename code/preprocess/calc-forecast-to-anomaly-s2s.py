@@ -1,5 +1,5 @@
 """
-Converts ecmwf forecast data into anoamlies relative to 
+Converts ecmwf forecast data into anomalies relative to 
 corresponding hindcast climatology.
 """
 
@@ -26,9 +26,9 @@ def init_anomaly(variable,dim,time):
 # INPUT -----------------------------------------------
 time_flag         = 'time'              # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
+init_start        = '20220103'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                      # number of forecasts 
-grids             = ['0.25x0.25','0.5x0.5']  # '0.25x0.25' & '0.5x0.5'
+grids             = ['0.25x0.25']  # '0.25x0.25' & '0.5x0.5'
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file
 write2file        = True
 # -----------------------------------------------------

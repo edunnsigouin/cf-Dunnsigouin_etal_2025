@@ -16,7 +16,7 @@ import os
 from forsikring import config,misc,s2s
 
 # INPUT -----------------------------------------------
-variables        = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variables        = ['mx24tp6']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 init_start       = '20220103'              # first initialization date of forecast (either a monday or thursday)
 init_n           = 104                    # number of forecasts   
 grids            = ['0.25x0.25']           # '0.25x0.25' or '0.5x0.5'
@@ -26,6 +26,7 @@ write2file       = True
 
 # get all dates for monday and thursday forecast initializations 
 init_dates = s2s.get_init_dates(init_start,init_n)
+print(init_dates)
 
 for variable in variables:
     for date in init_dates:
@@ -61,3 +62,4 @@ for variable in variables:
                 print('')
 
             ds.close()
+

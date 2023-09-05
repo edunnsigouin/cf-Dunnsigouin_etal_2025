@@ -36,7 +36,7 @@ init_start        = '2023-08-05'        # initialization date
 date              = '2023-08-07'        # forecast day
 grid              = '0.25x0.25'         # '0.25x0.25' or '0.5x0.5'
 NH                = np.array([1,9,19,29,39,49,59])
-iNH               = 2
+iNH               = 3
 write2file        = True
 # -----------------------------
 
@@ -77,9 +77,9 @@ p0 = ax.contourf(dim.longitude,dim.latitude,da,levels=clevs,cmap=cmap,extend='ma
 ax.contour(dim.longitude,dim.latitude,da,levels=clevs,colors='grey',linewidths=0.5,linestyles='-',transform=ccrs.PlateCarree())
 ax.coastlines()
 ax.set_aspect('auto')
-cb0 = fig.colorbar(p0, ax=ax, orientation='vertical',ticks=clevs.astype(int),pad=0.025,aspect=15)
-cb0.ax.set_title('[' + units + ']',fontsize=fontsize)
-cb0.ax.tick_params(labelsize=fontsize,size=0)
+#cb0 = fig.colorbar(p0, ax=ax, orientation='vertical',ticks=clevs.astype(int),pad=0.025,aspect=15)
+#cb0.ax.set_title('[' + units + ']',fontsize=fontsize)
+#cb0.ax.tick_params(labelsize=fontsize,size=0)
 
 plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)

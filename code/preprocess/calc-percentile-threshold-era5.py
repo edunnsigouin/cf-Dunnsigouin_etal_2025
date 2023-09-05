@@ -56,7 +56,7 @@ years            = np.arange(2002,2022,1)   # years for climatology calculation
 grids            = ['0.25x0.25']            # '0.25x0.25' or '0.5x0.5'
 pval             = np.array([0.75,0.8,0.85,0.9,0.95,0.99]) # percentile values
 comp_lev         = 5                        # compression level for output file
-aggregation      = 2
+aggregation      = 1
 window           = 11                       # sample window in days around calendar day
 write2file       = True
 # ----------------------------------------------------

@@ -14,7 +14,7 @@ RF_flag           = 'clim'                   # clim or pers
 time_flag         = 'time'              # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe/nordic/vestland                       
-init_start        = '20210104'               # first initialization date of forecast (either a monday or thursday)
+init_start        = '20220103'               # first initialization date of forecast (either a monday or thursday)
 init_n            = 104                      # number of weeks with forecasts
 write2file        = True
 # -----------------------------
@@ -72,7 +72,6 @@ ax.set_ylabel(r'spatial scale [degrees$^{\circ}$/km$^2$]',fontsize=fontsize)
 cb = fig.colorbar(p, ax=ax, orientation='vertical',ticks=clevs[::2],pad=0.025,aspect=15)
 cb.ax.set_title('fss',fontsize=fontsize)
 cb.ax.tick_params(labelsize=fontsize,size=0)
-
 
 plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)

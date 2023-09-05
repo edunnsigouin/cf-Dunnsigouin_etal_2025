@@ -19,10 +19,10 @@ from forsikring import config,misc,s2s
 
 # INPUT -----------------------------------------------
 variables        = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-years            = np.arange(2001,2021,1)  # years for climatology calculation
-init_start       = '20210104' # first initialization date of forecast (either a monday or thursday)  
+years            = np.arange(2002,2022,1)  # years for climatology calculation
+init_start       = '20220103' # first initialization date of forecast (either a monday or thursday)  
 init_n           = 104        # number of forecast initializations 
-grids            = ['0.25x0.25','0.5x0.5']          # '0.25x0.25' or '0.5x0.5'
+grids            = ['0.25x0.25']          # '0.25x0.25' or '0.5x0.5'
 comp_lev         = 5
 write2file       = True
 # -----------------------------------------------------         
@@ -37,7 +37,7 @@ for variable in variables:
         path_in  = config.dirs['era5_cont_daily'] + variable + '/'
         path_out = config.dirs['era5_forecast_clim'] + variable + '/'
     
-        print('calculate climatology (excluding 2021)..')
+        print('calculate climatology..')
         filenames = [path_in + variable + '_' + grid + '_' + str(years[0]) + '.nc']
         for year in years[1:]:
             filenames = filenames + [path_in + variable + '_' + grid + '_' + str(year) + '.nc']
