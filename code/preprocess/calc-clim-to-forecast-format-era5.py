@@ -8,6 +8,8 @@ to climatological jan 04 to jan 04 + 46 days.
 
 NOTE: climatology is calculated over available hindcast period: 2001-2020
 and for simple calandar day mean climatology
+
+NOTE2: need to fix hack down below!!!!
 """
 
 import numpy  as np
@@ -19,16 +21,17 @@ from forsikring import config,misc,s2s
 
 # INPUT -----------------------------------------------
 variables        = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-years            = np.arange(2002,2022,1)  # years for climatology calculation
-init_start       = '20220103' # first initialization date of forecast (either a monday or thursday)  
-init_n           = 104        # number of forecast initializations 
+years            = np.arange(2000,2020,1)  # years for climatology calculation
+init_start       = '20201217' # first initialization date of forecast (either a monday or thursday)  
+init_n           = 5        # number of forecast initializations 
 grids            = ['0.25x0.25']          # '0.25x0.25' or '0.5x0.5'
 comp_lev         = 5
-write2file       = True
+write2file       = False
 # -----------------------------------------------------         
 
 # get all dates for monday and thursday forecast initializations
 init_dates = s2s.get_init_dates(init_start,init_n)
+print(init_dates)
 
 for variable in variables:
     for grid in grids:
@@ -45,7 +48,9 @@ for variable in variables:
         # is this the right way to calculate the climatology for this project?    
         with ProgressBar():
             ds_clim = xr.open_mfdataset(filenames).groupby('time.dayofyear').mean(dim='time').compute()
-        ds_clim = ds_clim.drop_sel(dayofyear=366) # drop leap year day
+
+        if (init_start[0:4] == '2021') or (init_start[0:4] == '2022'): # HACK!!! NEED TO FIX THIS!!!
+            ds_clim = ds_clim.drop_sel(dayofyear=366) # drop leap year day
         ds_clim = ds_clim.rename({'dayofyear':'time'}) 
     
         print('picking out dates corresponding to forecast/hindcast..')

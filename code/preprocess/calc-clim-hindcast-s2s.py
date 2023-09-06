@@ -22,15 +22,16 @@ def init_clim(variable,time,units,dim):
 
 # input ----------------------------------------------
 variable      = 'tp24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-init_start    = '20220103'              # first initialization date of forecast (either a monday or thursday)   
-init_n        = 104                     # number of forecast initializations 
+init_start    = '20200102'              # first initialization date of forecast (either a monday or thursday)   
+init_n        = 105                     # number of forecast initializations 
 grids         = ['0.25x0.25'] # '0.25x0.25' or '0.5x0.5'
 comp_lev      = 5                       # level of compression with nccopy (1-10)
-write2file    = True
+write2file    = False
 # ----------------------------------------------------
 
 # get all dates for monday and thursday forecast initializations
 init_dates = s2s.get_init_dates(init_start,init_n)
+print(init_dates)
 
 for grid in grids:
     for date in init_dates:
