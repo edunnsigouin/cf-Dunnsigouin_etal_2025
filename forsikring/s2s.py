@@ -196,17 +196,57 @@ def calc_frac_RL08MWR(NH,da):
     return frac
 
 
-def calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,chunks,NH):
+
+def boxcar_smoother_xy(NH, da):
+    """
+    Smooths an array in xy using a boxcar smoother where the last two 
+    dimensions are latitude & longitude.
+    Note: only performs calculation on odd sized neighborhood smoothings (e.g., 1, 9, 19, ..)
+    """
+    # Ensure that the input is an xarray DataArray
+    if not isinstance(da, xr.DataArray):
+        raise ValueError("Input 'da' must be an xarray DataArray")
+
+    # Check if the last two dimensions are latitude and longitude
+    if (da.dims[-2], da.dims[-1]) != ('latitude', 'longitude'):
+        raise ValueError("The last two dimensions of 'da' must be 'latitude' and 'longitude'")
+
+    # initialize output array
+    #smooth = np.zeros((NH.size,) + da.shape)
+
+    smooth_values = np.zeros((NH.size,) + da.shape)
+    coords = {'NH': NH, **da.coords}
+    dims = ['NH'] + list(da.dims)
+    smooth = xr.DataArray(smooth_values, coords=coords, dims=dims)
+    
+    for i, n in enumerate(NH):
+        if n % 2 != 0:  # odd
+            # Create kernel with the same number of dimensions as da
+            kernel_shape     = [1] * len(da.dims)
+            kernel_shape[-2] = kernel_shape[-1] = n
+            kernel           = np.ones(kernel_shape) / (n**2)
+            # smooth
+            smooth[i, ...] = ndimage.convolve(da.values, kernel, mode='constant', cval=0.0)
+        else:  # even
+            smooth[i, ...] = np.nan
+    
+    return smooth
+
+
+
+def calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,init_dates,NH):
     """
     calculates fractions skill score and generates bootstrapped estimates by boostrapping
     subsampling the forecasts/mse_forecasts
     """
-    chunks_random = chunks.copy()
-    RF_mse        = (1/chunks.size)*RF_error.sum(dim='chunks').values
-    F_mse         = (1/chunks.size)*F_error.sum(dim='chunks').values
+
+    init_dates_index  = np.arange(0,init_dates.size)
+    init_dates_random = init_dates_index.copy()
+    RF_mse            = (1/init_dates.size)*RF_error.sum(dim='init_dates').values
+    F_mse             = (1/init_dates.size)*F_error.sum(dim='init_dates').values
     for i in range(nshuffle):
         # calc mean square error of forecast       
-        F_mse_bs = (1/chunks_random.size)*F_error.sel(chunks=chunks_random).sum(dim='chunks').values
+        F_mse_bs = (1/init_dates_random.size)*F_error.sel(init_dates=init_dates_random).sum(dim='init_dates').values
         # calc fss
         for n in range(0,NH.size,1):
             if NH[n] % 2 != 0: # odd
@@ -215,9 +255,10 @@ def calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,chunks,NH):
             else: # even
                 fss_bs[n,:,i] = np.nan
                 fss[n,:]      = np.nan
-        # shuffle forecasts (chunks) randomly with replacement
-        chunks_random = np.random.choice(chunks,nsample,replace='True')    
+        # shuffle forecasts (init_dates) randomly with replacement
+        init_dates_random = np.random.choice(init_dates_index,nsample,replace='True')    
     return fss,fss_bs
+
 
 
 def calc_msess_bootstrap(msess,msess_bs,RF_error,F_error,nshuffle,nsample,chunks):

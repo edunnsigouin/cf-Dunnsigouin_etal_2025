@@ -12,199 +12,88 @@ simplifies to fss = 1 - mse_forecast/variance(obs). See chapter 5.4.2 of
 Joliffe and Stephenson text book  
 """
 
-import numpy  as np
-import xarray as xr
+import numpy     as np
+import xarray    as xr
 import os
-from dask.diagnostics  import ProgressBar
-from forsikring        import misc,s2s,config
-import random
-from matplotlib        import pyplot as plt
-from functools         import partial
-
-def init_frac(dim,NH):
-    """
-    Initializes fraction array used below.
-    Written here to clean up code.
-    """
-    data   = np.zeros((NH.size,dim.ntime,dim.nlatitude,dim.nlongitude),dtype=np.float32)
-    dims   = ["neighborhood","time","latitude","longitude"]
-    coords = dict(neighborhood=NH,time=dim.time,latitude=dim.latitude,longitude=dim.longitude)
-    name   = 'frac'
-    frac   = xr.DataArray(data=data,dims=dims,coords=coords,name=name)
-    return frac
-
-def init_fss(dim,NH,nshuffle):
-    """
-    Initializes fss arrays used below.
-    Written here to clean up code.
-    """
-    data      = np.zeros((NH.size,dim.ntime),dtype=np.float32)
-    data_bs   = np.zeros((NH.size,dim.ntime,nshuffle),dtype=np.float32)
-    dims      = ["neighborhood","time"]
-    dims_bs   = ["neighborhood","time","number"]
-    coords    = dict(neighborhood=NH,time=dim.time)
-    coords_bs = dict(neighborhood=NH,time=dim.time,number=np.arange(0,nshuffle,1))
-    attrs     = dict(description='fractions skill score of forecast',units='unitless')
-    attrs_bs  = dict(description='fractions skill score of forecast bootstrapped',units='unitless')
-    name      = 'fss'
-    name_bs   = 'fss_bs'
-    fss       = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
-    fss_bs    = xr.DataArray(data=data_bs,dims=dims_bs,coords=coords_bs,attrs=attrs_bs,name=name_bs)
-    return fss,fss_bs
-
-def subselect_time_and_neighborhood_from_dim(dim,ltime,grid,NH,time_flag):
-    """ 
-    kitchen sink function to sub-select appropriate data  
-    """
-    # specify selected lead times if lead times are daily (not timescale)
-    # also subselect lead times corresponding to grid resolution
-    if time_flag == 'time':
-        dim.time = ltime
-        if grid == '0.5x0.5':
-            dim.time = dim.time[dim.time > 15]
-        elif grid == '0.25x0.25':
-            dim.time = dim.time[dim.time <= 15]
-        dim.ntime = dim.time.size
-
-    # match neighborhood sizes between high and low resolution data
-    # i.e. grid neighborhood size 5 in hr data is equivalent to 3 in lr data.
-    if grid == '0.5x0.5':
-        NH_grid = np.copy(np.ceil(NH/2)).astype(int)
-    elif grid == '0.25x0.25':
-        NH_grid = np.copy(NH).astype(int)
-
-    return dim,NH_grid
-
-
+from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
 RF_flag           = 'clim'                   # clim or pers
-time_flag         = 'time'                   # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe or norway only?
 init_start        = '20200102'               # first initialization date of forecast (either a monday or thursday)
-init_n            = 1                      # number of forecasts 
-grids             = ['0.25x0.25']            # '0.25x0.25' & '0.5x0.5'
-NH                = np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
-ltime             = np.arange(1,17,1)  # forecast lead times to calculate
-nshuffle          = 10000                        # number of times to shuffle initialization dates for error bars
-nsample           = 50                        # number of sampled forecasts with replacement in each bootstrap member
+init_n            = 105                      # number of forecasts 
+NH                = np.arange(1,61,2)        # np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
+nshuffle          = 10000                    # number of times to shuffle initialization dates for error bars
+nsample           = 50                       # number of sampled forecasts with replacement in each bootstrap member
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file
-write2file        = False
+write2file        = True
 # -----------------------------------------------------
 
 misc.tic()
 
-# define stuff  
-init_dates       = s2s.get_init_dates(init_start,init_n)
-init_dates       = init_dates.strftime('%Y-%m-%d').values
-ndates           = np.arange(0,init_n,1)
+# define stuff
+grid             = '0.25x0.25'       # grid resolution
+time_flag        = 'time'            # time or timescale
+init_dates       = s2s.get_init_dates(init_start,init_n).strftime('%Y-%m-%d').values
 path_in_F        = config.dirs['forecast_daily_anomaly'] + variable + '/'
 path_in_O        = config.dirs['era5_forecast_anomaly'] + variable + '/'
 path_out         = config.dirs['verify_forecast_daily']
-
-filename_hr_out  = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
+filename_out     = 'time_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
                    'anomaly_0.25x0.25_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
-filename_lr_out  = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'anomaly_0.5x0.5_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
-filename_out     = time_flag + '_fss_' + variable + '_' + 'forecast_' + RF_flag + '_' + \
-                   'anomaly_' + domain + '_' + init_dates[0] + '_' + init_dates[-1] + '.nc'
 
-for grid in grids:
+# Get data dimensions and make sure they are consistent with those
+# given the input options NH and ltime above
+dim      = s2s.get_dim(grid,time_flag)
+dim      = misc.subselect_xy_domain_from_dim(dim,domain,grid)
 
-    print('\ncalculating fss for ' + grid + '...')
+# initialize fss output array                                                                                              
+[fss,fss_bs] = verify.init_fss(dim,NH,nshuffle)
+F_error      = verify.init_error(dim,NH,init_dates)
+RF_error     = verify.init_error(dim,NH,init_dates)
+
+# loop over forecasts
+for  i, date in enumerate(init_dates):
+
+    print('percent complete: ' + str(i/init_dates.size*100) + ', calculating forecast ' + date)
     
-    # get data dimensions
-    dim = s2s.get_dim(grid,time_flag)
+    # define input filenames for forecast & observation anomalies
+    filename_O  =  path_in_O + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
+    filename_F  =  path_in_F + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
 
-    # kitchen sink function to sub-select appropriate data dimensions
-    # given input options above
-    dim           = misc.subselect_xy_domain_from_dim(dim,domain,grid)
-    [dim,NH_grid] = subselect_time_and_neighborhood_from_dim(dim,ltime,grid,NH,time_flag)
+    # read in files to dataarray
+    O = xr.open_dataset(filename_O)[variable]
+    F = xr.open_dataset(filename_F)[variable] 
 
-    if dim.time.size > 0: # only calc stuff if lead time is in lr or hr data
+    # sub-select specific domain, lead times and percentile threshold
+    O  = O.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
+    F  = F.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
+    
+    # smooth forecast and observations in xy for each forecast
+    # Should there be a cosine weighting when applying filter in y?
+    O_smooth = verify.boxcar_smoother_xy(NH,O)
+    F_smooth = verify.boxcar_smoother_xy(NH,F)
 
-        # initialize fss output array                                                                                              
-        [fss,fss_bs] = init_fss(dim,NH_grid,nshuffle)
+    O.close()
+    F.close()
 
-        # loop over forecasts
-        for index_date in ndates:
-
-            # Initialize fraction array for each forecast
-            # and observation pair.
-            # Dims er (neighborhood index, lead time, lat, lon)
-            O_frac       = init_frac(dim,NH_grid)
-            F_frac       = init_frac(dim,NH_grid)
-
-            # define input filenames for forecast & observation anomalies
-            filename_O  =  path_in_O + variable + '_' + time_flag + '_' + grid + '_' + init_dates[index_date] + '.nc'
-            filename_F  =  path_in_F + variable + '_' + time_flag + '_' + grid + '_' + init_dates[index_date] + '.nc'
-
-            # read in files to dataarray
-            O = xr.open_dataset(filename_O)[variable]
-            F = xr.open_mfdataset(filename_F)[variable] 
-
-            # change time dimension from datetime 64 to index values (1,2,3,4..)
-            O = s2s.preprocess(O,grid,time_flag)
-            F =	s2s.preprocess(F,grid,time_flag)
+    # calc squared error for each forecast
+    F_error_xy  = (F_smooth - O_smooth)**2
+    RF_error_xy = (O_smooth)**2
             
-            # sub-select specific domain, lead times and percentile threshold
-            O  = O.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
-            F  = F.sel(latitude=dim.latitude,longitude=dim.longitude,time=dim.time,method='nearest')
+    # average in space over entire domain and dump into dedicated error array
+    F_error[i,...]  = misc.xy_mean(F_error_xy).values
+    RF_error[i,...] = misc.xy_mean(RF_error_xy).values
 
-"""            
-            # calculate fractions
-            # Should there be a cosine weighting when applying filter in y?
-            O_frac[:,:,:,:]  = s2s.calc_frac_RL08MWR(NH_grid,O)
-            F_frac[:,:,:,:]  = s2s.calc_frac_RL08MWR(NH_grid,F)
 
-            O.close()
-            F.close()
-            
-        print('calculating errors..')
-        # calc squared error for all forecasts individually 
-        F_error  = (F_frac - O_frac)**2
-        RF_error = (O_frac)**2
+# calc fss with bootstraping over all forecasts
+[fss,fss_bs] = verify.calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,init_dates,NH)
 
-        # weighted spatial (x,y) mean
-        F_error  = misc.xy_mean(F_error)
-        RF_error = misc.xy_mean(RF_error)
-
-        # calc fss with bootstraping
-        print('calculating fss with bootstrapping..')
-        [fss,fss_bs] = s2s.calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,chunks,NH_grid)
-
-        # postprocessing
-        ds = xr.merge([fss,fss_bs])
-        if grid == '0.5x0.5': ds['neighborhood'] = NH
-        
-        if write2file:
-            print('writing to file..')
-            if grid == '0.25x0.25': ds.to_netcdf(path_out+filename_hr_out)
-            elif grid == '0.5x0.5': ds.to_netcdf(path_out+filename_lr_out)
-
-            print('compress file to reduce space..') 
-            if grid == '0.25x0.25': s2s.compress_file(comp_lev,3,filename_hr_out,path_out) 
-            elif grid == '0.5x0.5': s2s.compress_file(comp_lev,3,filename_lr_out,path_out)
-
-            
-# combine low and high resolution files into one file if both exist
-if (os.path.exists(path_out + filename_hr_out)) and (os.path.exists(path_out + filename_lr_out)):
-    if write2file:
-        print('combine high & low resolution files into one file..')
-        ds_hr           = xr.open_dataset(path_out + filename_hr_out)
-        ds_lr           = xr.open_dataset(path_out + filename_lr_out)
-        ds              = xr.concat([ds_hr,ds_lr], 'time')
-        ds.to_netcdf(path_out+filename_out)
-        os.system('rm ' + path_out + filename_hr_out + ' ' + path_out + filename_lr_out)
-
-        print('compress file to reduce space..')
-        s2s.compress_file(comp_lev,3,filename_out,path_out)
-        ds.close()
-        ds_lr.close()
-        ds_hr.close()        
-"""
-
+# write to file
+if write2file:
+    ds = xr.merge([fss,fss_bs])
+    ds.to_netcdf(path_out+filename_out)
+    s2s.compress_file(comp_lev,3,filename_out,path_out) 
 
 misc.toc()
 
