@@ -14,8 +14,8 @@ RF_flag           = 'clim'                   # clim or pers
 time_flag         = 'time'              # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe/nordic/vestland                       
-init_start        = '20220103'               # first initialization date of forecast (either a monday or thursday)
-init_n            = 104                      # number of weeks with forecasts
+init_start        = '20200102'               # first initialization date of forecast (either a monday or thursday)
+init_n            = 105                      # number of weeks with forecasts
 write2file        = True
 # -----------------------------
 
