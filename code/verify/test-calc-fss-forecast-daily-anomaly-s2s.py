@@ -22,10 +22,10 @@ RF_flag           = 'clim'                   # clim or pers
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe or norway only?
 init_start        = '20200102'               # first initialization date of forecast (either a monday or thursday)
-init_n            = 105                      # number of forecasts 
+init_n            = 313                      # number of forecasts 
 NH                = np.arange(1,61,2)        # np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
 nshuffle          = 10000                    # number of times to shuffle initialization dates for error bars
-nsample           = 50                       # number of sampled forecasts with replacement in each bootstrap member
+nsample           = 150                       # number of sampled forecasts with replacement in each bootstrap member
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file
 write2file        = True
 # -----------------------------------------------------

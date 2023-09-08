@@ -15,8 +15,8 @@ time_flag         = 'time'              # time or timescale
 variable          = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain            = 'europe'                 # europe/nordic/vestland                       
 init_start        = '20200102'               # first initialization date of forecast (either a monday or thursday)
-init_n            = 5                      # number of weeks with forecasts
-write2file        = False
+init_n            = 105                      # number of weeks with forecasts
+write2file        = True
 # -----------------------------
 
 # define stuff         
@@ -39,6 +39,8 @@ ds   = xr.open_dataset(path_in + filename_in)
 fss  = ds['fss'].values
 x    = ds['neighborhood'].values
 t    = ds['time'].values
+x2   = np.array([1,9,19,29,39,49,59])
+
 
 # calculate significance
 temp = ds['fss_bs'].quantile(0.05,dim='number',skipna=True).values
@@ -50,7 +52,7 @@ fontsize = 11
 clevs    = np.arange(0.0, 1.1, 0.1)
 cmap     = mpl.cm.get_cmap("RdBu_r").copy()
 cmap.set_bad(color=[0.8,0.8,0.8]) # set nans to specified color
-figsize  = np.array([4*1.61,4])
+figsize  = np.array([6*1.61,6])
 fig,ax   = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
 
 p = ax.pcolormesh(t,x,fss,cmap=cmap,vmin=0.0,vmax=1.0)
@@ -65,9 +67,9 @@ elif time_flag == 'timescale':
     ax.set_xticklabels(['1d1d','2d2d','4d4d','1w1w','2w2w','4w3w'],fontsize=fontsize)
     ax.set_xlabel(r'lead time [timescale]',fontsize=fontsize)
 
-ax.set_yticks(x)
-ax.set_yticklabels(['0.25/18','2.25/162','4.75/342','7.25/522','9.75/702','12.25/882','14.75/1062'],fontsize=fontsize)
-ax.set_ylabel(r'spatial scale [degrees$^{\circ}$/km$^2$]',fontsize=fontsize)
+ax.set_yticks(x2)
+ax.set_yticklabels(['1x1\n18x18','9x9\n162x162','19x19\n342x342','29x29\n522x522','39x39\n702x702','49x49\n882x882','59x59\n1062x1062'],fontsize=fontsize)
+ax.set_ylabel(r'spatial scale [grid points/km$^2$]',fontsize=fontsize)
 
 cb = fig.colorbar(p, ax=ax, orientation='vertical',ticks=clevs[::2],pad=0.025,aspect=15)
 cb.ax.set_title('fss',fontsize=fontsize)

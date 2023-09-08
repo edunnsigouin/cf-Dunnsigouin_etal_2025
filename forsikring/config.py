@@ -25,6 +25,7 @@ hindcast_monthly      = raw + "seasonal/ecmwf/hindcast/monthly/"
 forecast_monthly      =	raw + "seasonal/ecmwf/forecast/monthly/"
 
 era5_6hourly               = raw + "era5/6hourly/"
+era5_monthly               = raw + "era5/monthly/"
 era5_cont_daily            = processed + "cf-forsikring/era5/continuous-format/daily/"
 era5_cont_percentile       = processed + "cf-forsikring/era5/continuous-format/percentile/"
 era5_forecast_daily        = processed + "cf-forsikring/era5/model-format/forecast/daily/values/"
@@ -56,6 +57,7 @@ dirs = {"proj":proj,
         "hindcast_monthly":hindcast_monthly,
         "forecast_monthly":forecast_monthly,
         "era5_6hourly":era5_6hourly,
+        "era5_monthly":era5_monthly,
         "era5_cont_daily":era5_cont_daily,
         "era5_cont_percentile":era5_cont_percentile,
         "era5_forecast_daily":era5_forecast_daily,
