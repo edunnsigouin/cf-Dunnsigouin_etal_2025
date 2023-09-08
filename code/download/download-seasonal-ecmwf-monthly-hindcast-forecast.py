@@ -53,22 +53,13 @@ def seconds_in_month(date_string,leadtime_months):
 area            = '74/-27/33/45' # or 'E' for europe
 variables       = ['tp'] # 'tp' and 't2m'
 data_type       = 'forecast' # forecast or hindcast
-system          = '51' # model version (4,5 or 51)
+system          = '5' # model version (4,5 or 51)
 years           = np.arange(2017,2018,1)
-months          = np.arange(1,2,1)
-leadtime_months = np.arange(1,2,1)
+months          = np.arange(1,13,1)
+leadtime_months = np.arange(1,7,1)
 comp_lev        = 5 # file compression level
 write2file      = True
 # -----------------------------------------------------
-
-# create string array for input into dictionary
-months_string = [str(months[0])]
-for i in range(1,len(months)):
-        months_string = months_string + [str(months[i])]
-
-leadtime_months_string = [str(leadtime_months[0])]
-for i in range(1,len(leadtime_months)):
-        leadtime_months_string = leadtime_months_string + [str(leadtime_months[i])]
 
 # loop through variables        
 for variable in variables:
@@ -80,6 +71,8 @@ for variable in variables:
         path          = config.dirs[data_type + '_monthly'] + variable + '/'
 
         # populate dictionary
+        months_string          = [str(month) for month in months]
+        leadtime_months_string = [str(leadtime_month) for leadtime_month in leadtime_months]
         dic = {
                 'format':'grib',
                 'originating_centre':'ecmwf',
@@ -136,6 +129,6 @@ for variable in variables:
                 
                 # compress netcdf
                 s2s.compress_file(comp_lev,3,filename_nc,path)     
-                
+
 
                 

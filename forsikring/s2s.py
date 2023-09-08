@@ -156,7 +156,9 @@ def get_dim(grid,time_flag):
         from forsikring import dim_hr as dim
     elif grid == '0.5x0.5':
         from forsikring import dim_lr as dim
-
+    elif grid == '1.0x1.0':
+        from forsikring import dim_1x1 as dim
+        
     if time_flag == 'timescale':
         dim.time  = dim.timescale
         dim.ntime = dim.ntimescale

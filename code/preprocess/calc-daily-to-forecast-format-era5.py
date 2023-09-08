@@ -1,5 +1,5 @@
 """
-Converts era5 yearly files into the same format as ecmwf forecasts
+Converts daily era5 data in yearly files into the same format as ecmwf forecasts
 initialized on mondays and thursdays for use as a forecast verification dataset.
 i.e. for each lead time in a forecast file, we collect the analagous 
 era5 dates and put them into a new file.
@@ -21,7 +21,7 @@ init_start       = '20220103'              # first initialization date of foreca
 init_n           = 104                    # number of forecasts   
 grids            = ['0.25x0.25']           # '0.25x0.25' or '0.5x0.5'
 comp_lev         = 5
-write2file       = True
+write2file       = False
 # -----------------------------------------------------         
 
 # get all dates for monday and thursday forecast initializations 
