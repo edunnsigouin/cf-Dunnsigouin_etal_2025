@@ -10,7 +10,7 @@ from forsikring import config,s2s,misc
 # INPUT -----------------------------------------------
 area            = '74/-27/33/45' # or 'E' for europe
 variables       = ['tp','t2m'] # 'tp' and 't2m'
-years           = np.arange(1960,2023,1)
+years           = np.arange(2023,2024,1)
 months          = np.arange(1,13,1)
 grid            = '1.0/1.0'
 comp_lev        = 5 # file compression level
