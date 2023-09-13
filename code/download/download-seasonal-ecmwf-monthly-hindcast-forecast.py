@@ -51,14 +51,14 @@ def seconds_in_month(date_string,leadtime_months):
 
 # INPUT -----------------------------------------------
 area            = '74/-27/33/45' # or 'E' for europe
-variables       = ['tp'] # 'tp' and 't2m'
-data_type       = 'forecast' # forecast or hindcast
+variables       = ['tp','t2m'] # 'tp' and 't2m'
+data_type       = 'hindcast' # forecast or hindcast
 system          = '5' # model version (4,5 or 51)
-years           = np.arange(2022,2023,1)
+years           = np.arange(1993,2017,1)
 months          = np.arange(1,13,1)
 leadtime_months = np.arange(1,7,1)
 comp_lev        = 5 # file compression level
-write2file      = False
+write2file      = True
 # -----------------------------------------------------
 
 # loop through variables        
@@ -68,7 +68,7 @@ for variable in variables:
         # define stuff
         filename_grib = variable + '_' + str(year) + '.grib'
         filename_nc   = variable + '_' + str(year) + '.nc'
-        path          = config.dirs[data_type + '_monthly'] + variable + '/'
+        path          = config.dirs['seasonal_' + data_type + '_monthly'] + variable + '/'
 
         # populate dictionary
         months_string          = [str(month) for month in months]
@@ -97,8 +97,9 @@ for variable in variables:
                 c.retrieve('seasonal-monthly-single-levels', dic, path + filename_grib)
 
                 # read in data 
-                ds = xr.open_dataset(path+filename_grib, engine='cfgrib', backend_kwargs=dict(time_dims=('lead_time_month', 'time')))
-
+                ds = xr.open_dataset(path+filename_grib, engine='cfgrib', backend_kwargs=dict(time_dims=('forecastMonth', 'time')))
+                ds = ds.rename({'forecastMonth':'lead_time_month'})
+                
                 # modify metadata
                 if variable == 'tp':
                         # rename stuff

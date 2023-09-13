@@ -57,7 +57,7 @@ for variable in variables:
 
             # define some paths and strings   
             path_in      = config.dirs['era5_monthly'] + variable + '/'
-            path_out     = config.dirs['era5_forecast_seasonal_monthly'] + variable + '/'
+            path_out     = config.dirs['era5_seasonal_forecast_monthly'] + variable + '/'
             filename1_in = variable + '_' + str(year) + '.nc'
             filename2_in = variable + '_' + str(int(year)+1) + '.nc'
             filename_out = variable + '_' + str(year) + '.nc'

@@ -41,7 +41,7 @@ init_start        = '20200102'               # first initialization date of fore
 init_n            = 105                      # number of forecasts 
 grids             = ['0.25x0.25']  # '0.25x0.25' & '0.5x0.5'
 comp_lev          = 5                        # compression level (0-10) of netcdf putput file
-write2file        = True
+write2file        = False
 # -----------------------------------------------------
 
 misc.tic()

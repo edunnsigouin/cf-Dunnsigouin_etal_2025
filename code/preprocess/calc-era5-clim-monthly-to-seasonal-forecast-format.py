@@ -57,7 +57,7 @@ for variable in variables:
         
         # define stuff
         path_in  = config.dirs['era5_monthly'] + variable + '/'
-        path_out = config.dirs['era5_forecast_seasonal_monthly_clim'] + variable + '/'
+        path_out = config.dirs['era5_seasonal_forecast_monthly_clim'] + variable + '/'
     
         # calculate climatology
         filenames = [path_in + variable + '_' + str(year) + '.nc' for year in clim_years]
