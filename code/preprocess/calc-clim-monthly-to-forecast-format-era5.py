@@ -3,8 +3,8 @@ Converts climatological monthly era5 data in yearly files into the same format a
 seasonal forecasts for use as a forecast verification dataset.
 i.e. for each lead time in a forecast file, we collect the analagous
 era5 dates and put them into a new file.                                                                                                                            
-example: t2m_2021.nc is the forecast file and the new era5 file is                                                                                                                            
-t2m_2021.nc with the corresponding 12 initialization months and the                                                                                                                           
+example: t2m_2021.nc is the forecast file and the new era5 file is
+t2m_2021.nc with the corresponding 12 initialization months and the
 6 lead time months corresponding to climatological data.
 
 NOTE: climatology is calculated over available hindcast period 1993-2016
@@ -26,8 +26,8 @@ def init_forecast_format_array(dim,lead_time_months,year,forecast_months,variabl
     init_date = str(year) + '-' + str(forecast_months[0]).zfill(2)
     time      = pd.date_range(init_date,periods=forecast_months.size,freq="MS")
     data      = np.zeros((lead_time_months.size,time.size,dim.nlatitude,dim.nlongitude),dtype=np.float32)
-    dims      = ["lead_time_months","time","latitude","longitude"]
-    coords    = dict(lead_time_months=lead_time_months,time=time,latitude=dim.latitude,longitude=dim.longitude)
+    dims      = ["lead_time_month","time","latitude","longitude"]
+    coords    = dict(lead_time_month=lead_time_months,time=time,latitude=dim.latitude,longitude=dim.longitude)
     name      = variable
 
     if variable == 'tp': attrs = dict(long_name='total accumulated monthly precipitation',units='m')
@@ -36,15 +36,15 @@ def init_forecast_format_array(dim,lead_time_months,year,forecast_months,variabl
     forecast_format = xr.DataArray(data=data,dims=dims,coords=coords,name=name,attrs=attrs)
 
     forecast_format['time'].attrs['long_name']          = "initial time of forecast"
-    forecast_format['lead_time_months'].attrs['long_name'] = "months since forecast_reference_time"
+    forecast_format['lead_time_month'].attrs['long_name'] = "months since forecast_reference_time"
 
     return forecast_format
 
 
 # INPUT -----------------------------------------------
-variables        = ['tp']                 # tp & t2m  
-forecast_years   = np.arange(2017,2018,1)
-forecast_months  = np.arange(1,2,1)
+variables        = ['tp','t2m']                 # tp & t2m  
+forecast_years   = np.arange(2017,2023,1)
+forecast_months  = np.arange(1,13,1)
 lead_time_months = np.arange(1,7,1)
 clim_years       = np.arange(1993,2017,1) 
 comp_lev         = 5
@@ -57,7 +57,7 @@ for variable in variables:
         
         # define stuff
         path_in  = config.dirs['era5_monthly'] + variable + '/'
-        path_out = config.dirs['era5_forecast_monthly_clim'] + variable + '/'
+        path_out = config.dirs['era5_forecast_seasonal_monthly_clim'] + variable + '/'
     
         # calculate climatology
         filenames = [path_in + variable + '_' + str(year) + '.nc' for year in clim_years]
@@ -65,7 +65,8 @@ for variable in variables:
         ds_clim = ds_clim.rename({'month':'time'}) 
         
         for year in forecast_years:
-            
+
+            print('\nvariable: ' + variable + ', year: ' + str(year))
             # initialize output array per year
             forecast_format = init_forecast_format_array(dim,lead_time_months,year,forecast_months,variable)
 

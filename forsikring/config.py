@@ -24,21 +24,21 @@ hindcast_clim         = processed + "cf-forsikring/ecmwf/hindcast/climatology/"
 hindcast_monthly      = raw + "seasonal/ecmwf/hindcast/monthly/"
 forecast_monthly      =	raw + "seasonal/ecmwf/forecast/monthly/"
 
-era5_6hourly               = raw + "era5/6hourly/"
-era5_monthly               = raw + "era5/monthly/"
-era5_cont_daily            = processed + "cf-forsikring/era5/continuous-format/daily/"
-era5_cont_percentile       = processed + "cf-forsikring/era5/continuous-format/percentile/"
-era5_forecast_daily        = processed + "cf-forsikring/era5/model-format/forecast/daily/values/"
-era5_forecast_daily_binary = processed + "cf-forsikring/era5/model-format/forecast/daily/binary/"
-era5_forecast_monthly      = processed + "cf-forsikring/era5/monthly-model-format/forecast/values/"
-era5_forecast_monthly_clim = processed + "cf-forsikring/era5/monthly-model-format/forecast/climatology/"
-era5_forecast_clim         = processed + "cf-forsikring/era5/model-format/forecast/climatology/values/"
-era5_forecast_clim_binary  = processed + "cf-forsikring/era5/model-format/forecast/climatology/binary/"
-era5_forecast_anomaly      = processed + "cf-forsikring/era5/model-format/forecast/anomaly/values/"
-era5_forecast_pers         = processed + "cf-forsikring/era5/model-format/forecast/persistence/values/"
-era5_forecast_pers_binary  = processed + "cf-forsikring/era5/model-format/forecast/persistence/binary/"
-era5_hindcast_percentile   = processed + "cf-forsikring/era5/model-format/hindcast/percentile/"
-era5_hindcast_daily        = processed + "cf-forsikring/era5/model-format/hindcast/daily/"
+era5_6hourly                        = raw + "era5/6hourly/"
+era5_monthly                        = raw + "era5/monthly/"
+era5_cont_daily                     = processed + "cf-forsikring/era5/continuous-format/daily/"
+era5_cont_percentile                = processed + "cf-forsikring/era5/continuous-format/percentile/"
+era5_forecast_daily                 = processed + "cf-forsikring/era5/model-format/forecast/daily/values/"
+era5_forecast_daily_binary          = processed + "cf-forsikring/era5/model-format/forecast/daily/binary/"
+era5_forecast_seasonal_monthly      = processed + "cf-forsikring/era5/seasonal-model-format/monthly/forecast/values/"
+era5_forecast_seasonal_monthly_clim = processed + "cf-forsikring/era5/seasonal-model-format/monthly/forecast/climatology/"
+era5_forecast_clim                  = processed + "cf-forsikring/era5/model-format/forecast/climatology/values/"
+era5_forecast_clim_binary           = processed + "cf-forsikring/era5/model-format/forecast/climatology/binary/"
+era5_forecast_anomaly               = processed + "cf-forsikring/era5/model-format/forecast/anomaly/values/"
+era5_forecast_pers                  = processed + "cf-forsikring/era5/model-format/forecast/persistence/values/"
+era5_forecast_pers_binary           = processed + "cf-forsikring/era5/model-format/forecast/persistence/binary/"
+era5_hindcast_percentile            = processed + "cf-forsikring/era5/model-format/hindcast/percentile/"
+era5_hindcast_daily                 = processed + "cf-forsikring/era5/model-format/hindcast/daily/"
 
 verify_forecast_daily = verify + "cf-forsikring/ecmwf/forecast/daily/"
 
@@ -64,8 +64,8 @@ dirs = {"proj":proj,
         "era5_cont_percentile":era5_cont_percentile,
         "era5_forecast_daily":era5_forecast_daily,
         "era5_forecast_daily_binary":era5_forecast_daily_binary,
-        "era5_forecast_monthly":era5_forecast_monthly,
-        "era5_forecast_monthly_clim":era5_forecast_monthly_clim,
+        "era5_forecast_seasonal_monthly":era5_forecast_seasonal_monthly,
+        "era5_forecast_seasonal_monthly_clim":era5_forecast_seasonal_monthly_clim,
         "era5_forecast_clim":era5_forecast_clim,
         "era5_forecast_clim_binary":era5_forecast_clim_binary,
         "era5_forecast_anomaly":era5_forecast_anomaly,

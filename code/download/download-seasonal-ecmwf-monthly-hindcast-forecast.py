@@ -58,7 +58,7 @@ years           = np.arange(2022,2023,1)
 months          = np.arange(1,13,1)
 leadtime_months = np.arange(1,7,1)
 comp_lev        = 5 # file compression level
-write2file      = True
+write2file      = False
 # -----------------------------------------------------
 
 # loop through variables        
@@ -97,7 +97,7 @@ for variable in variables:
                 c.retrieve('seasonal-monthly-single-levels', dic, path + filename_grib)
 
                 # read in data 
-                ds = xr.open_dataset(path+filename_grib, engine='cfgrib', backend_kwargs=dict(time_dims=('forecastMonth', 'time')))
+                ds = xr.open_dataset(path+filename_grib, engine='cfgrib', backend_kwargs=dict(time_dims=('lead_time_month', 'time')))
 
                 # modify metadata
                 if variable == 'tp':
