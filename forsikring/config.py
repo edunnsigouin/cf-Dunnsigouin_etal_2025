@@ -43,6 +43,7 @@ era5_hindcast_percentile            = processed + "cf-forsikring/era5/model-form
 era5_hindcast_daily                 = processed + "cf-forsikring/era5/model-format/hindcast/daily/"
 
 era5_seasonal_forecast_monthly         = processed + "cf-forsikring/era5/seasonal-model-format/monthly/forecast/values/"
+era5_seasonal_hindcast_monthly         = processed + "cf-forsikring/era5/seasonal-model-format/monthly/hindcast/values/"
 era5_seasonal_forecast_monthly_clim    = processed + "cf-forsikring/era5/seasonal-model-format/monthly/forecast/climatology/"
 era5_seasonal_forecast_monthly_anomaly = processed + "cf-forsikring/era5/seasonal-model-format/monthly/forecast/anomaly/"
 
@@ -75,6 +76,7 @@ dirs = {"proj":proj,
         "era5_forecast_daily":era5_forecast_daily,
         "era5_forecast_daily_binary":era5_forecast_daily_binary,
         "era5_seasonal_forecast_monthly":era5_seasonal_forecast_monthly,
+        "era5_seasonal_hindcast_monthly":era5_seasonal_hindcast_monthly,
         "era5_seasonal_forecast_monthly_clim":era5_seasonal_forecast_monthly_clim,
         "era5_seasonal_forecast_monthly_anomaly":era5_seasonal_forecast_monthly_anomaly,
         "era5_forecast_clim":era5_forecast_clim,

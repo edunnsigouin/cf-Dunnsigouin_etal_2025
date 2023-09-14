@@ -8,7 +8,7 @@ import xarray as xr
 from forsikring import config,misc,s2s
 
 # INPUT -----------------------------------------------
-variables        = ['t2m','tp'] # tp & t2m
+variables        = ['tp'] # tp & t2m
 forecast_years   = np.arange(2017,2023,1)
 forecast_months  = np.arange(1,13,1)
 lead_time_months = np.arange(1,7,1)
