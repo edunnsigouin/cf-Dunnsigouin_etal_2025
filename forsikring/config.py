@@ -21,9 +21,10 @@ hindcast_daily        = processed + "cf-forsikring/ecmwf/hindcast/daily/"
 hindcast_percentile   = processed + "cf-forsikring/ecmwf/hindcast/percentile/"
 hindcast_clim         = processed + "cf-forsikring/ecmwf/hindcast/climatology/"
 
-seasonal_hindcast_monthly      = raw + "seasonal/ecmwf/monthly/hindcast/"
-seasonal_forecast_monthly      = raw + "seasonal/ecmwf/monthly/forecast/"
-seasonal_hindcast_monthly_clim = processed + "cf-forsikring/seasonal/ecmwf/monthly/hindcast/climatology/"
+seasonal_hindcast_monthly         = raw + "seasonal/ecmwf/monthly/hindcast/"
+seasonal_forecast_monthly         = raw + "seasonal/ecmwf/monthly/forecast/"
+seasonal_hindcast_monthly_clim    = processed + "cf-forsikring/seasonal/ecmwf/monthly/hindcast/climatology/"
+seasonal_forecast_monthly_anomaly = processed + "cf-forsikring/seasonal/ecmwf/monthly/forecast/anomaly/"
 
 era5_6hourly                        = raw + "era5/6hourly/"
 era5_monthly                        = raw + "era5/monthly/"
@@ -62,6 +63,7 @@ dirs = {"proj":proj,
         "seasonal_hindcast_monthly":seasonal_hindcast_monthly,
         "seasonal_forecast_monthly":seasonal_forecast_monthly,
         "seasonal_hindcast_monthly_clim":seasonal_hindcast_monthly_clim,
+        "seasonal_forecast_monthly_anomaly":seasonal_forecast_monthly_anomaly,
         "era5_6hourly":era5_6hourly,
         "era5_monthly":era5_monthly,
         "era5_cont_daily":era5_cont_daily,

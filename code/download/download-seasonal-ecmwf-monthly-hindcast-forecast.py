@@ -52,9 +52,9 @@ def seconds_in_month(date_string,leadtime_months):
 # INPUT -----------------------------------------------
 area            = '74/-27/33/45' # or 'E' for europe
 variables       = ['tp','t2m'] # 'tp' and 't2m'
-data_type       = 'hindcast' # forecast or hindcast
-system          = '5' # model version (4,5 or 51)
-years           = np.arange(1993,2017,1)
+data_type       = 'forecast' # forecast or hindcast
+system          = '51' # model version (4,5 or 51)
+years           = np.arange(2022,2023,1)
 months          = np.arange(1,13,1)
 leadtime_months = np.arange(1,7,1)
 comp_lev        = 5 # file compression level
