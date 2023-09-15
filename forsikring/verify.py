@@ -11,11 +11,12 @@ from datetime   import datetime
 from scipy      import signal, ndimage
 
 
-def boxcar_smoother_xy(NH, da):
+def boxcar_smoother_xy(box_sizes,da):
     """
     Smooths an array in xy using a boxcar smoother where the last two 
     dimensions are latitude & longitude.
-    Note: only performs calculation on odd sized neighborhood smoothings (e.g., 1, 9, 19, ..)
+    Note: only performs calculation on odd sized box sizes (e.g., 1,3,5,...)
+    where the size refers to the number of grid points per side of a square.
     """
     # Ensure that the input is an xarray DataArray
     if not isinstance(da, xr.DataArray):
@@ -26,14 +27,14 @@ def boxcar_smoother_xy(NH, da):
         raise ValueError("The last two dimensions of 'da' must be 'latitude' and 'longitude'")
 
     # initialize output array
-    #smooth = np.zeros((NH.size,) + da.shape)
+    #smooth = np.zeros((box_sizes.size,) + da.shape)
 
-    smooth_values = np.zeros((NH.size,) + da.shape)
-    coords = {'NH': NH, **da.coords}
-    dims = ['NH'] + list(da.dims)
+    smooth_values = np.zeros((box_sizes.size,) + da.shape)
+    coords = {'box_size': box_sizes, **da.coords}
+    dims = ['box_size'] + list(da.dims)
     smooth = xr.DataArray(smooth_values, coords=coords, dims=dims)
     
-    for i, n in enumerate(NH):
+    for i, n in enumerate(box_sizes):
         if n % 2 != 0:  # odd
             # Create kernel with the same number of dimensions as da
             kernel_shape     = [1] * len(da.dims)
@@ -48,30 +49,72 @@ def boxcar_smoother_xy(NH, da):
 
 
 
-def calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,init_dates,NH):
-    """
-    calculates fractions skill score and generates bootstrapped estimates by boostrapping
-    subsampling the forecasts/mse_forecasts
+#def calc_fss_bootstrap(fss,fss_bootstrap,reference_error,forecast_error,number_shuffle_bootstrap,number_sample_bootstrap,forecast_dates,box_sizes):
+#    """
+#    calculates fractions skill score and generates bootstrapped estimates by boostrapping
+#    subsampling the forecasts/mse_forecasts
+#    """
+
+#    forecast_dates_index  = np.arange(0,forecast_dates.size)
+#    forecast_dates_random = forecast_dates_index.copy()
+#    reference_mse         = (1/forecast_dates.size)*reference_error.sum(dim='forecast_dates').values
+#    forecast_mse          = (1/forecast_dates.size)*forecast_error.sum(dim='forecast_dates').values
+#    for i in range(number_shuffle_bootstrap):
+#        # calc mean square error of forecast       
+#        forecast_mse_bootstrap = (1/forecast_dates_random.size)*forecast_error.sel(forecast_dates=forecast_dates_random).sum(dim='forecast_dates').values
+#        # calc fss
+#        for n in range(0,box_sizes.size,1):
+#            if box_sizes[n] % 2 != 0: # odd
+#                fss[n,:]             = 1.0 - forecast_mse[n,:]/reference_mse[n,:]
+#                fss_bootstrap[n,:,i] = 1.0 - forecast_mse_bootstrap[n,:]/reference_mse[n,:]
+#            else: # even
+#                fss_bootstrap[n,:,i] = np.nan
+#                fss[n,:]             = np.nan
+#        # shuffle forecasts dates randomly with replacement
+#        forecast_dates_random = np.random.choice(forecast_dates_index,number_sample_bootstrap,replace='True')    
+#    return fss,fss_bootstrap
+
+
+
+# TRYING TO MAKE THIS CODE BETTER !!!!!!!!!!!!!!!!!!
+def calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, number_sample_bootstrap, box_sizes):
+    """ 
+    Calculates fractions skill score and generates bootstrapped estimates by boostrapping 
+    subsampling the forecasts/mse_forecasts                                                                           
     """
 
-    init_dates_index  = np.arange(0,init_dates.size)
-    init_dates_random = init_dates_index.copy()
-    RF_mse            = (1/init_dates.size)*RF_error.sum(dim='init_dates').values
-    F_mse             = (1/init_dates.size)*F_error.sum(dim='init_dates').values
-    for i in range(nshuffle):
-        # calc mean square error of forecast       
-        F_mse_bs = (1/init_dates_random.size)*F_error.sel(init_dates=init_dates_random).sum(dim='init_dates').values
-        # calc fss
-        for n in range(0,NH.size,1):
-            if NH[n] % 2 != 0: # odd
-                fss[n,:]      = 1.0 - F_mse[n,:]/RF_mse[n,:]
-                fss_bs[n,:,i] = 1.0 - F_mse_bs[n,:]/RF_mse[n,:]
-            else: # even
-                fss_bs[n,:,i] = np.nan
-                fss[n,:]      = np.nan
-        # shuffle forecasts (init_dates) randomly with replacement
-        init_dates_random = np.random.choice(init_dates_index,nsample,replace='True')    
-    return fss,fss_bs
+    # Compute the MSE
+    reference_mse = reference_error.mean(dim='forecast_dates')
+    forecast_mse = forecast_error.mean(dim='forecast_dates')
+
+    num_dates = len(reference_error['forecast_dates'])
+    
+    # Initialize results arrays
+    fss           = np.empty((len(box_sizes), forecast_mse.time.size))
+    fss_bootstrap = np.empty((len(box_sizes), forecast_mse.time.size, number_shuffle_bootstrap))
+
+    for i in range(number_shuffle_bootstrap):
+        
+        # Bootstrap sampling of forecast dates
+        sampled_indices = np.random.choice(num_dates, number_sample_bootstrap, replace=True)
+        forecast_mse_bootstrap = forecast_error.isel(forecast_dates=sampled_indices).mean(dim='forecast_dates')
+
+        print(sampled_indices)
+        
+        # Calculate FSS
+        fss_temp = 1.0 - forecast_mse / reference_mse
+        fss_bootstrap_temp = 1.0 - forecast_mse_bootstrap / reference_mse
+
+        for n, box_size in enumerate(box_sizes):
+            if box_size % 2:  # If odd
+                fss[n, :] = fss_temp
+                fss_bootstrap[n, :, i] = fss_bootstrap_temp
+            else:  # If even
+                fss[n, :] = np.nan
+                fss_bootstrap[n, :, i] = np.nan
+
+    return fss, fss_bootstrap
+
 
 
 def time_2_timescale(ds,time_flag,datetime64):
@@ -114,37 +157,36 @@ def time_2_timescale(ds,time_flag,datetime64):
 
 
 
-def init_error(dim,NH,init_dates):
+def initialize_error_array(dim,box_sizes,forecast_dates):
     """
-    Initializes error array used below.
+    Initializes error array.
     Written here to clean up code.
     """
-    data   = np.zeros((init_dates.size,NH.size,dim.ntime),dtype=np.float32)
-    dims   = ["init_dates","neighborhood","time"]
-    coords = dict(init_dates=np.arange(0,init_dates.size),neighborhood=NH,time=dim.time)
+    data   = np.zeros((forecast_dates.size,box_sizes.size,dim.ntime),dtype=np.float32)
+    dims   = ["forecast_dates","box_size","time"]
+    coords = dict(forecast_dates=np.arange(0,forecast_dates.size),box_size=box_sizes,time=dim.time)
     name   = 'error'
     error  = xr.DataArray(data=data,dims=dims,coords=coords,name=name)
     return error
 
 
-
-def init_fss(dim,NH,nshuffle):
+def initialize_fss_array(dim,box_sizes,number_shuffle_bootstrap):
     """
-    Initializes fss arrays used below.
+    Initializes fss arrays.
     Written here to clean up code. 
     """
-    data      = np.zeros((NH.size,dim.ntime),dtype=np.float32)
-    data_bs   = np.zeros((NH.size,dim.ntime,nshuffle),dtype=np.float32)
-    dims      = ["neighborhood","time"]
-    dims_bs   = ["neighborhood","time","number"]
-    coords    = dict(neighborhood=NH,time=dim.time)
-    coords_bs = dict(neighborhood=NH,time=dim.time,number=np.arange(0,nshuffle,1))
-    attrs     = dict(description='fractions skill score of forecast',units='unitless')
-    attrs_bs  = dict(description='fractions skill score of forecast bootstrapped',units='unitless')
-    name      = 'fss'
-    name_bs   = 'fss_bs'
-    fss       = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
-    fss_bs    = xr.DataArray(data=data_bs,dims=dims_bs,coords=coords_bs,attrs=attrs_bs,name=name_bs)
-    return fss,fss_bs
+    data             = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
+    data_bootstrap   = np.zeros((box_sizes.size,dim.ntime,number_shuffle_bootstrap),dtype=np.float32)
+    dims             = ["box_size","time"]
+    dims_bootstrap   = ["box_size","time","number_shuffle_bootstrap"]
+    coords           = dict(box_size=box_sizes,time=dim.time)
+    coords_bootstrap = dict(box_size=box_sizes,time=dim.time,number_shuffle_bootstrap=np.arange(0,number_shuffle_bootstrap,1))
+    attrs            = dict(description='fractions skill score of forecast',units='unitless')
+    attrs_bootstrap  = dict(description='fractions skill score of forecast bootstrapped',units='unitless')
+    name             = 'fss'
+    name_bootstrap   = 'fss_bootstrap'
+    fss              = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
+    fss_bootstrap    = xr.DataArray(data=data_bootstrap,dims=dims_bootstrap,coords=coords_bootstrap,attrs=attrs_bootstrap,name=name_bootstrap)
+    return fss,fss_bootstrap
 
 

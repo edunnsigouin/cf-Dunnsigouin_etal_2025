@@ -47,8 +47,8 @@ era5_seasonal_hindcast_monthly         = processed + "cf-forsikring/era5/seasona
 era5_seasonal_forecast_monthly_clim    = processed + "cf-forsikring/era5/seasonal-model-format/monthly/forecast/climatology/"
 era5_seasonal_forecast_monthly_anomaly = processed + "cf-forsikring/era5/seasonal-model-format/monthly/forecast/anomaly/"
 
-verify_forecast_daily = verify + "cf-forsikring/ecmwf/forecast/daily/"
-
+verify_forecast_daily            = verify + "s2s/ecmwf/daily/forecast/"
+verify_seasonal_forecast_monthly = verify + "seasonal/ecmwf/monthly/forecast/" 
 
 dirs = {"proj":proj,
         "data_interim":data_interim,
@@ -86,5 +86,6 @@ dirs = {"proj":proj,
         "era5_forecast_pers_binary":era5_forecast_pers_binary,
         "era5_hindcast_percentile":era5_hindcast_percentile,
         "era5_hindcast_daily":era5_hindcast_daily,
-        "verify_forecast_daily":verify_forecast_daily
+        "verify_forecast_daily":verify_forecast_daily,
+        "verify_seasonal_forecast_monthly":verify_seasonal_forecast_monthly
 }        
