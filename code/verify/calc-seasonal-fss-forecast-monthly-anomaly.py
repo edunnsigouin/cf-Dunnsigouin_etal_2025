@@ -19,16 +19,17 @@ import os
 from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
-variable                 = 'tp'                     # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable                 = 't2m'                     # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # flag for geographical domain for analysis, e.g, europe, nordic.
 first_forecast_date      = '2017-01'
-number_forecasts         = 5      
-box_sizes                = np.arange(1,61,2)        # np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
+number_forecasts         = 12      
+box_sizes                = np.arange(1,8,2)        # np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
 number_shuffle_bootstrap = 10                    # number of times to shuffle initialization dates for error bars
-number_sample_bootstrap  = 2                       # number of sampled forecasts with replacement in each bootstrap member
+number_sample_bootstrap  = 4                       # number of sampled forecasts with replacement in each bootstrap member
 compress_file_level      = 5                        # compression level (0-10) of netcdf putput file
 write2file               = False
 # -----------------------------------------------------
+
 
 misc.tic()
 
@@ -62,7 +63,7 @@ for  i, date in enumerate(forecast_dates):
     # sub-select specific domain, lead times and percentile threshold
     verification = verification.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
     forecast     = forecast.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
-    
+
     # smooth forecast and observations in xy for each forecast
     # Should there be a cosine weighting when applying filter in y?
     verification_smoothed = verify.boxcar_smoother_xy(box_sizes,verification)
@@ -83,6 +84,8 @@ for  i, date in enumerate(forecast_dates):
 #[fss,fss_bootstrap] = verify.calc_fss_bootstrap(fss,fss_bootstrap,reference_error,forecast_error,number_shuffle_bootstrap,number_sample_bootstrap,forecast_dates,box_sizes)
 
 [fss,fss_bootstrap] = verify.calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, number_sample_bootstrap, box_sizes)
+
+print(fss)
 
 # write to file
 if write2file:

@@ -57,14 +57,13 @@ for variable in variables:
                 c.retrieve('reanalysis-era5-single-levels-monthly-means', dic, path + filename)
 
                 if variable == 'tp':
-                    ds = xr.open_dataset(path + filename)[variable]
-                    ds2 = ds.copy()
+                    ds = xr.open_dataset(path + filename)
                     for m, month in enumerate(months):
-                        ds2[m,:,:] = ds[m,:,:]*100#days_in_month(year, month)
-                    ds2.to_netcdf(path + 'test.nc')
+                        ds[variable][m,:,:] = ds[variable][m,:,:]*days_in_month(year, month)
+                    ds.to_netcdf(path + filename)
                     ds.close()
                     
                 # compress netcdf
-                #s2s.compress_file(comp_lev,3,filename,path)     
+                s2s.compress_file(comp_lev,3,filename,path)     
             
                 

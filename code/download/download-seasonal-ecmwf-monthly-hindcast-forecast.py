@@ -51,10 +51,10 @@ def seconds_in_month(date_string,leadtime_months):
 
 # INPUT -----------------------------------------------
 area            = '74/-27/33/45' # or 'E' for europe
-variables       = ['tp','t2m'] # 'tp' and 't2m'
+variables       = ['tp'] # 'tp' and 't2m'
 data_type       = 'forecast' # forecast or hindcast
-system          = '51' # model version (4,5 or 51)
-years           = np.arange(2022,2023,1)
+system          = '5' # model version (4,5 or 51)
+years           = np.arange(2017,2018,1)
 months          = np.arange(1,13,1)
 leadtime_months = np.arange(1,7,1)
 comp_lev        = 5 # file compression level
@@ -68,7 +68,7 @@ for variable in variables:
         # define stuff
         filename_grib = variable + '_' + str(year) + '.grib'
         filename_nc   = variable + '_' + str(year) + '.nc'
-        path          = config.dirs['seasonal_' + data_type + '_monthly'] + variable + '/'
+        path          = config.dirs['seasonal_' + data_type ] + variable + '/'
 
         # populate dictionary
         months_string          = [str(month) for month in months]
@@ -95,11 +95,11 @@ for variable in variables:
                 # download
                 c = cdsapi.Client()
                 c.retrieve('seasonal-monthly-single-levels', dic, path + filename_grib)
-
+                
                 # read in data 
                 ds = xr.open_dataset(path+filename_grib, engine='cfgrib', backend_kwargs=dict(time_dims=('forecastMonth', 'time')))
                 ds = ds.rename({'forecastMonth':'lead_time_month'})
-                
+
                 # modify metadata
                 if variable == 'tp':
                         # rename stuff
@@ -110,14 +110,14 @@ for variable in variables:
                         del ds[variable].attrs['GRIB_name']
                         del ds[variable].attrs['GRIB_shortName']
                         del ds[variable].attrs['GRIB_units']
-                        
+
                         # units => m/s to m
                         for t in range(0,ds['time'].size): # initialization dates
-                                date_string = str(ds['time'][t].values)[:10]
-                                seconds     = seconds_in_month(date_string,leadtime_months)
-                                for lt in range(0,leadtime_months.size): # lead times
-                                        ds[variable][:,lt,t,:,:] = ds[variable][:,lt,t,:,:]*seconds[lt]
-                                        
+                            date_string = str(ds['time'][t].values)[:10]
+                            seconds     = seconds_in_month(date_string,leadtime_months)
+                            for lt in range(0,leadtime_months.size): # lead times
+                                ds[variable][:,lt,t,:,:] = ds[variable][:,lt,t,:,:]*seconds[lt]
+                                
                 if variable == 't2m':
                         ds[variable].attrs['long_name'] = '2m temperature'
                         ds[variable].attrs['units']     = 'K'

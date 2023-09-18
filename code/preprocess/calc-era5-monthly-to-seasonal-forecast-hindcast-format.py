@@ -10,12 +10,12 @@ from forsikring import config,misc,s2s
 
 # INPUT -----------------------------------------------
 variables        = ['t2m','tp'] # tp & t2m
-data_flag        = 'hindcast' # forecast or hindcast
-forecast_years   = np.arange(1993,2017,1)
+data_flag        = 'forecast' # forecast or hindcast
+forecast_years   = np.arange(2017,2023,1)
 forecast_months  = np.arange(1,13,1)
 lead_time_months = np.arange(1,7,1)
 comp_lev         = 5
-write2file       = False
+write2file       = True
 # -----------------------------------------------------         
 
 for variable in variables:
