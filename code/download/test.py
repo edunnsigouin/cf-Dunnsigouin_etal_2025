@@ -14,15 +14,14 @@ def days_in_month(year, month):
     """
     return calendar.monthrange(year, month)[1]
 
-
 # INPUT -----------------------------------------------
 area            = '74/-27/33/45' # or 'E' for europe
 variables       = ['tp'] # 'tp' and 't2m'
-years           = np.arange(1960,1961,1)
+years           = np.arange(2022,2023,1)
 months          = np.arange(1,13,1)
 grid            = '1.0/1.0'
 comp_lev        = 5 # file compression level
-write2file      = True
+write2file      = False
 # -----------------------------------------------------
 
 # loop through variables and create one file for each year       
@@ -40,7 +39,7 @@ for variable in variables:
 
             ds = xr.open_dataset(path + filename)
             print(ds[variable][0,10,10].values)
-            ds[variable] = ds[variable]*100 
+            ds[variable] = ds[variable]*days_in_month(year, month)
             print(ds[variable][0,10,10].values)
             ds.to_netcdf(path + 'test.nc')
             ds.close()

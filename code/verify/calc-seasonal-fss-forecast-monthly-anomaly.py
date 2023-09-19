@@ -19,15 +19,15 @@ import os
 from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
-variable                 = 't2m'                     # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable                 = 'tp'                     # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # flag for geographical domain for analysis, e.g, europe, nordic.
 first_forecast_date      = '2017-01'
-number_forecasts         = 12      
-box_sizes                = np.arange(1,8,2)        # np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
-number_shuffle_bootstrap = 10                    # number of times to shuffle initialization dates for error bars
-number_sample_bootstrap  = 4                       # number of sampled forecasts with replacement in each bootstrap member
-compress_file_level      = 5                        # compression level (0-10) of netcdf putput file
-write2file               = False
+number_forecasts         = 72      
+box_sizes                = np.arange(1,61,2)        # np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
+number_shuffle_bootstrap = 10000                    # number of times to shuffle initialization dates for error bars
+number_sample_bootstrap  = 72                       # number of sampled forecasts with replacement in each bootstrap member
+comp_lev                 = 5                        # compression level (0-10) of netcdf putput file
+write2file               = True
 # -----------------------------------------------------
 
 
@@ -80,16 +80,15 @@ for  i, date in enumerate(forecast_dates):
     verification.close()
     forecast.close()
     
+
 # calc fss with bootstraping over all forecasts
-#[fss,fss_bootstrap] = verify.calc_fss_bootstrap(fss,fss_bootstrap,reference_error,forecast_error,number_shuffle_bootstrap,number_sample_bootstrap,forecast_dates,box_sizes)
-
-[fss,fss_bootstrap] = verify.calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, number_sample_bootstrap, box_sizes)
-
-print(fss)
+[fss_temp,fss_bootstrap_temp] = verify.calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, number_sample_bootstrap, box_sizes)
 
 # write to file
 if write2file:
-    ds = xr.merge([fss,fss_bootstrap])
+    fss[:,:]           = fss_temp
+    fss_bootstrap[:,:] = fss_bootstrap_temp
+    ds                 = xr.merge([fss,fss_bootstrap])
     ds.to_netcdf(path_out+filename_out)
     s2s.compress_file(comp_lev,3,filename_out,path_out) 
 

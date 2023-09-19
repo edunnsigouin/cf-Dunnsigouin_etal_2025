@@ -58,7 +58,7 @@ years           = np.arange(2017,2018,1)
 months          = np.arange(1,13,1)
 leadtime_months = np.arange(1,7,1)
 comp_lev        = 5 # file compression level
-write2file      = True
+write2file      = False
 # -----------------------------------------------------
 
 # loop through variables        

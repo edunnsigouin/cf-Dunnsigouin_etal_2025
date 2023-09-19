@@ -14,11 +14,10 @@ def days_in_month(year, month):
     """
     return calendar.monthrange(year, month)[1]
 
-
 # INPUT -----------------------------------------------
 area            = '74/-27/33/45' # or 'E' for europe
 variables       = ['tp'] # 'tp' and 't2m'
-years           = np.arange(1960,1961,1)
+years           = np.arange(2023,2024,1)
 months          = np.arange(1,13,1)
 grid            = '1.0/1.0'
 comp_lev        = 5 # file compression level
@@ -56,15 +55,18 @@ for variable in variables:
                 c = cdsapi.Client()
                 c.retrieve('reanalysis-era5-single-levels-monthly-means', dic, path + filename)
 
+                # units of tp in era5 monthly are total accumulated precip per day
+                # so here I multiply by days_in_month to get monthly accumulated values. 
                 if variable == 'tp':
-                    ds = xr.open_dataset(path + filename)[variable]
-                    ds2 = ds.copy()
-                    for m, month in enumerate(months):
-                        ds2[m,:,:] = ds[m,:,:]*100#days_in_month(year, month)
-                    ds2.to_netcdf(path + 'test.nc')
+                    ds   = xr.open_dataset(path + filename)[variable]
+                    temp = np.zeros(ds.shape)
+                    for m in range(ds.shape[0]):
+                        temp[m,:,:] = days_in_month(year, m+1)
+                    ds = ds*temp
+                    ds.to_netcdf(path + filename)
                     ds.close()
-                    
+
                 # compress netcdf
-                #s2s.compress_file(comp_lev,3,filename,path)     
+                s2s.compress_file(comp_lev,3,filename,path)     
             
                 
