@@ -23,7 +23,6 @@ model_version_specs = dict(
     )
 )
 
-
 def which_mv_for_init(fc_init_date,model='ECMWF',fmt='%Y-%m-%d'):
     """    
     return model version for a specified initialization date and model 
@@ -75,28 +74,16 @@ def which_mv_for_init(fc_init_date,model='ECMWF',fmt='%Y-%m-%d'):
         return None
 
 
-
-def get_monday_thursday_dates(mon_thu_start,num_i_weeks):
-    """
-    generate set of continuous monday and thursday dates starting on mon_thu_start[0] and mon_thu_start[1] respectively
-    """
-    dates_monday          = pd.date_range(mon_thu_start[0], periods=num_i_weeks, freq="7D") # forecasts that start monday
-    dates_thursday        = pd.date_range(mon_thu_start[1], periods=num_i_weeks, freq="7D") # forecasts that start thursday
-    dates_monday_thursday = dates_monday.union(dates_thursday)
-    return dates_monday_thursday
-
-
-def get_init_dates(init_start,init_n):
+def get_forecast_dates(first_forecast_date,number_forecasts):
     """
     generate set of continuous dates on mondays and thursdays starting on init_start
     with length init_n
     """
-    dates_monday          = pd.date_range(init_start, periods=init_n, freq="W-MON") # forecasts that start monday
-    dates_thursday        = pd.date_range(init_start, periods=init_n, freq="W-THU")
-    dates_monday_thursday = dates_monday.union(dates_thursday)
-    dates_monday_thursday = dates_monday_thursday[:init_n] 
-    return dates_monday_thursday
-
+    dates_monday          = pd.date_range(first_forecast_date, periods=number_forecasts, freq="W-MON") # forecasts that start monday
+    dates_thursday        = pd.date_range(first_forecast_date, periods=number_forecasts, freq="W-THU")
+    forecast_dates        = dates_monday.union(dates_thursday)
+    forecast_dates        = forecast_dates[:number_forecasts] 
+    return forecast_dates
 
 
 def grib_to_netcdf(path,filename_grb,filename_nc):
@@ -106,65 +93,6 @@ def grib_to_netcdf(path,filename_grb,filename_nc):
     os.system('grib_to_netcdf ' + path + filename_grb + ' -I step -o ' + path + filename_nc)
     os.system('rm ' +  path + filename_grb)
     return
-
-
-def compress_file(comp_lev,ncfiletype,filename,path_out):
-    """
-    wrapper for compressing file using nccopy
-    """
-    cmd           = 'nccopy -k ' + str(ncfiletype) + ' -s -d ' + str(comp_lev) + ' '
-    filename_comp = 'temp_' + filename 
-    os.system(cmd + path_out + filename + ' ' + path_out + filename_comp)
-    os.system('mv ' + path_out + filename_comp + ' ' + path_out + filename)
-    return
-
-
-def to_netcdf_pack64bit(da,filename_out):
-    """
-    A wraper on xrray's to_netcdf with 64-bit
-    encoding to pack the data.
-    Modified from: https://stackoverflow.com/questions/57179990/compression-of-arrays-in-netcdf-file
-    """
-    n    = 16
-    vmin = np.min(da).item()
-    vmax = np.max(da).item()
-
-    # stretch/compress data to the available packed range                                                                                                                                                    
-    scale_factor = (vmax - vmin) / (2 ** n - 1)
-
-    # translate the range to be symmetric about zero
-    add_offset = vmin + 2 ** (n - 1) * scale_factor
-
-    # write2file
-    encoding = {da.name:{
-                "dtype": 'int16',
-                "scale_factor": scale_factor,
-                "add_offset": add_offset,
-                "_FillValue": -9999,
-                "missing_value":-9999}}
-
-    da.to_netcdf(filename_out,encoding=encoding,format='NETCDF3_64BIT')
-    
-    return
-
-
-def get_dim(grid,time_flag):
-    """
-    imports data dimensions given a grid
-    """
-    if grid == '0.25x0.25':
-        from forsikring import dim_hr as dim
-    elif grid == '0.5x0.5':
-        from forsikring import dim_lr as dim
-    elif grid == '1.0x1.0':
-        from forsikring import dim_1x1 as dim
-        
-    if time_flag == 'timescale':
-        dim.time  = dim.timescale
-        dim.ntime = dim.ntimescale
-        
-    return dim
-
 
 
 def convert_2_binary_RL08MWR(data,threshold):
@@ -215,7 +143,6 @@ def boxcar_smoother_xy(NH, da):
 
     # initialize output array
     #smooth = np.zeros((NH.size,) + da.shape)
-
     smooth_values = np.zeros((NH.size,) + da.shape)
     coords = {'NH': NH, **da.coords}
     dims = ['NH'] + list(da.dims)
@@ -233,7 +160,6 @@ def boxcar_smoother_xy(NH, da):
             smooth[i, ...] = np.nan
     
     return smooth
-
 
 
 def calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,init_dates,NH):
@@ -260,60 +186,6 @@ def calc_fss_bootstrap(fss,fss_bs,RF_error,F_error,nshuffle,nsample,init_dates,N
         # shuffle forecasts (init_dates) randomly with replacement
         init_dates_random = np.random.choice(init_dates_index,nsample,replace='True')    
     return fss,fss_bs
-
-
-
-def calc_msess_bootstrap(msess,msess_bs,RF_error,F_error,nshuffle,nsample,chunks):
-    """
-    calculates mean square error skill score and generates bootstrapped estimates by boostrapping
-    subsampling the forecasts/mse_forecasts
-    """
-    chunks_random  = chunks.copy()
-    RF_mse         = (1/chunks.size)*RF_error.sum(dim='chunks').values
-    F_mse          = (1/chunks.size)*F_error.sum(dim='chunks').values
-    msess[:]       =  1 - F_mse/RF_mse
-    for i in range(nshuffle):
-        # calc mean square error                          
-        F_mse_bs = (1/chunks_random.size)*F_error.sel(chunks=chunks_random).sum(dim='chunks').values
-        # calc msess
-        msess_bs[:,i] =  1 - F_mse_bs/RF_mse
-        # shuffle forecasts (chunks) randomly with replacement 
-        chunks_random = np.random.choice(chunks,nsample,replace='True')
-    return msess,msess_bs
-
-
-
-
-def calc_fss_RL08MWR(O,F,RF,method):
-    """
-    Calculates the fractions skill score following equations 5,6,7
-    from Roberts and Lean 2008 MWR given input fractions for observations,
-    forecast, and reference forecast.
-    INPUT: O, F and RF have shape [N,Nx,Ny], where N = neighborhood size, 
-    Nx and Ny are spatial dimensions. O,F and RF must have same dimension 
-    sizes.
-    If method = 'classic', then mse of reference forecast is calculated
-    as in equation 7 from RL08MWR. Else if method = 'default', mse of reference forecast defaults 
-    to regular mse for input reference forecast (like climatology or persistence)
-    """
-    Nx = O.shape[1]
-    Ny = O.shape[2]
-    
-    # calc MSE 
-    error_forecast     = (O - F)**2
-    error_ref_forecast = (O - RF)**2
-    mse_forecast       = error_forecast.sum(axis=2).sum(axis=1)/Nx/Ny
-
-    if method == 'classic':
-        mse_ref_forecast = (1/Nx/Ny)*(np.sum(np.sum(O**2,axis=2),axis=1) + np.sum(np.sum(F**2,axis=2),axis=1))
-    elif method == 'default':
-        mse_ref_forecast = error_ref_forecast.sum(axis=2).sum(axis=1)/Nx/Ny
-        
-    # fractions skill score                                 
-    fss = 1.0 - mse_forecast/mse_ref_forecast
-    
-    return fss
-
 
 
 def preprocess(ds,grid,time_flag):

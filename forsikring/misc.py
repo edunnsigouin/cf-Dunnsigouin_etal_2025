@@ -6,6 +6,7 @@ import time
 import numpy  as np
 import xarray as xr
 from scipy    import signal
+import os
 
 def tic():
     """
@@ -24,6 +25,25 @@ def toc():
     else:
         print("Toc: start time not set")
     return
+
+
+def get_dim(grid,time_flag):
+    """   
+    imports data dimensions given a grid 
+    """
+    if grid == '0.25x0.25':
+        from forsikring import dim_025x025 as dim
+    elif grid == '0.5x0.5':
+        from forsikring import dim_05x05 as dim
+    elif grid == '1.0x1.0':
+        from forsikring import dim_1x1 as dim
+
+    if time_flag == 'timescale':
+        dim.time  = dim.timescale
+        dim.ntime = dim.ntimescale
+
+    return dim
+
 
 def xy_mean(ds):
     """ 
@@ -79,3 +99,42 @@ def subselect_xy_domain_from_dim(dim,domain,grid):
     dim.nlongitude = dim.longitude.size
     return dim
 
+
+def compress_file(comp_lev,ncfiletype,filename,path_out):
+    """  
+    wrapper for compressing file using nccopy
+    """
+    cmd           = 'nccopy -k ' + str(ncfiletype) + ' -s -d ' + str(comp_lev) + ' '
+    filename_comp = 'temp_' + filename
+    os.system(cmd + path_out + filename + ' ' + path_out + filename_comp)
+    os.system('mv ' + path_out + filename_comp + ' ' + path_out + filename)
+    return
+
+
+def to_netcdf_pack64bit(da,filename_out):
+    """ 
+    A wraper on xrray's to_netcdf with 64-bit
+    encoding to pack the data.                                                                                                                                             
+    Modified from: https://stackoverflow.com/questions/57179990/compression-of-arrays-in-netcdf-file
+    """
+    n    = 16
+    vmin = np.min(da).item()
+    vmax = np.max(da).item()
+
+    # stretch/compress data to the available packed range
+    scale_factor = (vmax - vmin) / (2 ** n - 1)
+
+    # translate the range to be symmetric about zero
+    add_offset = vmin + 2 ** (n - 1) * scale_factor
+
+    # write2file
+    encoding = {da.name:{
+                "dtype": 'int16',
+                "scale_factor": scale_factor,
+                "add_offset": add_offset,
+                "_FillValue": -9999,
+                "missing_value":-9999}}
+
+    da.to_netcdf(filename_out,encoding=encoding,format='NETCDF3_64BIT')
+    
+    return

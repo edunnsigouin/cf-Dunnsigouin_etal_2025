@@ -14,7 +14,7 @@ import matplotlib as mpl
 variable            = 'tp'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain              = 'europe'                 # europe/nordic/vestland                       
 first_forecast_date = '2017-01'
-number_forecasts    = 72
+number_forecasts    = 36
 write2file          = True
 # -----------------------------
 
@@ -33,7 +33,6 @@ fss  = ds['fss'].values
 x    = ds['box_size'].values
 t    = ds['time'].values
 x2   = np.array([1,9,19,29,39,49,59])
-
 
 # calculate significance
 temp = ds['fss_bootstrap'].quantile(0.05,dim='number_shuffle_bootstrap',skipna=True).values

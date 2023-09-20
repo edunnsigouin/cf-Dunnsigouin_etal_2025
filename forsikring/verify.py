@@ -48,7 +48,6 @@ def boxcar_smoother_xy(box_sizes,da):
     return smooth
 
 
-
 def calc_fss_bootstrap(fss,fss_bootstrap,reference_error,forecast_error,number_shuffle_bootstrap,number_sample_bootstrap,forecast_dates,box_sizes):
     """
     calculates fractions skill score and generates bootstrapped estimates by boostrapping
@@ -108,9 +107,6 @@ def calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap
     return fss, fss_bootstrap
 
 
-
-
-
 def time_2_timescale(ds,time_flag,datetime64):
     """
     resamples daily time into timescales following
@@ -148,7 +144,6 @@ def time_2_timescale(ds,time_flag,datetime64):
                 ds         = xr.concat([temp1,temp2],"time")
                 ds['time'] = np.arange(1,3,1)
     return ds
-
 
 
 def initialize_error_array(dim,box_sizes,forecast_dates):

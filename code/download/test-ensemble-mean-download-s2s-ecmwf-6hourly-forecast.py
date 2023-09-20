@@ -22,8 +22,8 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product       = 'forecast' # forecast/vr_forecast
-init_start    = '20210816' # first initialization date of forecast (either a monday or thursday)
-init_n        = 5        # number of forecast initializations   
+init_start    = '20210104' # first initialization date of forecast (either a monday or thursday)
+init_n        = 1        # number of forecast initializations   
 grid          = '0.25/0.25' # degree lat/lon resolution
 area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var           = 't2m'
@@ -40,15 +40,13 @@ if product == 'forecast':
         step = '0/to/360/by/6'
     elif grid == '0.5/0.5':
         step = '366/to/1104/by/6'
-    number = '1/to/50'
     stream = 'enfo'
-    path   = config.dirs['forecast_6hourly'] + var + '/'
+    path   = config.dirs['forecast_6hourly'] + var + '/ensemble_mean/'
     dtypes = ['cf','pf']
 elif product == 'vr_forecast':
     step   = '360'
-    number = '1/to/50'
     stream = 'efov'
-    path   = config.dirs['forecast_6hourly'] + var + '/'
+    path   = config.dirs['forecast_6hourly'] + var + '/ensemble_mean/'
     dtypes = ['cf','pf']
     grid   = '0.5/0.5' # need to use low-res
     
@@ -81,9 +79,8 @@ dic = {
     'param': param,
     'levtype': 'sfc',
     'step': step,
-    'number': number,
     'use':'infrequent',
-    'type':'',
+    'type':'em',
     'date':''
 }    
 

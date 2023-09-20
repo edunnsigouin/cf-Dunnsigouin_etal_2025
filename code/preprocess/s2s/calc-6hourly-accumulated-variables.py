@@ -15,51 +15,47 @@ from forsikring import config,misc,s2s
 from matplotlib  import pyplot as plt
 
 # INPUT ----------------------------------------------- 
-variables     = ['tp']                  
-dtypes        = ['cf','pf']             # control & perturbed forecasts/hindcasts
-product       = 'hindcast'              # hindcast or forecast
-init_start    = '20200102' # first initialization date of forecast (either a monday or thursday) 
-init_n        = 105        # number of forecast initializations 
-grid          = '0.25/0.25'             # '0.25/0.25' or '0.5/0.5'
-comp_lev      = 5                       # level of compression with nccopy (1-10)
-write2file    = True
+variables           = ['tp']                  
+dtypes              = ['cf','pf']             # control & perturbed forecasts/hindcasts
+product             = 'forecast'              # hindcast or forecast
+first_forecast_date = '20200102' # first initialization date of forecast (either a monday or thursday) 
+number_forecasts    = 1        # number of forecast initializations 
+grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
+comp_lev            = 5                       # level of compression with nccopy (1-10)
+write2file          = False
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
-init_dates = s2s.get_init_dates(init_start,init_n)
-print(init_dates)
-
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts).strftime('%Y-%m-%d')
+print(forecast_dates)
 
 for variable in variables:
-    for date in init_dates:
+    for date in forecast_dates:
         for dtype in dtypes:
 
             misc.tic()
             
-            datestring = date.strftime('%Y-%m-%d')
             print('')
-            print('variable: ' + variable + ', date: ' + datestring + ', dtype: ' + dtype)
+            print('variable: ' + variable + ', date: ' + date + ', dtype: ' + dtype)
 
             # define some paths and strings
             variable_out = variable + '6' 
-            path_in      = config.dirs[product + '_6hourly'] + variable + '/'
-            path_out     = config.dirs[product + '_6hourly'] + variable_out + '/'
-            if grid == '0.25/0.25': gridstring = '0.25x0.25'
-            elif grid == '0.5/0.5': gridstring = '0.5x0.5'
-
-            # read data
-            forcastcycle = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
-            filename_in  = '%s_%s_%s_%s_%s.nc'%(variable,forcastcycle,gridstring,datestring,dtype)
-            filename_out = '%s_%s_%s_%s_%s.nc'%(variable_out,forcastcycle,gridstring,datestring,dtype)
-            ds           = xr.open_dataset(path_in + filename_in)
+            path_in      = config.dirs['s2s_' + product + '_6hourly'] + variable + '/'
+            path_out     = config.dirs['s2s_' + product + '_6hourly'] + variable_out + '/'
+            forcastcycle = s2s.which_mv_for_init(date,model='ECMWF',fmt='%Y-%m-%d')
+            filename_in  = '%s_%s_%s_%s_%s.nc'%(variable,forcastcycle,grid,date,dtype)
+            filename_out = '%s_%s_%s_%s_%s.nc'%(variable_out,forcastcycle,grid,date,dtype)
             
-            if grid == '0.25/0.25': # first 15 days of hindcast/forecast @ high-resolution
+            # read data
+            ds = xr.open_dataset(path_in + filename_in)
+            
+            if grid == '0.25x0.25': # first 15 days of hindcast/forecast @ high-resolution
                 
                 # to get 6 hour accumulated values do var(t) - var(t-1)
                 # note: var(t=0) = 0
                 ds[variable] = ds[variable].pad(time=1,mode='edge').diff('time').isel(time=slice(None,ds.time.size))                
 
-            elif grid == '0.5/0.5': # last 30 days of hindcast/forecast @ low-resolution
+            elif grid == '0.5x0.5': # last 30 days of hindcast/forecast @ low-resolution
 
                 # remove hour 360 from low-resolution hindcast files if they downloaded hour 360
 		# so all files start at hour 366
@@ -73,7 +69,7 @@ for variable in variables:
                 
                 # Fix hour 366 in LR data using variable resolution data, var_new(366) = var_old(366) - var_variable_res(360)
                 variable_vr                = variable + 'var'
-                filename_in_vr             = '%s_%s_%s_%s_%s_%s.nc'%(variable,forcastcycle,'vr',gridstring,datestring,dtype)
+                filename_in_vr             = '%s_%s_%s_%s_%s_%s.nc'%(variable,forcastcycle,'vr',grid,date,dtype)
                 ds_vr                      = xr.open_dataset(path_in + filename_in_vr)
                 ds[variable][dict(time=0)] = temp - ds_vr[variable_vr][dict(time=0)]
                 ds_vr.close()
@@ -87,18 +83,14 @@ for variable in variables:
                 ds[variable_out].attrs['units']      = 'm'
                 ds[variable_out].attrs['long_name']  = '6-hourly accumulated snowfall'
 
-            print(path_out + filename_out)
-            
             if write2file:
                 print('writing to file..')
-                s2s.to_netcdf_pack64bit(ds[variable_out],path_out + filename_out)
-                print('compress file to reduce space..')
-                s2s.compress_file(comp_lev,4,filename_out,path_out)
+                misc.to_netcdf_pack64bit(ds[variable_out],path_out + filename_out)
+                misc.compress_file(comp_lev,4,filename_out,path_out)
                 print('')
                 
             ds.close()
             
-
             misc.toc()
 
 
