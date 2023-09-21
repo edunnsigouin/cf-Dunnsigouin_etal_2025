@@ -21,14 +21,14 @@ from datetime                    import datetime
 from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
-product       = 'forecast' # forecast/vr_forecast
-init_start    = '20210816' # first initialization date of forecast (either a monday or thursday)
-init_n        = 5        # number of forecast initializations   
-grid          = '0.25/0.25' # degree lat/lon resolution
-area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var           = 't2m'
-comp_lev      = 5 # file compression level
-write2file    = True
+product             = 'forecast' # forecast/vr_forecast
+first_forecast_date = '20210816' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 1        # number of forecast initializations   
+grid                = '0.5/0.5' # degree lat/lon resolution
+area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
+var                 = 't2m'
+comp_lev            = 5 # file compression level
+write2file          = True
 # -----------------------------------------
 
 # initialize mars server
@@ -42,13 +42,13 @@ if product == 'forecast':
         step = '366/to/1104/by/6'
     number = '1/to/50'
     stream = 'enfo'
-    path   = config.dirs['forecast_6hourly'] + var + '/'
+    path   = config.dirs['s2s_forecast_6hourly'] + var + '/'
     dtypes = ['cf','pf']
 elif product == 'vr_forecast':
     step   = '360'
     number = '1/to/50'
     stream = 'efov'
-    path   = config.dirs['forecast_6hourly'] + var + '/'
+    path   = config.dirs['s2s_forecast_6hourly'] + var + '/'
     dtypes = ['cf','pf']
     grid   = '0.5/0.5' # need to use low-res
     
@@ -88,12 +88,12 @@ dic = {
 }    
 
 # get all dates for monday and thursday forecast initializations
-init_dates = s2s.get_init_dates(init_start,init_n)
-print(init_dates)
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast)
+print(forecast_dates)
 
 # populate dictionary some more and download eachforcast one-by-one
 if write2file:
-    for date in init_dates:
+    for date in forecast_dates:
         for dtype in dtypes:
 
             misc.tic()
@@ -121,7 +121,7 @@ if write2file:
             s2s.grib_to_netcdf(path,filename_grb,filename_nc)
 
             print('compress files to reduce space..')
-            s2s.compress_file(comp_lev,4,filename_nc,path)
+            misc.compress_file(comp_lev,4,filename_nc,path)
     
             misc.toc()
 

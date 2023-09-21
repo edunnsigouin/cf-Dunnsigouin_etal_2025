@@ -48,30 +48,30 @@ def boxcar_smoother_xy(box_sizes,da):
     return smooth
 
 
-def calc_fss_bootstrap(fss,fss_bootstrap,reference_error,forecast_error,number_shuffle_bootstrap,number_sample_bootstrap,forecast_dates,box_sizes):
-    """
-    calculates fractions skill score and generates bootstrapped estimates by boostrapping
-    subsampling the forecasts/mse_forecasts
-    """
-
-    forecast_dates_index  = np.arange(0,forecast_dates.size)
-    forecast_dates_random = forecast_dates_index.copy()
-    reference_mse         = (1/forecast_dates.size)*reference_error.sum(dim='forecast_dates').values
-    forecast_mse          = (1/forecast_dates.size)*forecast_error.sum(dim='forecast_dates').values
-    for i in range(number_shuffle_bootstrap):
-        # calc mean square error of forecast       
-        forecast_mse_bootstrap = (1/forecast_dates_random.size)*forecast_error.sel(forecast_dates=forecast_dates_random).sum(dim='forecast_dates').values
-        # calc fss
-        for n in range(0,box_sizes.size,1):
-            if box_sizes[n] % 2 != 0: # odd
-                fss[n,:]             = 1.0 - forecast_mse[n,:]/reference_mse[n,:]
-                fss_bootstrap[n,:,i] = 1.0 - forecast_mse_bootstrap[n,:]/reference_mse[n,:]
-            else: # even
-                fss_bootstrap[n,:,i] = np.nan
-                fss[n,:]             = np.nan
-        # shuffle forecasts dates randomly with replacement
-        forecast_dates_random = np.random.choice(forecast_dates_index,number_sample_bootstrap,replace='True')    
-    return fss,fss_bootstrap
+#def calc_fss_bootstrap(fss,fss_bootstrap,reference_error,forecast_error,number_shuffle_bootstrap,number_sample_bootstrap,forecast_dates,box_sizes):
+#    """
+#    calculates fractions skill score and generates bootstrapped estimates by boostrapping
+#    subsampling the forecasts/mse_forecasts
+#    """
+#
+#    forecast_dates_index  = np.arange(0,forecast_dates.size)
+#    forecast_dates_random = forecast_dates_index.copy()
+#    reference_mse         = (1/forecast_dates.size)*reference_error.sum(dim='forecast_dates').values
+#    forecast_mse          = (1/forecast_dates.size)*forecast_error.sum(dim='forecast_dates').values
+#    for i in range(number_shuffle_bootstrap):
+#        # calc mean square error of forecast       
+#        forecast_mse_bootstrap = (1/forecast_dates_random.size)*forecast_error.sel(forecast_dates=forecast_dates_random).sum(dim='forecast_dates').values
+#        # calc fss
+#        for n in range(0,box_sizes.size,1):
+#            if box_sizes[n] % 2 != 0: # odd
+#                fss[n,:]             = 1.0 - forecast_mse[n,:]/reference_mse[n,:]
+#                fss_bootstrap[n,:,i] = 1.0 - forecast_mse_bootstrap[n,:]/reference_mse[n,:]
+#            else: # even
+#                fss_bootstrap[n,:,i] = np.nan
+#                fss[n,:]             = np.nan
+#        # shuffle forecasts dates randomly with replacement
+#        forecast_dates_random = np.random.choice(forecast_dates_index,number_sample_bootstrap,replace='True')    
+#    return fss,fss_bootstrap
 
 
 
