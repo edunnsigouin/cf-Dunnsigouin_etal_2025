@@ -61,6 +61,12 @@ def rm_lpyr_days(data):
     """
     return data.sel(time=~((data.time.dt.month == 2) & (data.time.dt.day == 29)))
 
+def is_leap_year(year):
+    if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+        return True
+    else:
+        return False
+
 def get_season(ds,season):
     """
     Extracts times belonging to a given season

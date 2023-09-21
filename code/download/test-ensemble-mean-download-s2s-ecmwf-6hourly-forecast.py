@@ -21,14 +21,14 @@ from datetime                    import datetime
 from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
-product       = 'forecast' # forecast/vr_forecast
-init_start    = '20210104' # first initialization date of forecast (either a monday or thursday)
-init_n        = 1        # number of forecast initializations   
-grid          = '0.25/0.25' # degree lat/lon resolution
-area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var           = 't2m'
-comp_lev      = 5 # file compression level
-write2file    = True
+product             = 'forecast' # forecast/vr_forecast
+first_forecast_date = '20200102' # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 105        # number of forecast initializations   
+grid                = '0.25/0.25' # degree lat/lon resolution
+area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
+var                 = 't2m'
+comp_lev            = 5 # file compression level
+write2file          = True
 # -----------------------------------------
 
 # initialize mars server
@@ -41,13 +41,13 @@ if product == 'forecast':
     elif grid == '0.5/0.5':
         step = '366/to/1104/by/6'
     stream = 'enfo'
-    path   = config.dirs['forecast_6hourly'] + var + '/ensemble_mean/'
-    dtypes = ['cf','pf']
+    path   = config.dirs['s2s_forecast_6hourly'] + var + '/ensemble_mean/'
+    dtype  = 'em'
 elif product == 'vr_forecast':
     step   = '360'
     stream = 'efov'
-    path   = config.dirs['forecast_6hourly'] + var + '/ensemble_mean/'
-    dtypes = ['cf','pf']
+    path   = config.dirs['s2s_forecast_6hourly'] + var + '/ensemble_mean/'
+    dtype  = 'em'
     grid   = '0.5/0.5' # need to use low-res
     
 if grid == '0.25/0.25': gridstring = '0.25x0.25'
@@ -80,46 +80,44 @@ dic = {
     'levtype': 'sfc',
     'step': step,
     'use':'infrequent',
-    'type':'em',
+    'type':dtype,
     'date':''
 }    
 
 # get all dates for monday and thursday forecast initializations
-init_dates = s2s.get_init_dates(init_start,init_n)
-print(init_dates)
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts)
+print(forecast_dates)
 
 # populate dictionary some more and download eachforcast one-by-one
 if write2file:
-    for date in init_dates:
-        for dtype in dtypes:
+    for date in forecast_dates:
 
-            misc.tic()
-            
-            # define filenames & variables
-            datestring       = date.strftime('%Y-%m-%d')
-            refyear          = int(datestring[:4])
-            forcastcycle     = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
+        misc.tic()
         
-            if product == 'forecast': base_name = '%s_%s_%s_%s_%s'%(var,forcastcycle,gridstring,datestring,dtype)
-            elif product == 'vr_forecast': base_name = '%s_%s_%s_%s_%s_%s'%(var,forcastcycle,'vr',gridstring,datestring,dtype)
+        # define filenames & variables
+        datestring       = date.strftime('%Y-%m-%d')
+        refyear          = int(datestring[:4])
+        forcastcycle     = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
+        
+        if product == 'forecast': base_name = '%s_%s_%s_%s_%s'%(var,forcastcycle,gridstring,datestring,dtype)
+        elif product == 'vr_forecast': base_name = '%s_%s_%s_%s_%s_%s'%(var,forcastcycle,'vr',gridstring,datestring,dtype)
 
-            filename_grb     = base_name + '.grb'
-            filename_nc      = base_name + '.nc'
+        filename_grb     = base_name + '.grb'
+        filename_nc      = base_name + '.nc'
 
-            # populate dictionary some more
-            dic['date']  = datestring
-            dic['type']  = dtype
+        # populate dictionary some more
+        dic['date']  = datestring
 
-            print('downloading: ' + path + filename_grb)
-            print(dic)
-            server.execute(dic, path + filename_grb)
+        print('downloading: ' + path + filename_grb)
+        print(dic)
+        server.execute(dic, path + filename_grb)
     
-            print('convert grib to netcdf..')    
-            s2s.grib_to_netcdf(path,filename_grb,filename_nc)
+        print('convert grib to netcdf..')    
+        s2s.grib_to_netcdf(path,filename_grb,filename_nc)
 
-            print('compress files to reduce space..')
-            s2s.compress_file(comp_lev,4,filename_nc,path)
-    
-            misc.toc()
+        print('compress files to reduce space..')
+        misc.compress_file(comp_lev,4,filename_nc,path)
+
+        misc.toc()
 
 
