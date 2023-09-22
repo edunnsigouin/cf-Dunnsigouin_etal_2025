@@ -88,7 +88,7 @@ for  i, date in enumerate(forecast_dates):
 if write2file:
     fss[:,:]           = fss_temp
     fss_bootstrap[:,:] = fss_bootstrap_temp
-    ds                 = xr.merge([fss,fss_bs])
+    ds                 = xr.merge([fss,fss_bootstrap])
     ds.to_netcdf(path_out+filename_out)
     misc.compress_file(comp_lev,3,filename_out,path_out) 
 

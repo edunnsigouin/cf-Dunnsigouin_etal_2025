@@ -12,9 +12,9 @@ from forsikring import config,s2s
 
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe
-grid       = '0.25/0.25' # '0.25/0.25' or '0.5/0.5'
-variables  = ['u10m6','v10m6'] # mwd6, swh6, hmax6
-date_start = '2013-01-01'
+grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
+variables  = ['t2m6'] # mwd6, swh6, hmax6
+date_start = '1960-01-01'
 date_end   = '2023-01-01'#'2023-01-01'
 comp_lev   = 5 # file compression level
 write2file = True
@@ -62,6 +62,8 @@ for variable in variables:
             dic['variable'] = '10m_u_component_of_wind'
         elif variable == 'v10m6':
             dic['variable'] = '10m_v_component_of_wind'
+        elif variable == 't2m6':
+            dic['variable'] = '2m_temperature'
             
         # download files    
         for i in range(0,dates.size-1):
@@ -116,6 +118,11 @@ for variable in variables:
                         ds                              = ds.rename({'v10':variable})
                         ds[variable].attrs['long_name'] = '6-hourly mean 10m v component of wind'
                         ds[variable].attrs['units']     = 'unitless'
+                elif variable == 't2m6':
+                        ds                              = ds.resample(time='6h').mean('time')
+                        ds                              = ds.rename({'t2m':variable})
+                        ds[variable].attrs['long_name'] = '6-hourly mean 2m temperature'
+                        ds[variable].attrs['units']     = 'K'
                         
                 ds.to_netcdf(path + filename)
                 ds.close()
