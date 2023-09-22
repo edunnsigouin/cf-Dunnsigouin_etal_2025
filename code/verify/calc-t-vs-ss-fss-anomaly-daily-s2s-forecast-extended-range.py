@@ -20,12 +20,12 @@ variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,
 domain                   = 'europe'                 # europe or norway only?
 first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
 number_forecasts         = 2                      # number of forecasts 
-grids                    = ['0.25x0.25']
-box_sizes                = np.arange(1,8,2)        # np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
+grids                    = ['0.25x0.25','0.5x0.5']
+box_sizes                = np.arange(1,8,2)        # smoothing box size in grid points per side. Must be odd!
 number_shuffle_bootstrap = 2                    # number of times to shuffle initialization dates for error bars
 number_sample_bootstrap  = 2                       # number of sampled forecasts with replacement in each bootstrap member
 comp_lev                 = 5                        # compression level (0-10) of netcdf putput file
-write2file               = False
+write2file               = True
 # -----------------------------------------------------
 
 misc.tic()
@@ -39,8 +39,9 @@ path_out             = config.dirs['verify_s2s_forecast_daily']
 for grid in grids:
 
     # define output fss file
-    filename_out = 't_vs_ss_fss_anomaly_' + variable + '_' + grid + '_' + domain + \
-	           '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '.nc'
+    #filename_out = 't_vs_ss_fss_anomaly_' + variable + '_' + grid + '_' + domain + \
+    #                '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '.nc'
+    filename_out = 'test_' + grid + '.nc'
     
     # get data dimensions and subselect domain
     dim            = misc.get_dim(grid,'time')
@@ -48,9 +49,9 @@ for grid in grids:
     box_sizes_temp = verify.match_box_sizes_high_to_low_resolution(grid,box_sizes)
 
     # initialize fss output array                                                                                              
-    [fss,fss_bootstrap] = verify.initialize_fss_array(dim,box_sizes,number_shuffle_bootstrap)
-    forecast_error      = verify.initialize_error_array(dim,box_sizes,forecast_dates)
-    reference_error     = verify.initialize_error_array(dim,box_sizes,forecast_dates)
+    [fss,fss_bootstrap] = verify.initialize_fss_array(dim,box_sizes_temp,number_shuffle_bootstrap)
+    forecast_error      = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)
+    reference_error     = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)
 
     # loop over forecasts
     for  i, date in enumerate(forecast_dates):
@@ -71,8 +72,8 @@ for grid in grids:
     
         # smooth forecast and observations in xy for each forecast
         # Should there be a cosine weighting when applying filter in y?
-        verification_smoothed = verify.boxcar_smoother_xy(box_sizes,verification)
-        forecast_smoothed     = verify.boxcar_smoother_xy(box_sizes,forecast)
+        verification_smoothed = verify.boxcar_smoother_xy(box_sizes_temp,verification)
+        forecast_smoothed     = verify.boxcar_smoother_xy(box_sizes_temp,forecast)
 
         # calc squared error for each forecast
         forecast_error_xy  = (forecast_smoothed - verification_smoothed)**2
@@ -85,17 +86,34 @@ for grid in grids:
         verification.close()
         forecast.close()
 
-    
     # calc fss with bootstraping over all forecasts  
-    [fss_temp,fss_bootstrap_temp] = verify.calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, number_sample_bootstrap, box_sizes)
+    [fss[:,:],fss_bootstrap[:,:,:]] = verify.calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, number_sample_bootstrap, box_sizes_temp)
 
     # write to file
     if write2file:
-        fss[:,:]           = fss_temp
-        fss_bootstrap[:,:] = fss_bootstrap_temp
-        ds                 = xr.merge([fss,fss_bootstrap])
+        ds = xr.merge([fss,fss_bootstrap])
+        if grid == '0.5x0.5': ds['box_sizes'] = box_sizes # matching box size dim across resolutions 
         ds.to_netcdf(path_out+filename_out)
         misc.compress_file(comp_lev,3,filename_out,path_out) 
+        ds.close()
 
+"""
+# combine low and high resolution files into one file if both exist
+if (os.path.exists(path_out + filename_hr_out)) and (os.path.exists(path_out + filename_lr_out)):
+    if write2file:
+        print('combine high & low resolution files into one file..')
+        ds_hr           = xr.open_dataset(path_out + filename_hr_out)
+        ds_lr           = xr.open_dataset(path_out + filename_lr_out)
+	ds              = xr.concat([ds_hr,ds_lr], 'time')
+        ds.to_netcdf(path_out+filename_out)
+        os.system('rm ' + path_out + filename_hr_out + ' ' + path_out + filename_lr_out)
+
+        print('compress file to reduce space..')
+	s2s.compress_file(comp_lev,3,filename_out,path_out)
+        ds.close()
+	ds_lr.close()
+	ds_hr.close()
+"""
+        
 misc.toc()
 

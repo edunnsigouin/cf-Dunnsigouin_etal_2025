@@ -58,6 +58,7 @@ def init_fss(dim,NH,nshuffle):
     fss_bs    = xr.DataArray(data=data_bs,dims=dims_bs,coords=coords_bs,attrs=attrs_bs,name=name_bs)
     return fss,fss_bs
 
+
 def subselect_time_and_neighborhood_from_dim(dim,ltime,grid,NH,time_flag):
     """ 
     kitchen sink function to sub-select appropriate data  

@@ -8,13 +8,13 @@ from dask.diagnostics import ProgressBar
 import cdsapi
 import pandas as pd
 import os
-from forsikring import config,s2s
+from forsikring import config,s2s,misc
 
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe
 grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
 variables  = ['t2m6'] # mwd6, swh6, hmax6
-date_start = '1960-01-01'
+date_start = '1961-01-01'
 date_end   = '2023-01-01'#'2023-01-01'
 comp_lev   = 5 # file compression level
 write2file = True
@@ -126,7 +126,7 @@ for variable in variables:
                         
                 ds.to_netcdf(path + filename)
                 ds.close()
-
+                
                 if (dates[i+1].year - dates[i].year == 1) or (dates[i+1].strftime('%Y-%m-%d') == date_end): # if new year or end of dates
 
                         print('')
@@ -135,15 +135,14 @@ for variable in variables:
                         filenames    = variable + '_' + gridstring + '_' + str(year) + '-*'
                         filename_out = variable + '_' + gridstring + '_' + str(year) + '.nc'
                         ds           = xr.open_mfdataset(path + filenames)
-                        with ProgressBar():
-                                ds = ds.compute()
+                        with ProgressBar(): ds = ds.compute()
                         ds.to_netcdf(path + filename_out)
                         ds.close()
                         os.system('rm ' + path + filenames)
 
                         print('compress files to reduce space..')
                         print('')
-                        s2s.compress_file(comp_lev,3,filename_out,path)
+                        misc.compress_file(comp_lev,3,filename_out,path)
 
 
 

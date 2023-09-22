@@ -27,13 +27,16 @@ def boxcar_smoother_xy(box_sizes,da):
         raise ValueError("The last two dimensions of 'da' must be 'latitude' and 'longitude'")
 
     # initialize output array
-    #smooth = np.zeros((box_sizes.size,) + da.shape)
-
     smooth_values = np.zeros((box_sizes.size,) + da.shape)
     coords        = {'box_size': box_sizes, **da.coords}
     dims          = ['box_size'] + list(da.dims)
     smooth        = xr.DataArray(smooth_values, coords=coords, dims=dims)
-    
+
+    # NOTE about loop below: when doing calculation for high res data (0.25x0.25),
+    # all box sizes are odd numbered. But with low res data (0.5x0.5),
+    # half the box sizes are even and only the odd ones are used for smoothing.
+    # This is so that the dimension box_size is the same for both resolutions and
+    # the odd box_sizes are those that correspond to the box sizes at high resolution.
     for i, n in enumerate(box_sizes):
         if n % 2 != 0:  # odd
             # Create kernel with the same number of dimensions as da
@@ -42,7 +45,7 @@ def boxcar_smoother_xy(box_sizes,da):
             kernel           = np.ones(kernel_shape) / (n**2)
             # smooth
             smooth[i, ...] = ndimage.convolve(da.values, kernel, mode='constant', cval=0.0)
-        else:  # even
+        else: # even
             smooth[i, ...] = np.nan
     
     return smooth
@@ -159,8 +162,15 @@ def match_box_sizes_high_to_low_resolution(grid,box_sizes):
     low (0.5x0.5 degree) resolution data. For example, box size with 5 
     grid points per side in high res data is equivalent to 3 in low res
     data.
+    Box_sizes for low res data ends up being the same length array,
+    but has odd AND even values. The odd ones correspond to the high res
+    box sizes. For example, high res box sizes [1,3,5,7] correspond to low
+    res box sizes [1,2,3,4]. Here, only the odd numbered sizes are used in 
+    the boxcar smoother (see function).
     """
-    if grid == '0.5x0.5': box_sizes_lr = np.copy(np.ceil(box_sizes/2)).astype(int)
-    else: box_sizes_lr = box_sizes
+    if grid == '0.5x0.5':
+        box_sizes_lr = np.copy(np.ceil(box_sizes/2)).astype(int)
+    else:
+        box_sizes_lr = box_sizes
         
     return box_sizes_lr
