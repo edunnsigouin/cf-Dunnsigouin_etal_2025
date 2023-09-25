@@ -174,3 +174,32 @@ def match_box_sizes_high_to_low_resolution(grid,box_sizes):
         box_sizes_lr = box_sizes
         
     return box_sizes_lr
+
+
+
+def combine_high_and_low_res_files(filename_hr, filename_lr, filename, path, write2file):
+
+    hr_file_path  = path + filename_hr
+    lr_file_path  = path + filename_lr
+    out_file_path = path + filename
+
+    if not os.path.exists(hr_file_path) or not os.path.exists(lr_file_path):
+        print("Either the high-resolution or low-resolution file does not exist.")
+        return
+
+    if not write2file:
+        print("Write to file is disabled. Exiting.")
+        return
+
+    try:
+        print('Combining high & low-resolution files into one file...')
+        with xr.open_dataset(hr_file_path) as ds_hr, xr.open_dataset(lr_file_path) as ds_lr:
+            ds = xr.concat([ds_hr, ds_lr], 'time')
+            ds.to_netcdf(path + filename)
+            
+        print('Deleting original high and low-resolution files...')
+        os.remove(hr_file_path)
+        os.remove(lr_file_path)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")

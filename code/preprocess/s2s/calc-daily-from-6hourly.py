@@ -11,13 +11,13 @@ from forsikring import config,misc,s2s
 from matplotlib  import pyplot as plt
 
 # INPUT ----------------------------------------------- 
-variables           = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+variables           = ['t2m24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 product             = 'forecast'              # hindcast or forecast ?
-first_forecast_date = '20200102' # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 1        # number of forecast initializations  
-grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
+first_forecast_date = '20210104' # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 104        # number of forecast initializations  
+grid                = '0.5x0.5'             # '0.25x0.25' or '0.5x0.5'
 comp_lev            = 5                       # level of compression with nccopy (1-10)
-write2file          = False
+write2file          = True
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
@@ -51,13 +51,12 @@ for variable in variables:
                     # drop first 'day' for high res data since it accumulates data when
                     # there is no data (i.e. initialization time)
                     ds = ds.isel(time=slice(1,ds.time.size)) 
-
                 # metadata    
                 ds                                  = ds.rename({'tp6':variable})    
                 ds[variable].attrs['units']         = 'm'
                 ds[variable].attrs['long_name']     = 'daily accumulated precipitation'
                 ds[variable].attrs['forecastcycle'] = forecastcycle
-                
+
                 if write2file: misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out) 
                 ds.close()
 
@@ -157,7 +156,29 @@ for variable in variables:
                 ds[variable].attrs['forecastcycle'] = forecastcycle
                 if write2file: misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
                 ds.close()
+                
+            elif variable == 't2m24': # daily-mean 2-meter temperature (K)
 
+                path_in                             = config.dirs['s2s_' + product + '_6hourly'] + 't2m/'
+                path_out                            = config.dirs['s2s_' + product + '_daily'] + variable + '/'
+                filename_in                         = 't2m_' + basename + '.nc'
+                filename_out                        = variable + '_' + basename + '.nc'
+                ds                                  = xr.open_dataset(path_in + filename_in)
+                ds                                  = ds.resample(time='1D').mean('time')
+                ds                                  = ds.rename({'t2m':variable})
+
+                # remove last day since it only does an average of the first 6 hours
+                # of the last day
+                ds = ds.isel(time=slice(0,ds.time.size-1))
+
+                ds[variable].attrs['units']         = 'K'
+                ds[variable].attrs['long_name']     = 'daily-mean 2-meter temperature'
+                ds[variable].attrs['forecastcycle'] = forecastcycle
+                
+                if write2file: misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
+                ds.close()
+
+                
                 
         if write2file:
             

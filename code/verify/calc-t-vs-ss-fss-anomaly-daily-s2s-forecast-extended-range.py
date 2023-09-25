@@ -18,7 +18,7 @@ from forsikring  import misc,s2s,verify,config
 # INPUT -----------------------------------------------
 variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
-first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
+first_forecast_date      = '20210104'               # first initialization date of forecast (either a monday or thursday)
 number_forecasts         = 2                      # number of forecasts 
 grids                    = ['0.25x0.25','0.5x0.5']
 box_sizes                = np.arange(1,8,2)        # smoothing box size in grid points per side. Must be odd!
@@ -35,14 +35,17 @@ forecast_dates       = s2s.get_forecast_dates(first_forecast_date,number_forecas
 path_in_forecast     = config.dirs['s2s_forecast_daily_anomaly'] + variable + '/'
 path_in_verification = config.dirs['era5_s2s_forecast_daily_anomaly'] + variable + '/'
 path_out             = config.dirs['verify_s2s_forecast_daily']
+prefix               =  't_vs_ss_fss_anomaly_' + variable + '_' + domain + \
+                        '_' + forecast_dates[0] + '_' + forecast_dates[-1] 
+filename_hr_out      = prefix + '_0.25x0.25.nc'
+filename_lr_out      = prefix +	'_0.5x0.5.nc'
 
 for grid in grids:
 
     # define output fss file
-    #filename_out = 't_vs_ss_fss_anomaly_' + variable + '_' + grid + '_' + domain + \
-    #                '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '.nc'
-    filename_out = 'test_' + grid + '.nc'
-    
+    if grid == '0.25x0.25': filename_out = filename_hr_out
+    elif grid == '0.5x0.5': filename_out = filename_lr_out
+
     # get data dimensions and subselect domain
     dim            = misc.get_dim(grid,'time')
     dim            = misc.subselect_xy_domain_from_dim(dim,domain,grid)
@@ -92,28 +95,15 @@ for grid in grids:
     # write to file
     if write2file:
         ds = xr.merge([fss,fss_bootstrap])
-        if grid == '0.5x0.5': ds['box_sizes'] = box_sizes # matching box size dim across resolutions 
+        if grid == '0.5x0.5': ds['box_size'] = box_sizes # matching box size dim across resolutions 
         ds.to_netcdf(path_out+filename_out)
         misc.compress_file(comp_lev,3,filename_out,path_out) 
         ds.close()
 
-"""
-# combine low and high resolution files into one file if both exist
-if (os.path.exists(path_out + filename_hr_out)) and (os.path.exists(path_out + filename_lr_out)):
-    if write2file:
-        print('combine high & low resolution files into one file..')
-        ds_hr           = xr.open_dataset(path_out + filename_hr_out)
-        ds_lr           = xr.open_dataset(path_out + filename_lr_out)
-	ds              = xr.concat([ds_hr,ds_lr], 'time')
-        ds.to_netcdf(path_out+filename_out)
-        os.system('rm ' + path_out + filename_hr_out + ' ' + path_out + filename_lr_out)
 
-        print('compress file to reduce space..')
-	s2s.compress_file(comp_lev,3,filename_out,path_out)
-        ds.close()
-	ds_lr.close()
-	ds_hr.close()
-"""
-        
+# combine low and high resolution files into one file if both exist
+filename_out = prefix + '.nc'
+verify.combine_high_and_low_res_files(filename_hr_out, filename_lr_out, filename_out, path_out, write2file)
+
 misc.toc()
 

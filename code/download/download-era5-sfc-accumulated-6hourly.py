@@ -95,7 +95,6 @@ for variable in variables:
                         ds[variable].attrs['long_name'] = '6-hourly accumulated precipitation'
                         ds[variable].attrs['units']     = 'm'
                 elif variable == 'sf6':
-                        ds['time']                      = ds.time - np.timedelta64(1,'h') # shift time to put all required data on same day 
                         ds                              = ds.resample(time='6h').sum('time')
                         ds                              = ds.isel(time=slice(1,5))
                         ds                              = ds.rename({'sf':variable})

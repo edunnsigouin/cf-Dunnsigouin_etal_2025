@@ -104,10 +104,21 @@ for variable in variables:
             ds[variable].attrs['long_name'] = 'daily maximum timestep precipitation rate'
             if write2file: ds.to_netcdf(dir_out + filename_out)
             ds.close()
+        elif variable == 't2m24': # daily-mean 2-meter temperature
+            dir_in                          = config.dirs['era5_6hourly'] + 't2m6/'
+            dir_out                         = config.dirs['era5_daily'] + variable + '/'
+            filename_in                     = 't2m6_' + grid + '_' + str(year) + '.nc'
+            filename_out                    = variable + '_' + grid + '_' + str(year) + '.nc'
+            ds                              = xr.open_dataset(dir_in + filename_in)
+            ds                              = ds.rename({'t2m6':variable})
+            ds                              = ds.resample(time='1D').mean('time')
+            ds[variable].attrs['units']     = 'K'
+            ds[variable].attrs['long_name'] = 'daily-mean 2-meter temperature'
+            if write2file: ds.to_netcdf(dir_out + filename_out)
+            ds.close()
             
 
-        if write2file:   
-            misc.compress_file(comp_lev,3,filename_out,dir_out)
+        if write2file: misc.compress_file(comp_lev,3,filename_out,dir_out)
 
         
         misc.toc()
