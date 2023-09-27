@@ -9,7 +9,7 @@ import pandas   as pd
 import os
 from datetime   import datetime
 from scipy      import signal, ndimage
-
+from forsikring  import misc
 
 def boxcar_smoother_xy(box_sizes,da):
     """
@@ -84,43 +84,42 @@ def calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap
     return fss, fss_bootstrap
 
 
-def time_2_timescale(ds,time_flag,datetime64):
-    """
-    resamples daily time into timescales following
-    Wheeler et al. 2016 QJRMS. For exmaple, 1d1d,2d2d etc..
-    Not exactly same since hr to lr data occurs on day 15 not 14.
-    """
-    if time_flag == 'timescale':
-        
-        if datetime64: # keep time dimension as datetime64
-            time = ds.time.values
-            if ds.time.size == 15:
-                temp1      = ds.isel(time=1).drop_vars('time')
-                temp2      = ds.isel(time=slice(2,3)).mean(dim='time')
-                temp3      = ds.isel(time=slice(4,7)).mean(dim='time')
-                temp4      = ds.isel(time=slice(7,13)).mean(dim='time')
-                ds         = xr.concat([temp1,temp2,temp3,temp4],"time")
-                ds['time'] = np.array([time[1],time[2],time[4],time[7]],dtype='datetime64[ns]')
-            elif ds.time.size == 31:
-                temp1      = ds.isel(time=slice(0,12)).mean(dim='time')
-                temp2      = ds.isel(time=slice(13,31)).mean(dim='time')
-                ds         = xr.concat([temp1,temp2],"time")
-                ds['time'] = np.array([time[0],time[13]],dtype='datetime64[ns]')
 
-        else: # convert time dimension to integers starting at 1
-            if ds.time.size == 15:
-                temp1      = ds.sel(time=2).drop_vars('time')
-                temp2      = ds.sel(time=slice(3,4)).mean(dim='time')
-                temp3      = ds.sel(time=slice(5,8)).mean(dim='time')
-                temp4      = ds.sel(time=slice(8,14)).mean(dim='time')
-                ds         = xr.concat([temp1,temp2,temp3,temp4],"time")
-                ds['time'] = np.arange(1,5,1) 
-            elif ds.time.size == 31:
-                temp1      = ds.sel(time=slice(16,28)).mean(dim='time')
-                temp2      = ds.sel(time=slice(29,46)).mean(dim='time')
-                ds         = xr.concat([temp1,temp2],"time")
-                ds['time'] = np.arange(1,3,1)
-    return ds
+def resample_15_days(ds):
+    """ 
+    Resamples dataset time dimention with 15 days to timescales 
+    """
+    temp1                = ds.isel(time=1).drop_vars('time')
+    temp2                = ds.isel(time=slice(2, 3)).mean(dim='time')
+    temp3                = ds.isel(time=slice(4, 7)).mean(dim='time')
+    temp4                = ds.isel(time=slice(7, 13)).mean(dim='time')
+    ds_resampled         = xr.concat([temp1, temp2, temp3, temp4], "time")
+    ds_resampled['time'] = np.arange(1, 5, 1)
+    return ds_resampled
+
+def resample_31_days(ds):
+    """
+    Resamples dataset time dimention with 31 days to timescales 
+    """
+    temp1                = ds.isel(time=slice(0, 12)).mean(dim='time')
+    temp2                = ds.isel(time=slice(13, 31)).mean(dim='time')
+    ds_resampled         = xr.concat([temp1, temp2], "time")
+    ds_resampled['time'] = np.arange(5, 7, 1)
+    return ds_resampled
+
+def resample_time_to_timescale(ds, time_flag):
+    """Resamples daily time into timescales following Wheeler et al. 2016 QJRMS.
+    Adjusted for hr to lr data occurring on day 15 not 14."""
+    
+    if time_flag != 'timescale':
+        return ds
+
+    if ds.time.size == 15:
+        return resample_15_days(ds)
+    elif ds.time.size == 31:
+        return resample_31_days(ds)
+    else:
+        raise ValueError(f"Unsupported time size: {ds.time.size}. Supported sizes are 15 or 31.")
 
 
 def initialize_error_array(dim,box_sizes,forecast_dates):
@@ -177,7 +176,7 @@ def match_box_sizes_high_to_low_resolution(grid,box_sizes):
 
 
 
-def combine_high_and_low_res_files(filename_hr, filename_lr, filename, path, write2file):
+def combine_high_and_low_res_files(filename_hr, filename_lr, filename, path, time_flag, write2file):
 
     hr_file_path  = path + filename_hr
     lr_file_path  = path + filename_lr
@@ -194,7 +193,10 @@ def combine_high_and_low_res_files(filename_hr, filename_lr, filename, path, wri
     try:
         print('Combining high & low-resolution files into one file...')
         with xr.open_dataset(hr_file_path) as ds_hr, xr.open_dataset(lr_file_path) as ds_lr:
-            ds = xr.concat([ds_hr, ds_lr], 'time')
+            if time_flag == 'time':
+                ds = xr.concat([ds_hr, ds_lr], 'time')
+            elif time_flag == 'timescale':
+                ds = xr.concat([ds_hr, ds_lr], 'timescale')
             ds.to_netcdf(path + filename)
             
         print('Deleting original high and low-resolution files...')
@@ -203,3 +205,47 @@ def combine_high_and_low_res_files(filename_hr, filename_lr, filename, path, wri
 
     except Exception as e:
         print(f"An error occurred: {e}")
+
+
+        
+def get_data_dimensions(grid, time_flag, domain):
+    dim = misc.get_dim(grid, time_flag)
+    return misc.subselect_xy_domain_from_dim(dim, domain, grid)
+        
+
+
+def calc_forecast_and_reference_error(filename_verification, filename_forecast, variable, box_sizes_temp, dim, time_flag):
+
+    verification          = xr.open_dataset(filename_verification)[variable]
+    forecast              = xr.open_dataset(filename_forecast)[variable]
+
+    verification          = resample_time_to_timescale(verification, time_flag)
+    forecast              = resample_time_to_timescale(forecast, time_flag)
+
+    verification          = verification.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
+    forecast              = forecast.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
+
+    verification_smoothed = boxcar_smoother_xy(box_sizes_temp, verification)
+    forecast_smoothed     = boxcar_smoother_xy(box_sizes_temp, forecast)
+
+    forecast_error_xy     = (forecast_smoothed - verification_smoothed) ** 2
+    reference_error_xy    = (verification_smoothed) ** 2
+
+    verification.close()
+    forecast.close()
+
+    return misc.xy_mean(forecast_error_xy).values, misc.xy_mean(reference_error_xy).values
+
+
+def write_fss_to_file(fss, fss_bootstrap, write2file, grid, box_sizes, time_flag, filename_out, path_out, comp_lev):
+    """Kitchen sink function to write fss to file""" 
+    if write2file:
+        ds = xr.merge([fss,fss_bootstrap])
+        if grid == '0.5x0.5':
+            ds['box_size'] = box_sizes
+        if time_flag == 'timescale':
+            ds = ds.rename({'time': 'timescale'})
+        ds.to_netcdf(path_out + filename_out)
+        misc.compress_file(comp_lev, 3, filename_out, path_out)
+        ds.close()
+    return

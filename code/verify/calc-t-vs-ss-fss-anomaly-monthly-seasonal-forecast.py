@@ -19,6 +19,7 @@ import os
 from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
+time_flag                = 'time'                   # time or timescale as time dimension?
 variable                 = 'tp'                     # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # flag for geographical domain for analysis, e.g, europe, nordic.
 first_forecast_date      = '2017-01'
@@ -27,7 +28,7 @@ box_sizes                = np.arange(1,61,2)        # np.array([1,9,19,29,39,49,
 number_shuffle_bootstrap = 10000                    # number of times to shuffle initialization dates for error bars
 number_sample_bootstrap  = 36                       # number of sampled forecasts with replacement in each bootstrap member
 comp_lev                 = 5                        # compression level (0-10) of netcdf putput file
-write2file               = True
+write2file               = False
 # -----------------------------------------------------
 
 
