@@ -16,14 +16,14 @@ import os
 from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
-variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable                 = 't2m24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
-first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 313                      # number of forecasts 
+first_forecast_date      = '20210104'               # first initialization date of forecast (either a monday or thursday)
+number_forecasts         = 104                      # number of forecasts 
 grid                     = '0.25x0.25'
 box_sizes                = np.arange(1,61,2)        # np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
 number_shuffle_bootstrap = 10000                    # number of times to shuffle initialization dates for error bars
-number_sample_bootstrap  = 313                       # number of sampled forecasts with replacement in each bootstrap member
+number_sample_bootstrap  = 104                       # number of sampled forecasts with replacement in each bootstrap member
 comp_lev                 = 5                        # compression level (0-10) of netcdf putput file
 write2file               = True
 # -----------------------------------------------------

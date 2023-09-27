@@ -1,48 +1,46 @@
 """
-Converts ecmwf forecast data into anomalies relative to 
-corresponding hindcast climatology.
+Converts era5 s2s forecast format data into anomaly relative
+to climatological mean.
 """
 
 import numpy    as np
 import xarray   as xr
-import os
 from forsikring import misc,s2s,config
 
 # INPUT -----------------------------------------------
-variables           = ['t2m24']                  # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variables           = ['t2m24']                 # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 first_forecast_date = '20210104'               # first initialization date of forecast (either a monday or thursday)
 number_forecasts    = 104                      # number of forecasts 
-grids               = ['0.25x0.25']            # '0.25x0.25' & '0.5x0.5'
+grids               = ['0.5x0.5']            # '0.25x0.25' & '0.5x0.5'
 comp_lev            = 5                        # compression level (0-10) of netcdf putput file
 write2file          = True
 # -----------------------------------------------------
 
 misc.tic()
 
-# define stuff  
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts).strftime('%Y-%m-%d').values
+# get forecast dates 
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts).strftime('%Y-%m-%d')
 print(forecast_dates)
 
 for variable in variables:
     for grid in grids:
         for date in forecast_dates:
 
-            print('\nconverting forecast to anomaly for ' + grid + ' and initialization ' + date)
+            print('\nconverting forecast to anomaly ' + variable + ' for ' + grid + ' and initialization ' + date)
         
             # define stuff
-            dim               = misc.get_dim(grid,'time')
-            path_in_forecast  = config.dirs['s2s_forecast_daily'] + variable + '/'
-            path_in_clim      = config.dirs['s2s_hindcast_daily_clim'] + variable + '/'
-            path_out          = config.dirs['s2s_forecast_daily_anomaly'] + variable + '/'
+            path_in_forecast  = config.dirs['era5_s2s_forecast_daily'] + variable + '/'
+            path_in_clim      = config.dirs['era5_s2s_forecast_daily_clim'] + variable + '/'
+            path_out          = config.dirs['era5_s2s_forecast_daily_anomaly'] + variable + '/'
             filename_forecast = variable + '_' + grid + '_' + date + '.nc'
             filename_clim     = variable + '_' + grid + '_' + date + '.nc'
             filename_out      = variable + '_' + grid + '_' + date + '.nc'
         
-            # read data
-            da_forecast = xr.open_dataset(path_in_forecast + filename_forecast)[variable].mean(dim='number') # ensemble mean
+            # read forecast and climatology in forecast format
+            da_forecast = xr.open_dataset(path_in_forecast + filename_forecast)[variable]
             da_clim     = xr.open_dataset(path_in_clim + filename_clim)[variable]
 
-	    # calculate anomalies from climatology
+            # calc anomaly
             da_anomaly = da_forecast - da_clim
 
             # modify metadata
@@ -61,15 +59,16 @@ for variable in variables:
             if variable == 'mx24rn6':
                 da_anomaly.attrs['units']     = 'm'
                 da_anomaly.attrs['long_name'] = 'anomalies of daily maximum 6 hour accumulated rainfall'
-
-            # write output     
+            
+            # write output
             if write2file:
                 da_anomaly.to_netcdf(path_out + filename_out)
                 misc.compress_file(comp_lev,3,filename_out,path_out) 
-                
+        
             da_forecast.close()
             da_clim.close()
-
+            da_anomaly.close()
+            
 misc.toc()
 
 
