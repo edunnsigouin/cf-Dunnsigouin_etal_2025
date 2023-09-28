@@ -20,15 +20,15 @@ from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
 time_flag                = 'time'                   # time or timescale as time dimension?
-variable                 = 'tp'                     # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable                 = 't2m'                     # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # flag for geographical domain for analysis, e.g, europe, nordic.
-first_forecast_date      = '2017-01'
-number_forecasts         = 36      
+first_forecast_date      = '2022-01'
+number_forecasts         = 12      
 box_sizes                = np.arange(1,61,2)        # np.array([1,9,19,29,39,49,59])  # neighborhood size in grid points per side
 number_shuffle_bootstrap = 10000                    # number of times to shuffle initialization dates for error bars
-number_sample_bootstrap  = 36                       # number of sampled forecasts with replacement in each bootstrap member
+number_sample_bootstrap  = 12                       # number of sampled forecasts with replacement in each bootstrap member
 comp_lev                 = 5                        # compression level (0-10) of netcdf putput file
-write2file               = False
+write2file               = True
 # -----------------------------------------------------
 
 
@@ -39,11 +39,10 @@ forecast_dates       = pd.date_range(first_forecast_date,periods=number_forecast
 path_in_forecast     = config.dirs['seasonal_forecast_monthly_anomaly'] + variable + '/'
 path_in_verification = config.dirs['era5_seasonal_forecast_monthly_anomaly'] + variable + '/'
 path_out             = config.dirs['verify_seasonal_forecast_monthly']
-filename_out         = 'time_fss_seasonal_forecast_' + variable + '_anomaly_' + domain + '_' + \
-                        forecast_dates[0] + '_' + forecast_dates[-1] + '.nc'
+filename_out         = 'time_vs_ss_fss_anomaly_' + variable + '_' + domain + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '.nc'
 
 # initialize fss output array
-dim                 = s2s.get_dim('1.0x1.0','time')
+dim                 = misc.get_dim('1.0x1.0','time')
 [fss,fss_bootstrap] = verify.initialize_fss_array(dim,box_sizes,number_shuffle_bootstrap)
 forecast_error      = verify.initialize_error_array(dim,box_sizes,forecast_dates)
 reference_error     = verify.initialize_error_array(dim,box_sizes,forecast_dates)
@@ -91,7 +90,7 @@ if write2file:
     fss_bootstrap[:,:] = fss_bootstrap_temp
     ds                 = xr.merge([fss,fss_bootstrap])
     ds.to_netcdf(path_out+filename_out)
-    s2s.compress_file(comp_lev,3,filename_out,path_out) 
+    misc.compress_file(comp_lev,3,filename_out,path_out) 
 
 misc.toc()
 
