@@ -20,7 +20,7 @@ from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
 time_flag                = 'time'                   # time or timescale as time dimension?
-variable                 = 't2m'                     # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable                 = 'tp'                     # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # flag for geographical domain for analysis, e.g, europe, nordic.
 first_forecast_date      = '2022-01'
 number_forecasts         = 12      

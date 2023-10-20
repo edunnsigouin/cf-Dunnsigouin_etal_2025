@@ -11,7 +11,7 @@ from forsikring  import misc,s2s,config
 import matplotlib as mpl
 
 # INPUT -----------------------
-variable            = 't2m'         # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable            = 'tp'         # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain              = 'europe'     # europe/nordic/vestland                       
 first_forecast_date = '2022-01'
 number_forecasts    = 12

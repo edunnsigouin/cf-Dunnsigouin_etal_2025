@@ -74,16 +74,31 @@ def which_mv_for_init(fc_init_date,model='ECMWF',fmt='%Y-%m-%d'):
         return None
 
 
-def get_forecast_dates(first_forecast_date,number_forecasts):
+def get_forecast_dates(first_forecast_date,number_forecasts,season):
     """
     generate set of continuous dates on mondays and thursdays starting on init_start
     with length init_n
     """
+
+    SEASONS = {
+        'djf': [12, 1, 2],                  # December to February
+        'mam': [3, 4, 5],                   # March to May
+        'jja': [6, 7, 8],                   # June to August
+        'son': [9, 10, 11],                  # September to November
+        'annual': [1,2,3,4,5,6,7,8,9,10,11,12] # all year
+    }
+    
+    if season not in SEASONS:
+        raise ValueError(f"Invalid season. Choose from: {', '.join(SEASONS.keys())}")
+
     dates_monday          = pd.date_range(first_forecast_date, periods=number_forecasts, freq="W-MON") # forecasts that start monday
     dates_thursday        = pd.date_range(first_forecast_date, periods=number_forecasts, freq="W-THU")
     forecast_dates        = dates_monday.union(dates_thursday)
-    forecast_dates        = forecast_dates[:number_forecasts] 
+    forecast_dates        = forecast_dates[:number_forecasts]
+    forecast_dates        = forecast_dates[forecast_dates.month.isin(SEASONS[season])]
+    
     return forecast_dates
+
 
 
 def grib_to_netcdf(path,filename_grb,filename_nc):

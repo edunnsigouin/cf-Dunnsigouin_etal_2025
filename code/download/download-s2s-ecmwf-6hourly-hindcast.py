@@ -25,15 +25,15 @@ from datetime                    import datetime
 from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
-product       = 'vr_hindcast' # hindcast/vr_hindcast
-init_start    = '20210104' # first initialization date of forecast (either a monday or thursday)
-init_n        = 104          # number of forecast initializations      
-nhdates       = 20 # number of hindcast years  
-grid          = '0.5/0.5' # degree lat/lon resolution
-area          = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var           = 't2m'
-comp_lev      = 5 # file compression level
-write2file    = True
+product             = 'hindcast' # hindcast/vr_hindcast
+first_forecast_date = '20200102' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 105          # number of forecast initializations      
+nhdates             = 20 # number of hindcast years  
+grid                = '0.25/0.25' # degree lat/lon resolution
+area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
+var                 = 't2m'
+comp_lev            = 5 # file compression level
+write2file          = False
 # -----------------------------------------
 
 # initialize mars server
@@ -43,18 +43,17 @@ server = ECMWFService("mars")
 if product == 'hindcast':
     if grid == '0.25/0.25':
         step = '0/to/360/by/6'
-        #step = '0/to/168/by/6'
     elif grid == '0.5/0.5':
         step = '366/to/1104/by/6'
     number = '1/to/10'
     stream = 'enfh'
-    path   = config.dirs['hindcast_6hourly'] + var + '/'
+    path   = config.dirs['s2s_hindcast_6hourly'] + var + '/'
     dtypes = ['cf','pf']
 elif product == 'vr_hindcast':
     step   = '360'
     number = '1/to/10'
     stream = 'efho'
-    path   = config.dirs['hindcast_6hourly'] + var + '/'
+    path   = config.dirs['s2s_hindcast_6hourly'] + var + '/'
     dtypes = ['cf','pf']
     grid   = '0.5/0.5' # need to use low-res
     
@@ -95,15 +94,12 @@ dic1 = {
 }    
 
 # get all dates for monday and thursday forecast initializations
-init_dates = s2s.get_init_dates(init_start,init_n)
-print(init_dates)
-
-#init_dates  = pd.date_range(init_start, periods=init_n)
-#print(init_dates)
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast)
+print(forecast_dates)
 
 # populate dictionary some more and download each hindcast/forcast one-by-one
 if write2file:
-    for date in init_dates:
+    for date in forecast_dates:
         for dtype in dtypes:
             
             misc.tic()
@@ -146,7 +142,7 @@ if write2file:
                 s2s.grib_to_netcdf(path,filename3_grb,filename_nc)
             
                 print('compress files to reduce space..')
-                s2s.compress_file(comp_lev,4,filename_nc,path)
+                misc.compress_file(comp_lev,4,filename_nc,path)
 
             elif product == 'vr_hindcast':
             
@@ -168,7 +164,7 @@ if write2file:
                 s2s.grib_to_netcdf(path,filename_grb,filename_nc)
 
                 print('compress files to reduce space..')
-                s2s.compress_file(comp_lev,4,filename_nc,path)
+                misc.compress_file(comp_lev,4,filename_nc,path)
 
             
             misc.toc()

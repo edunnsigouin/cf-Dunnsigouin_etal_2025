@@ -83,24 +83,44 @@ def get_season(ds,season):
     elif season == 'jfm': index = (months >= 1) & (months <= 3)
     return ds.sel(time=index)
 
+
 def subselect_xy_domain_from_dim(dim,domain,grid):
     """  
     sub-selects xy domain from dim                                                                                                       
     """
     if grid == '0.25x0.25':
-        if domain == 'nordic':
-            dim.latitude   = np.flip(np.arange(53,73.75,0.25))
-            dim.longitude  = np.arange(0,35.25,0.25)
+        if domain == 'scandinavia':
+            dim.latitude   = np.flip(np.arange(53,73.25,0.25))
+            dim.longitude  = np.arange(2,32.25,0.25)
         elif domain == 'vestland':
             dim.latitude   = np.flip(np.arange(59,62.75,0.25))
             dim.longitude  = np.arange(4,8.75,0.25)
+        elif domain == 'northern_europe':
+            dim.latitude   = np.flip(np.arange(53.25,73.75,0.25))
+            dim.longitude  = np.arange(-27,45.25,0.25)
+        elif domain == 'southern_europe':
+            dim.latitude   = np.flip(np.arange(33,53.25,0.25))
+            dim.longitude  = np.arange(-27,45.25,0.25)
+        elif domain == 'iberia':
+            dim.latitude   = np.flip(np.arange(35,45.25,0.25))
+            dim.longitude  = np.arange(-12,3.25,0.25)
     elif grid == '0.5x0.5':
-        if domain == 'nordic':
-            dim.latitude   = np.flip(np.arange(53,74,0.5))
-            dim.longitude  = np.arange(0,35.5,0.5)
+        if domain == 'scandinavia':
+            dim.latitude   = np.flip(np.arange(53,73.5,0.5))
+            dim.longitude  = np.arange(2,32.5,0.5)
         elif domain == 'vestland':
             dim.latitude   = np.flip(np.arange(59,63,0.5))
             dim.longitude  = np.arange(4,9,0.5)
+        elif domain == 'northern_europe':
+            dim.latitude   = np.flip(np.arange(53,74,0.5))
+            dim.longitude  = np.arange(-27,45.5,0.5)
+        elif domain == 'southern_europe':
+           dim.latitude   = np.flip(np.arange(33,53,0.5))
+           dim.longitude  = np.arange(-27,45.5,0.5)
+        elif domain == 'iberia':
+            dim.latitude   = np.flip(np.arange(35,45.5,0.5))
+            dim.longitude  = np.arange(-12,3.5,0.5)
+            
     dim.nlatitude  = dim.latitude.size
     dim.nlongitude = dim.longitude.size
     return dim
