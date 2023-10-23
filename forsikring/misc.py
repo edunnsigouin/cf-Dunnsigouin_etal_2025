@@ -101,6 +101,12 @@ def subselect_xy_domain_from_dim(dim,domain,grid):
         elif domain == 'southern_europe':
             dim.latitude   = np.flip(np.arange(33,53.25,0.25))
             dim.longitude  = np.arange(-27,45.25,0.25)
+        elif domain == 'western_europe':
+            dim.latitude   = np.arange(33,73.75,0.25)
+            dim.longitude  = np.arange(-27,9.0,0.25)
+        elif domain == 'eastern_europe':
+            dim.latitude   = np.arange(33,73.75,0.25)
+            dim.longitude  = np.arange(9.0,45.25,0.25)            
         elif domain == 'iberia':
             dim.latitude   = np.flip(np.arange(35,45.25,0.25))
             dim.longitude  = np.arange(-12,3.25,0.25)

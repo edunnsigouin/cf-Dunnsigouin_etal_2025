@@ -26,28 +26,28 @@ from forsikring  import misc,s2s,verify,config
 # INPUT -----------------------------------------------
 time_flag                = 'time'                   # timescale or time?
 variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domain                   = 'iberia'                 # europe or norway only?
+domain                   = 'europe'         # europe or norway only?
 first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
 number_forecasts         = 313                      # number of forecasts 
-season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
+season                   = 'jja'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
 grids                    = ['0.25x0.25']
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 number_shuffle_bootstrap = 10000                    # number of times to shuffle initialization dates for error bars
-number_sample_bootstrap  = 100                       # number of sampled forecasts with replacement in each bootstrap member
 comp_lev                 = 5                        # compression level (0-10) of netcdf putput file
-write2file               = False
+write2file               = True
 # -----------------------------------------------------
 
 misc.tic()
 
 # define stuff
-forecast_dates       = s2s.get_forecast_dates(first_forecast_date,number_forecasts,'mam').strftime('%Y-%m-%d')
-path_in_forecast     = config.dirs['s2s_forecast_daily_anomaly'] + variable + '/'
-path_in_verification = config.dirs['era5_s2s_forecast_daily_anomaly'] + variable + '/'
-path_out             = config.dirs['verify_s2s_forecast_daily']
-prefix               = time_flag + '_vs_ss_fss_anomaly_' + variable + '_' + domain + '_' + forecast_dates[0] + '_' + forecast_dates[-1] 
-filename_hr_out      = prefix + '_0.25x0.25.nc'
-filename_lr_out      = prefix +	'_0.5x0.5.nc'
+forecast_dates          = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
+path_in_forecast        = config.dirs['s2s_forecast_daily_anomaly'] + variable + '/'
+path_in_verification    = config.dirs['era5_s2s_forecast_daily_anomaly'] + variable + '/'
+path_out                = config.dirs['verify_s2s_forecast_daily']
+prefix                  = time_flag + '_vs_ss_fss_anomaly_' + variable + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] 
+filename_hr_out         = prefix + '_0.25x0.25.nc'
+filename_lr_out         = prefix + '_0.5x0.5.nc'
+number_sample_bootstrap = forecast_dates.size 
 
 # loop through forecasts with different grids
 for grid in grids:
@@ -59,7 +59,7 @@ for grid in grids:
     [fss,fss_bootstrap] = verify.initialize_fss_array(dim,box_sizes_temp,number_shuffle_bootstrap)
     forecast_error      = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)
     reference_error     = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)
-
+    
     # loop over forecast dates
     for  i, date in enumerate(forecast_dates):
         print('percent complete: ' + str(i / len(forecast_dates) * 100) + ', calculating forecast ' + date)
@@ -77,4 +77,5 @@ for grid in grids:
 verify.combine_high_and_low_res_files(filename_hr_out, filename_lr_out, prefix + '.nc', path_out, time_flag, write2file)
 
 misc.toc()
+
 

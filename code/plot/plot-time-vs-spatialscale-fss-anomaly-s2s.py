@@ -13,15 +13,16 @@ import matplotlib as mpl
 # INPUT -----------------------
 time_flag           = 'time'                   # time or timescale ?
 variable            = 'tp24'                  # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domain              = 'europe'                 # europe/nordic/vestland                       
+domain              = 'vestland'                 # europe/nordic/vestland                       
 first_forecast_date = '20200102'               # first initialization date of forecast (either a monday or thursday)
 number_forecasts    = 313                      # number of weeks with forecasts
+season              = 'annual'
 grid                = '0.25x0.25'
-write2file          = True
+write2file          = False
 # -----------------------------
 
 # define stuff         
-forecast_dates   = s2s.get_forecast_dates(first_forecast_date,number_forecasts).strftime('%Y-%m-%d')
+forecast_dates   = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
 path_in          = config.dirs['verify_s2s_forecast_daily']
 path_out         = config.dirs['fig'] + 's2s/ecmwf/daily/forecast/'
 
@@ -32,9 +33,9 @@ if grid == 'both':
         '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '.pdf'
 else:
     filename_in      = time_flag + '_vs_ss_fss_anomaly_' + variable + '_' + domain + \
-        '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.nc'
+        '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.nc'
     figname_out      = time_flag + '_vs_spatialscale_fss_anomaly_' + variable + '_' + domain + \
-        '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.pdf'
+        '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.pdf'
     
 # read in data
 ds   = xr.open_dataset(path_in + filename_in)
@@ -47,6 +48,7 @@ y2   = np.array([1,9,17,25,33,41,49,57])
 temp = ds['fss_bootstrap'].quantile(0.05,dim='number_shuffle_bootstrap',skipna=True).values
 sig  = (temp < 0).astype(np.int32) # when 5th percentile crosses zero
 sig  = np.ma.masked_less(sig, 0.5)
+
 
 # remove box sizes where not applicable for low-res data 
 if grid == 'both':

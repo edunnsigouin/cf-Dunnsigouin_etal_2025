@@ -10,7 +10,7 @@ from forsikring      import misc,s2s,config
 from scipy           import signal, ndimage
 
 # INPUT -----------------------
-domain            = 'scandinavia'            # europe/nordic/vestland                       
+domain            = 'eastern_europe'            # europe/nordic/vestland                       
 write2file        = False
 # -----------------------------
 
@@ -24,13 +24,15 @@ path_out          = config.dirs['fig'] + 'era5/' + variable + '/'
 filename_in       = variable + '_' + grid + '_2023.nc'
 figname_out       = 'xy_' + variable + '_' + grid + '_' + domain + '_' + date + '.pdf'
 
-
 # read in dummy data
 da = xr.open_dataset(path_in + filename_in).sel(time=date)[variable] # lead time indexing starts at day 0 (lead time 1 day)
 
 # extract specified domain
 dim     = misc.subselect_xy_domain_from_dim(dim,domain,grid)
 da      = da.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
+
+print(dim.longitude)
+print(dim.longitude.size)
 
 # plot 
 fontsize = 11
