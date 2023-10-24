@@ -12,13 +12,13 @@ import matplotlib as mpl
 
 # INPUT -----------------------
 time_flag           = 'time'                   # time or timescale ?
-variable            = 'tp24'                  # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domain              = 'vestland'                 # europe/nordic/vestland                       
-first_forecast_date = '20200102'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 313                      # number of weeks with forecasts
-season              = 'annual'
+variable            = 't2m24'                  # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+domain              = 'europe'                 # europe/nordic/vestland                       
+first_forecast_date = '20210104'               # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 104                      # number of weeks with forecasts
+season              = 'jja'
 grid                = '0.25x0.25'
-write2file          = False
+write2file          = True
 # -----------------------------
 
 # define stuff         
@@ -28,9 +28,9 @@ path_out         = config.dirs['fig'] + 's2s/ecmwf/daily/forecast/'
 
 if grid == 'both':
     filename_in      = time_flag + '_vs_ss_fss_anomaly_' + variable + '_' + domain + \
-        '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '.nc'
+        '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '.nc'
     figname_out      = time_flag + '_vs_spatialscale_fss_anomaly_' + variable + '_' + domain + \
-        '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '.pdf'
+        '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '.pdf'
 else:
     filename_in      = time_flag + '_vs_ss_fss_anomaly_' + variable + '_' + domain + \
         '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.nc'
@@ -42,13 +42,11 @@ ds   = xr.open_dataset(path_in + filename_in)
 fss  = ds['fss'].values
 y    = ds['box_size'].values
 x    = ds[time_flag].values
-y2   = np.array([1,9,17,25,33,41,49,57])
 
 # calculate significance
 temp = ds['fss_bootstrap'].quantile(0.05,dim='number_shuffle_bootstrap',skipna=True).values
 sig  = (temp < 0).astype(np.int32) # when 5th percentile crosses zero
 sig  = np.ma.masked_less(sig, 0.5)
-
 
 # remove box sizes where not applicable for low-res data 
 if grid == 'both':
@@ -76,7 +74,7 @@ else:
 ax.set_xlabel(r'lead time [days]',fontsize=fontsize)
 ax.set_xlim([x[0],x[-1]])
 
-ax.set_yticks(y2)
+ax.set_yticks(np.array([1,9,17,25,33,41,49,57]))
 ax.set_yticklabels(['1/0.25/9','9/2.25/81','17/4.25/153','25/6.25/225','33/8.25/297','41/10.25/369','49/12.25/441','57/14.25/513'],fontsize=fontsize)
 ax.set_ylabel(r'spatial scale [gridpoints$^2$/degrees$^2$/km$^2$]',fontsize=fontsize)
 ax.set_ylim([y[0],y[-2]])

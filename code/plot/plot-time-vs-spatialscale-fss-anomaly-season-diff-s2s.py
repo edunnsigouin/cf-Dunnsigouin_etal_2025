@@ -49,29 +49,30 @@ def calc_significance(ds_ctl, ds_exp, significance_threshold):
     return significance_matrix
 
 
-
 # INPUT -----------------------
 time_flag           = 'time'                        # time or timescale ?
-variable            = 'tp24'                        # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domains             = ['southern_europe','northern_europe']  # europe/nordic/vestland                       
-first_forecast_date = '20200102'                    # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 313                           # number of weeks with forecasts
-season              = 'annual'
+variable            = 't2m24'                        # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+domain              = 'europe'                      # europe/nordic/vestland                       
+first_forecast_date = '20210104'                    # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 104                           # number of weeks with forecasts
+seasons             = ['djf','jja']
 grid                = '0.25x0.25'
-write2file          = False
+write2file          = True
 # -----------------------------
 
 # define stuff         
-forecast_dates   = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
-path_in          = config.dirs['verify_s2s_forecast_daily']
-path_out         = config.dirs['fig'] + 's2s/ecmwf/daily/forecast/'
+forecast_dates_ctl = s2s.get_forecast_dates(first_forecast_date,number_forecasts,seasons[0]).strftime('%Y-%m-%d')
+forecast_dates_exp = s2s.get_forecast_dates(first_forecast_date,number_forecasts,seasons[1]).strftime('%Y-%m-%d')
+forecast_dates     = s2s.get_forecast_dates(first_forecast_date,number_forecasts,'annual').strftime('%Y-%m-%d')
+path_in            = config.dirs['verify_s2s_forecast_daily']
+path_out           = config.dirs['fig'] + 's2s/ecmwf/daily/forecast/'
 
-filename_in_ctl  = time_flag + '_vs_ss_fss_anomaly_' + variable + '_' + domains[0] + \
-                       '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.nc'
-filename_in_exp  = time_flag + '_vs_ss_fss_anomaly_' + variable + '_' + domains[1] + \
-                       '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.nc'
-figname_out      = time_flag + '_vs_spatialscale_fss_anomaly_' + variable + '_anomaly_' + domains[1] + \
-                       '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.pdf'
+filename_in_ctl    = time_flag + '_vs_ss_fss_anomaly_' + variable + '_' + domain + \
+                       '_' + seasons[0] + '_' + forecast_dates_ctl[0] + '_' + forecast_dates_ctl[-1] + '_' + grid + '.nc'
+filename_in_exp    = time_flag + '_vs_ss_fss_anomaly_' + variable + '_' + domain + \
+                       '_' + seasons[1] + '_' + forecast_dates_exp[0] + '_' + forecast_dates_exp[-1] + '_' + grid + '.nc'
+figname_out        = time_flag + '_vs_spatialscale_fss_anomaly_' + variable + '_anomaly_' + domain + \
+                       '_' + seasons[0] + '_minus_' + seasons[1] + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.pdf'
     
 # read in data
 ds_ctl = xr.open_dataset(path_in + filename_in_ctl)
@@ -82,10 +83,10 @@ x      = ds_ctl[time_flag].values
 # calculate significance of difference in fss
 sig = calc_significance(ds_ctl,ds_exp,0.05)
 
-
 # plot 
 fontsize = 11
-clevs    = np.arange(-0.14, 0.14, 0.01)
+#clevs    = np.arange(-0.20, 0.22, 0.02)
+clevs    = np.arange(-0.3, 0.33, 0.03)
 cmap     = mpl.cm.get_cmap("RdBu_r").copy()
 figsize  = np.array([6*1.61,6])
 fig,ax   = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))

@@ -11,27 +11,6 @@ from forsikring    import misc,s2s,config
 import matplotlib  as mpl
 import scipy.stats as stats
 
-"""
-def calc_significance(ds_ctl,ds_exp,threshold):
-    
-    Calculates significance of difference between the means
-    of the two bootstrapped distributions for each box_size and time
-    
-    box_size = ds_ctl['box_size'].values
-    time     = ds_ctl['time'].values    
-    sig      = np.zeros((box_size.size,time.size))
-    fss_ctl  = ds_ctl['fss_bootstrapped'].values
-    fss_exp  = ds_exp['fss_bootstrapped'].values
-    
-    for i in range(0,box_size.size):
-        for j in range(0,time.size):            
-            [temp,sig[i,j]] = stats.ttest_ind(fss_ctl[i,j,:],fss_exp[i,j,:], equal_var=True)
-            if sig[i,j] > threshold:
-                sig[i,j] = 0.0
-            else:
-                sig[i,j] = 1.0
-    return sig
-"""
 
 def calc_significance(ds_ctl, ds_exp, significance_threshold):
     """
@@ -54,8 +33,8 @@ def calc_significance(ds_ctl, ds_exp, significance_threshold):
     fss_exp   = ds_exp['fss_bootstrap'].values
     
     # Define constants for significance
-    NOT_SIGNIFICANT = 0.0
-    SIGNIFICANT     = 1.0
+    NOT_SIGNIFICANT = 1.0
+    SIGNIFICANT     = 0.0
     
     # Initialize result matrix
     significance_matrix = np.zeros((box_sizes.size, times.size))
@@ -66,7 +45,7 @@ def calc_significance(ds_ctl, ds_exp, significance_threshold):
             _, p_value = stats.ttest_ind(fss_ctl[i, j, :], fss_exp[i, j, :], equal_var=True)
             significance_matrix[i, j] = SIGNIFICANT if p_value <= significance_threshold else NOT_SIGNIFICANT
 
-    #significance_matrix  = np.ma.masked_less(significance_matrix, 0.5)            
+    significance_matrix  = np.ma.masked_less(significance_matrix, 0.5)            
     return significance_matrix
 
 
@@ -74,12 +53,12 @@ def calc_significance(ds_ctl, ds_exp, significance_threshold):
 # INPUT -----------------------
 time_flag           = 'time'                        # time or timescale ?
 variable            = 'tp24'                        # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domains             = ['europe','southern_europe']  # europe/nordic/vestland                       
+domains             = ['southern_europe','northern_europe']  # europe/nordic/vestland                       
 first_forecast_date = '20200102'                    # first initialization date of forecast (either a monday or thursday)
 number_forecasts    = 313                           # number of weeks with forecasts
 season              = 'annual'
 grid                = '0.25x0.25'
-write2file          = False
+write2file          = True
 # -----------------------------
 
 # define stuff         
@@ -91,7 +70,7 @@ filename_in_ctl  = time_flag + '_vs_ss_fss_anomaly_' + variable + '_' + domains[
                        '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.nc'
 filename_in_exp  = time_flag + '_vs_ss_fss_anomaly_' + variable + '_' + domains[1] + \
                        '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.nc'
-figname_out      = time_flag + '_vs_spatialscale_fss_anomaly_' + variable + '_anomaly_' + domains[1] + \
+figname_out      = time_flag + '_vs_spatialscale_fss_anomaly_' + variable + '_anomaly_' + domains[0] '_minus_' domains[1] + \
                        '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.pdf'
     
 # read in data
@@ -103,11 +82,10 @@ x      = ds_ctl[time_flag].values
 # calculate significance of difference in fss
 sig = calc_significance(ds_ctl,ds_exp,0.05)
 
-print(sig)
-"""
+
 # plot 
 fontsize = 11
-clevs    = np.arange(-0.16, 0.16, 0.01)
+clevs    = np.arange(-0.14, 0.14, 0.01)
 cmap     = mpl.cm.get_cmap("RdBu_r").copy()
 figsize  = np.array([6*1.61,6])
 fig,ax   = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
@@ -132,5 +110,5 @@ cb.ax.tick_params(labelsize=fontsize,size=0)
 plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)
 plt.show()
-"""
+
 
