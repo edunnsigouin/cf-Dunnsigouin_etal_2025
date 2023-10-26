@@ -51,13 +51,13 @@ def calc_significance(ds_ctl, ds_exp, significance_threshold):
 
 # INPUT -----------------------
 time_flag           = 'time'                        # time or timescale ?
-variable            = 'tp24'                        # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable            = 't2m24'                        # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domains             = ['southern_europe','northern_europe']  # europe/nordic/vestland                       
-first_forecast_date = '20200102'                    # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 313                           # number of weeks with forecasts
+first_forecast_date = '20210104'                    # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 104                           # number of weeks with forecasts
 season              = 'annual'
 grid                = '0.25x0.25'
-write2file          = True
+write2file          = False
 # -----------------------------
 
 # define stuff         
