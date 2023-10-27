@@ -249,3 +249,19 @@ def write_fss_to_file(fss, fss_bootstrap, write2file, grid, box_sizes, time_flag
         misc.compress_file(comp_lev, 3, filename_out, path_out)
         ds.close()
     return
+
+
+def write_error_to_file(forecast_error, reference_error, write2file, grid, box_sizes, time_flag, filename_out, path_out, comp_lev):
+    """Kitchen sink function to write forecast or reference error to file"""
+    if write2file:
+        forecast_error  = forecast_error.rename({'error':'forecast_error'})
+        reference_error = reference_error.rename({'error':'reference_error'})
+        ds              = xr.merge([forecast_error,reference_error])
+        if grid == '0.5x0.5':
+            ds['box_size']  = box_sizes
+        if time_flag == 'timescale':
+            ds  = ds.rename({'time': 'timescale'})
+        ds.to_netcdf(path_out + filename_out)
+        misc.compress_file(comp_lev, 3, filename_out, path_out)
+        ds.close()
+    return

@@ -161,37 +161,6 @@ def mask_significant_values_from_bootstrap(data_array, threshold):
 
 
 
-#def mask_significant_values_from_bootstrap(data_array, threshold):
-#    """
-#    Create a significance mask from data_array based on a one-sample t-test.
-#    Tests whether the mean of teh distribution is significantly different than 0.
-#    
-#    Parameters:
-#    - data_array (xarray.DataArray): The data array to test.
-#    - threshold (float): p-value threshold for significance.
-#
-#    Returns:
-#    xarray.DataArray: A mask with np.nan for significant values and 1.0 for non-significant values.
-#    """
-    
-#    # Apply the t-test along the 'number_shuffle_bootstrap' dimension
-#    p_values = xr.apply_ufunc(
-#        lambda x: stats.ttest_1samp(x, 0.0, alternative='two-sided')[1],
-#        data_array,
-#        input_core_dims=[['number_shuffle_bootstrap']],
-#        vectorize=True
-#    )
-
-#    # Create the significance mask based on p-values
-#    significance_mask = xr.where(p_values < threshold, np.nan, 1.0)
-#    
-#    return significance_mask
-
-
-
-
-
-
 def mask_significance_between_bootstraps(data_array1, data_array2, threshold):
     """
     Determine if two bootstrapped distributions are statistically different based on a given threshold
@@ -222,31 +191,3 @@ def mask_significance_between_bootstraps(data_array1, data_array2, threshold):
 
     return masked_significance
 
-
-
-#def mask_significance_between_bootstraps(data_array1, data_array2, threshold):
-#    """
-#    Test if means of data_array1 and data_array2 are significantly different using Welch's t-test.
-#
-#    Parameters:
-#    - data_array1 (xarray.DataArray): First data array.
-#    - data_array2 (xarray.DataArray): Second data array.
-#    - threshold (float): p-value threshold for significance.
-#
-#    Returns:
-#    xarray.DataArray: A mask with np.nan for significant differences and 1.0 for non-significant differences.
-#    """
-    
-#    # Apply the Welch's t-test along the 'number_shuffle_bootstrap' dimension
-#    p_values = xr.apply_ufunc(
-#        lambda x, y: stats.ttest_ind(x, y, equal_var=False)[1],
-#        data_array1,
-#        data_array2,
-#        input_core_dims=[['number_shuffle_bootstrap'], ['number_shuffle_bootstrap']],
-#        vectorize=True
-#    )
-#
-#    # Create the significance mask based on p-values
-#    significance_mask = xr.where(p_values < threshold, np.nan, 1.0)
-#
-#    return significance_mask

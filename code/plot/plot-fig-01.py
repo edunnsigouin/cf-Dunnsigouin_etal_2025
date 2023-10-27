@@ -40,7 +40,7 @@ def setup_subplot(ax, time, box_size, fss_data, sig_data, title_text, clevs, cma
     return ax
 
 # INPUT -----------------------
-write2file = True
+write2file = False
 # -----------------------------
 
 # define stuff         
@@ -64,6 +64,8 @@ fssb_4     = xr.open_dataset(path_in + filename_in_4)['fss_bootstrap']
 box_size   = fss_1['box_size']
 time       = fss_1['time']
 timescale  = fss_3['timescale']
+
+
 
 # Remove box sizes where low and high-res data don't overlap on the same grid.
 index              = np.where(~np.isnan(fss_3[:,4]))
