@@ -85,6 +85,44 @@ def calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap
 
 
 
+def calc_fss_bootstrap_difference(reference_error1, reference_error2, forecast_error1, forecast_error2, number_shuffle_bootstrap, number_sample_bootstrap, box_sizes):
+    """
+    Calculates fractions skill scores for two sets of forecast and reference errors.
+    Generates bootstrapped estimates of the DIFFERENCE in the fss values by bootsrapping
+    the subsampled forecast_errors. 
+    """
+
+    number_forecasts = len(reference_error1['forecast_dates'])
+
+    # Compute the MSE                                                                                                                                                   
+    reference_mse1 = reference_error1.mean(dim='forecast_dates')
+    reference_mse2 = reference_error2.mean(dim='forecast_dates')
+    forecast_mse1  = forecast_error1.mean(dim='forecast_dates')
+    forecast_mse2  = forecast_error2.mean(dim='forecast_dates')
+    
+    # Initialize results arrays
+    fss_difference           = np.empty((len(box_sizes), forecast_mse1.time.size))
+    fss_bootstrap_difference = np.empty((len(box_sizes), forecast_mse1.time.size, number_shuffle_bootstrap))
+
+    # compute fss without bootstrap
+    fss_difference[:,:] = (1.0 - forecast_mse1 / reference_mse1) - (1.0 - forecast_mse2 / reference_mse2)
+
+    # compute fss with bootstrap
+    for i in range(number_shuffle_bootstrap):
+
+        # subsample forecast dates with replacement
+        sampled_indices = np.random.choice(number_forecasts, number_sample_bootstrap, replace=True)
+
+        # bootstrap forecast mse
+        forecast_mse_bootstrap1         = forecast_error1.isel(forecast_dates=sampled_indices).mean(dim='forecast_dates')
+        forecast_mse_bootstrap2         = forecast_error2.isel(forecast_dates=sampled_indices).mean(dim='forecast_dates')
+        fss_bootstrap_difference[:,:,i] = (1.0 - forecast_mse_bootstrap1 / reference_mse1) - (1.0 - forecast_mse_bootstrap2 / reference_mse2)
+
+    return fss_difference, fss_bootstrap_difference
+
+
+
+
 def resample_15_days(ds):
     """ 
     Resamples dataset time dimention with 15 days to timescales 
@@ -254,8 +292,8 @@ def write_fss_to_file(fss, fss_bootstrap, write2file, grid, box_sizes, time_flag
 def write_error_to_file(forecast_error, reference_error, write2file, grid, box_sizes, time_flag, filename_out, path_out, comp_lev):
     """Kitchen sink function to write forecast or reference error to file"""
     if write2file:
-        forecast_error  = forecast_error.rename({'error':'forecast_error'})
-        reference_error = reference_error.rename({'error':'reference_error'})
+        forecast_error  = forecast_error.rename('forecast_error')
+        reference_error = reference_error.rename('reference_error')
         ds              = xr.merge([forecast_error,reference_error])
         if grid == '0.5x0.5':
             ds['box_size']  = box_sizes

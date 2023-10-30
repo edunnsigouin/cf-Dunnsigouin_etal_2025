@@ -26,14 +26,14 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product             = 'hindcast' # hindcast/vr_hindcast
-first_forecast_date = '20200102' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 105          # number of forecast initializations      
+first_forecast_date = '20200702' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 53          # number of forecast initializations      
 nhdates             = 20 # number of hindcast years  
 grid                = '0.25/0.25' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var                 = 't2m'
 comp_lev            = 5 # file compression level
-write2file          = False
+write2file          = True
 # -----------------------------------------
 
 # initialize mars server
@@ -94,7 +94,7 @@ dic1 = {
 }    
 
 # get all dates for monday and thursday forecast initializations
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast)
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast,'annual')
 print(forecast_dates)
 
 # populate dictionary some more and download each hindcast/forcast one-by-one
