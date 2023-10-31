@@ -43,7 +43,7 @@ def setup_subplot(ax, time, box_size, fss_data, sig_data, title_text, clevs, cma
     return ax
 
 # INPUT -----------------------
-write2file = True
+write2file = False
 # -----------------------------
 
 # define stuff         
@@ -54,7 +54,7 @@ filename_in_2     = 'time_vs_ss_fss_anomaly_t2m24_europe_annual_2021-01-04_2021-
 filename_in_3     = 'time_vs_ss_difference_t2m24_europe_annual_2021-01-04_2021-12-30_tp24_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
 filename_in_4     = 'timescale_vs_ss_fss_anomaly_tp24_europe_annual_2021-01-04_2021-12-30.nc'
 filename_in_5     = 'timescale_vs_ss_fss_anomaly_t2m24_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_6     = 'timescale_vs_ss_fss_anomaly_t2m24_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_6     = 'timescale_vs_ss_difference_t2m24_europe_annual_2021-01-04_2021-12-30_tp24_europe_annual_2021-01-04_2021-12-30.nc'
 figname_out       = 'fig_01.pdf'
 
 # read in data
@@ -105,7 +105,7 @@ setup_subplot(ax[3], ds4['timescale'], ds4['box_size'], ds4['fss'], sig4, 'd) pr
 setup_subplot(ax[4], ds5['timescale'], ds5['box_size'], ds5['fss'], sig5, 'e) temperature', clevs, cmap, fontsize)
 
 # F) temperature minus precipitation 
-#setup_subplot(ax[5], ds6['timescale'],ds6['box_size'], ds6['fss'], sig6, 'f) temperature minus precipitation', clevs_anom, cmap_anom, fontsize)
+setup_subplot(ax[5], ds6['timescale'],ds6['box_size'], ds6['fss'], sig6, 'f) temperature minus precipitation', clevs_anom, cmap_anom, fontsize)
 
 # write2file
 plt.tight_layout()

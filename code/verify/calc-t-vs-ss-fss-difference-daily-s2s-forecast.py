@@ -17,22 +17,22 @@ import os
 from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
-time_flag                = 'time'                   # timescale or time?
-first_forecast_date      = '20200102'
-number_forecasts         = 313
-grid                     = '0.25x0.25'      	    # grid resolution
+time_flag                = 'timescale'                   # timescale or time?
+first_forecast_date      = '20210104'
+number_forecasts         = 104
+grid                     = ''      	    # grid resolution
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 number_shuffle_bootstrap = 10000                    # number of times to shuffle initialization dates for error bars
 comp_lev                 = 5                        # compression level (0-10) of netcdf putput file 
 write2file               = True
 # fss number 1:
-variable1                = 'tp24'                   
+variable1                = 't2m24'                   
 domain1                  = 'europe'                 
-season1                  = 'ndjfm'                 
+season1                  = 'annual'                 
 # fss number 2:
 variable2                = 'tp24'
 domain2                  = 'europe'
-season2                  = 'mjjas'
+season2                  = 'annual'
 # -----------------------------------------------------
 
 misc.tic()

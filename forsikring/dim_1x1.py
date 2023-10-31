@@ -5,8 +5,8 @@ import numpy as np
 
 latitude  = np.flip(np.arange(33,75,1.0))
 longitude = np.arange(-27,46,1.0)
-time      = np.arange(1,7,1)
+timescale  = np.arange(1,7,1)
 
 nlatitude  = latitude.size
 nlongitude = longitude.size
-ntime      = time.size
+ntimescale = timescale.size

@@ -11,6 +11,7 @@ from datetime   import datetime
 from scipy      import signal, ndimage
 from forsikring  import misc
 
+
 def boxcar_smoother_xy(box_sizes,da):
     """
     Smooths an array in xy using a boxcar smoother where the last two 
@@ -102,8 +103,12 @@ def calc_fss_bootstrap_difference(reference_error1, reference_error2, forecast_e
     forecast_mse2  = forecast_error2.mean(dim='forecast_dates')
     
     # Initialize results arrays
-    fss_difference           = np.empty((len(box_sizes), forecast_mse1.time.size))
-    fss_bootstrap_difference = np.empty((len(box_sizes), forecast_mse1.time.size, number_shuffle_bootstrap))
+    if 'time' in forecast_error1.dims:
+        fss_difference           = np.empty((len(box_sizes), forecast_mse1.time.size))
+        fss_bootstrap_difference = np.empty((len(box_sizes), forecast_mse1.time.size, number_shuffle_bootstrap))
+    else:
+        fss_difference           = np.empty((len(box_sizes), forecast_mse1.timescale.size))
+        fss_bootstrap_difference = np.empty((len(box_sizes), forecast_mse1.timescale.size, number_shuffle_bootstrap))
 
     # compute fss without bootstrap
     fss_difference[:,:] = (1.0 - forecast_mse1 / reference_mse1) - (1.0 - forecast_mse2 / reference_mse2)
@@ -159,6 +164,24 @@ def resample_time_to_timescale(ds, time_flag):
         return resample_31_days(ds)
     else:
         raise ValueError(f"Unsupported time size: {ds.time.size}. Supported sizes are 15 or 31.")
+
+
+def initialize_smooth_forecast(box_sizes,variable,da_forecast):
+    """ 
+    initializes a forecast with an extra dimmension indicating smoothing
+    """
+    time      = da_forecast.time
+    number    = da_forecast.number
+    latitude  = da_forecast.latitude
+    longitude = da_forecast.longitude
+    
+    data               = np.zeros((box_sizes.size,time.size,number.size,latitude.size,longitude.size),dtype=np.float32)
+    dims               = ["box_size","time","number","latitude","longitude"]
+    coords             = dict(box_size=box_sizes,time=time,number=number,latitude=latitude,longitude=longitude)
+    name               = variable
+    da_forecast_smooth = xr.DataArray(data=data,dims=dims,coords=coords,name=name)#.astype('float16')
+    return da_forecast_smooth
+
 
 
 def initialize_error_array(dim,box_sizes,forecast_dates):

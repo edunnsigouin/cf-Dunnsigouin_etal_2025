@@ -37,7 +37,7 @@ grids                    = ['0.25x0.25','0.5x0.5']
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 number_shuffle_bootstrap = 10000                    # number of times to shuffle initialization dates for error bars
 comp_lev                 = 5                        # compression level (0-10) of netcdf putput file
-write2file               = True
+write2file               = False
 # -----------------------------------------------------
 
 misc.tic()
@@ -72,7 +72,7 @@ for grid in grids:
         filename_verification                           = path_in_verification + variable + '_' + grid + '_' + date + '.nc'
         filename_forecast                               = path_in_forecast + variable + '_' + grid + '_' + date + '.nc'
         forecast_error[i, ...], reference_error[i, ...] = verify.calc_forecast_and_reference_error(filename_verification, filename_forecast, variable, box_sizes_temp, dim, time_flag)
-
+    
     # calc fss with bootstraping over all forecasts  
     fss[:,:], fss_bootstrap[:,:,:] = verify.calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, box_sizes_temp)
 
