@@ -52,7 +52,7 @@ def boxcar_smoother_xy(box_sizes,da):
 
 
 
-def calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, number_sample_bootstrap, box_sizes):
+def calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, box_sizes):
     """ 
     Calculates fractions skill score and generates bootstrapped estimates by boostrapping 
     subsampling the forecasts/mse_forecasts                                                                           
@@ -75,7 +75,7 @@ def calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap
     for i in range(number_shuffle_bootstrap):
         
         # subsample forecast dates with replacement
-        sampled_indices        = np.random.choice(number_forecasts, number_sample_bootstrap, replace=True)
+        sampled_indices = np.random.choice(number_forecasts, number_forecasts, replace=True)
         
         # bootstrap forecast mse
         forecast_mse_bootstrap = forecast_error.isel(forecast_dates=sampled_indices).mean(dim='forecast_dates')
@@ -85,14 +85,15 @@ def calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap
 
 
 
-def calc_fss_bootstrap_difference(reference_error1, reference_error2, forecast_error1, forecast_error2, number_shuffle_bootstrap, number_sample_bootstrap, box_sizes):
+def calc_fss_bootstrap_difference(reference_error1, reference_error2, forecast_error1, forecast_error2, number_shuffle_bootstrap, box_sizes):
     """
     Calculates fractions skill scores for two sets of forecast and reference errors.
     Generates bootstrapped estimates of the DIFFERENCE in the fss values by bootsrapping
     the subsampled forecast_errors. 
     """
 
-    number_forecasts = len(reference_error1['forecast_dates'])
+    # forecasts number can be different. Choose smallest amount for simplicity.
+    number_forecasts = min(len(reference_error1['forecast_dates']),len(reference_error2['forecast_dates']))
 
     # Compute the MSE                                                                                                                                                   
     reference_mse1 = reference_error1.mean(dim='forecast_dates')
@@ -111,7 +112,7 @@ def calc_fss_bootstrap_difference(reference_error1, reference_error2, forecast_e
     for i in range(number_shuffle_bootstrap):
 
         # subsample forecast dates with replacement
-        sampled_indices = np.random.choice(number_forecasts, number_sample_bootstrap, replace=True)
+        sampled_indices = np.random.choice(number_forecasts, number_forecasts, replace=True)
 
         # bootstrap forecast mse
         forecast_mse_bootstrap1         = forecast_error1.isel(forecast_dates=sampled_indices).mean(dim='forecast_dates')

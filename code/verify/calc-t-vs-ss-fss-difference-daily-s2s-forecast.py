@@ -18,21 +18,21 @@ from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
 time_flag                = 'time'                   # timescale or time?
-first_forecast_date      = '20210104'
-number_forecasts         = 104
+first_forecast_date      = '20200102'
+number_forecasts         = 313
 grid                     = '0.25x0.25'      	    # grid resolution
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 number_shuffle_bootstrap = 10000                    # number of times to shuffle initialization dates for error bars
 comp_lev                 = 5                        # compression level (0-10) of netcdf putput file 
-write2file               = False
+write2file               = True
 # fss number 1:
-variable1                = 't2m24'                   
+variable1                = 'tp24'                   
 domain1                  = 'europe'                 
-season1                  = 'annual'                 
+season1                  = 'ndjfm'                 
 # fss number 2:
 variable2                = 'tp24'
 domain2                  = 'europe'
-season2                  = 'annual'
+season2                  = 'mjjas'
 # -----------------------------------------------------
 
 misc.tic()
@@ -40,13 +40,6 @@ misc.tic()
 # define stuff
 forecast_dates1         = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season1).strftime('%Y-%m-%d')
 forecast_dates2         = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season2).strftime('%Y-%m-%d')
-if len(forecast_dates1) > len(forecast_dates2): # make sure the number of forecast_dates are the same size 
-    forecast_dates1 = forecast_dates1[:len(forecast_dates2)]
-else:
-    forecast_dates2 = forecast_dates2[:len(forecast_dates1)]
-
-# define more stuff    
-number_sample_bootstrap = forecast_dates1.size 
 path_in                 = config.dirs['verify_s2s_forecast_daily']
 path_out                = config.dirs['verify_s2s_forecast_daily']
 prefix_out              = time_flag + '_vs_ss_difference_' + variable1 + '_' + domain1 + '_' + season1 + '_' + forecast_dates1[0] + '_' + forecast_dates1[-1] + \
@@ -73,7 +66,7 @@ dim                                       = verify.get_data_dimensions(grid, tim
 [fss_difference,fss_bootstrap_difference] = verify.initialize_fss_array(dim,box_sizes,number_shuffle_bootstrap)
 
 # calc fss with bootstraping over all forecasts  
-fss_difference[:,:], fss_bootstrap_difference[:,:,:] = verify.calc_fss_bootstrap_difference(reference_error1, reference_error2, forecast_error1, forecast_error2, number_shuffle_bootstrap, number_sample_bootstrap, box_sizes)
+fss_difference[:,:], fss_bootstrap_difference[:,:,:] = verify.calc_fss_bootstrap_difference(reference_error1, reference_error2, forecast_error1, forecast_error2, number_shuffle_bootstrap, box_sizes)
 
 # write to fss and errors to file
 verify.write_fss_to_file(fss_difference, fss_bootstrap_difference, write2file, grid, box_sizes, time_flag, filename_out, path_out, comp_lev)

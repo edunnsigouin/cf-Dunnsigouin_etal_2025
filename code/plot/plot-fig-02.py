@@ -12,7 +12,10 @@ def setup_subplot(ax, time, box_size, fss_data, sig_data, title_text, clevs, cma
     """
     Sets up specifics of subplots for fig. 2
     """
-    p = ax.contourf(time, box_size, fss_data, levels=clevs, cmap=cmap, extend='min')
+    if (title_text == 'c) NDJFM minus MJJAS precipitation') or (title_text == 'f) NDJFM minus MJJAS temperature'):
+        p = ax.contourf(time, box_size, fss_data, levels=clevs, cmap=cmap, extend='both')
+    else:
+        p = ax.contourf(time, box_size, fss_data, levels=clevs, cmap=cmap, extend='min')
     ax.pcolor(time, box_size, sig_data, hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
 
     ax.set_xticks(time)
@@ -22,12 +25,12 @@ def setup_subplot(ax, time, box_size, fss_data, sig_data, title_text, clevs, cma
 
     ax.set_yticks(np.array([1, 9, 17, 25, 33, 41, 49, 57]))
     ax.set_yticklabels(['1/0.25', '9/2.25', '17/4.25', '25/6.25', '33/8.25', '41/10.25', '49/12.25', '57/14.25'], fontsize=fontsize)
-    if (title_text == 'a) JJA precipitation') or (title_text == 'd) JJA temperature'):
+    if (title_text == 'a) MJJAS precipitation') or (title_text == 'd) MJJAS temperature'):
         ax.set_ylabel(r'spatial scale [gridpoints$^2$/degrees$^2$]', fontsize=fontsize)
     ax.set_ylim([box_size[0], box_size[-2]])
 
     ax.set_title(title_text, fontsize=fontsize + 3)
-    if (title_text == 'c) DJF minus JJA precipitation') or (title_text == 'f) DJF minus JJA temperature'):
+    if (title_text == 'c) NDJFM minus MJJAS precipitation') or (title_text == 'f) NDJFM minus MJJAS temperature'):
         cb = plt.colorbar(p, ax=ax, orientation='vertical', ticks=clevs[::2], pad=0.025, aspect=15)
     else:
         cb = plt.colorbar(p, ax=ax, orientation='vertical', ticks=clevs, pad=0.025, aspect=15)
@@ -36,38 +39,35 @@ def setup_subplot(ax, time, box_size, fss_data, sig_data, title_text, clevs, cma
     return ax
 
 # INPUT -----------------------
-write2file = False
+write2file = True
 # -----------------------------
 
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'time_vs_ss_fss_anomaly_tp24_europe_jja_2020-06-01_2022-08-29_0.25x0.25.nc'
-filename_in_2     = 'time_vs_ss_fss_anomaly_tp24_europe_djf_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_3     = 'time_vs_ss_fss_anomaly_t2m24_europe_jja_2021-06-03_2021-08-30_0.25x0.25.nc'
-filename_in_4     = 'time_vs_ss_fss_anomaly_t2m24_europe_djf_2021-01-04_2021-12-30_0.25x0.25.nc'
 figname_out       = 'fig_02.pdf'
-    
-# read in data
-fss_1      = xr.open_dataset(path_in + filename_in_1)['fss']
-fss_2      = xr.open_dataset(path_in + filename_in_2)['fss']
-fss_3      = xr.open_dataset(path_in + filename_in_3)['fss']
-fss_4      = xr.open_dataset(path_in + filename_in_4)['fss']
-fssb_1     = xr.open_dataset(path_in + filename_in_1)['fss_bootstrap']
-fssb_2     = xr.open_dataset(path_in + filename_in_2)['fss_bootstrap']
-fssb_3     = xr.open_dataset(path_in + filename_in_3)['fss_bootstrap']
-fssb_4     = xr.open_dataset(path_in + filename_in_4)['fss_bootstrap']
-box_size   = fss_1['box_size']
-time       = fss_1['time']
+filename_in_1     = 'time_vs_ss_fss_anomaly_tp24_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
+filename_in_2     = 'time_vs_ss_fss_anomaly_tp24_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_3     = 'time_vs_ss_difference_tp24_europe_ndjfm_2020-01-02_2022-12-29_tp24_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
+filename_in_4     = 'time_vs_ss_fss_anomaly_t2m24_europe_mjjas_2021-05-03_2021-09-30_0.25x0.25.nc'
+filename_in_5     = 'time_vs_ss_fss_anomaly_t2m24_europe_ndjfm_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_6     = 'time_vs_ss_difference_t2m24_europe_ndjfm_2021-01-04_2021-12-30_t2m24_europe_mjjas_2021-05-03_2021-09-30_0.25x0.25.nc'
 
+# read in data
+ds1        = xr.open_dataset(path_in + filename_in_1)
+ds2        = xr.open_dataset(path_in + filename_in_2)
+ds3        = xr.open_dataset(path_in + filename_in_3)
+ds4        = xr.open_dataset(path_in + filename_in_4)
+ds5        = xr.open_dataset(path_in + filename_in_5)
+ds6        = xr.open_dataset(path_in + filename_in_6)
 
 # calculate significance
-sig_1       = s2s.mask_significant_values_from_bootstrap(fssb_1,0.01)
-sig_2       = s2s.mask_significant_values_from_bootstrap(fssb_2,0.01)
-sig_3       = s2s.mask_significant_values_from_bootstrap(fssb_3,0.01)
-sig_4       = s2s.mask_significant_values_from_bootstrap(fssb_4,0.01)
-sig_2minus1 = s2s.mask_significance_between_bootstraps(fssb_1, fssb_2, 0.05)
-sig_4minus3 = s2s.mask_significance_between_bootstraps(fssb_4, fssb_3, 0.05)
+sig1       = s2s.mask_significant_values_from_bootstrap(ds1['fss_bootstrap'],0.05)
+sig2       = s2s.mask_significant_values_from_bootstrap(ds2['fss_bootstrap'],0.05)
+sig3       = s2s.mask_significant_values_from_bootstrap(ds3['fss_bootstrap'],0.05)
+sig4       = s2s.mask_significant_values_from_bootstrap(ds4['fss_bootstrap'],0.05)
+sig5       = s2s.mask_significant_values_from_bootstrap(ds5['fss_bootstrap'],0.05)
+sig6       = s2s.mask_significant_values_from_bootstrap(ds6['fss_bootstrap'],0.05)
 
 # plot 
 fontsize    = 11
@@ -80,23 +80,23 @@ figsize     = np.array([12*1.61,9])
 fig,ax      = plt.subplots(nrows=2,ncols=3,sharey='row',figsize=(figsize[0],figsize[1]))
 ax          = ax.ravel()
 
-# A) JJA precipitation
-setup_subplot(ax[0], time, box_size, fss_1, sig_1, 'a) JJA precipitation', clevs, cmap, fontsize)
+# A) MJJAS precipitation
+setup_subplot(ax[0], ds1['time'], ds1['box_size'], ds1['fss'], sig1, 'a) MJJAS precipitation', clevs, cmap, fontsize)
 
-# B) DJF precipitation
-setup_subplot(ax[1], time, box_size, fss_2, sig_2, 'b) DJF precipitation', clevs, cmap, fontsize)
+# B) NDJFM precipitation
+setup_subplot(ax[1], ds2['time'], ds2['box_size'], ds2['fss'], sig2, 'b) NDJFM precipitation', clevs, cmap, fontsize)
 
-# C) DJF minus JJA precipitation
-setup_subplot(ax[2], time, box_size, fss_2-fss_1, sig_2minus1, 'c) DJF minus JJA precipitation', clevs_anom1, cmap_anom, fontsize)
+# C) NDJFM minus MJJAS precipitation
+setup_subplot(ax[2], ds3['time'], ds3['box_size'], ds3['fss'], sig3, 'c) NDJFM minus MJJAS precipitation', clevs_anom1, cmap_anom, fontsize)
 
-# D) JJA temperature
-setup_subplot(ax[3], time, box_size, fss_3, sig_3, 'd) JJA temperature', clevs, cmap, fontsize)
+# D) MJJAS temperature
+setup_subplot(ax[3], ds4['time'], ds4['box_size'], ds4['fss'], sig4, 'd) MJJAS temperature', clevs, cmap, fontsize)
 
-# E) DJF temperature
-setup_subplot(ax[4], time, box_size, fss_4, sig_4, 'e) DJF temperature', clevs, cmap, fontsize)
+# E) NDJFM temperature
+setup_subplot(ax[4], ds5['time'], ds5['box_size'], ds5['fss'], sig5, 'e) NDJFM temperature', clevs, cmap, fontsize)
 
-# F) DJF minus JJA temperature
-setup_subplot(ax[5], time, box_size, fss_4-fss_3, sig_4minus3, 'f) DJF minus JJA temperature', clevs_anom2, cmap_anom, fontsize)
+# F) NDJFM minus MJJAS temperature
+setup_subplot(ax[5], ds6['time'], ds6['box_size'], ds6['fss'], sig6, 'f) NDJFM minus MJJAS temperature', clevs_anom2, cmap_anom, fontsize)
 
 # write2file
 plt.tight_layout()

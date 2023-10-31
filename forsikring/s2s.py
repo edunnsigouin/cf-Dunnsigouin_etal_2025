@@ -85,6 +85,8 @@ def get_forecast_dates(first_forecast_date,number_forecasts,season):
         'mam': [3, 4, 5],                   # March to May
         'jja': [6, 7, 8],                   # June to August
         'son': [9, 10, 11],                  # September to November
+        'ndjfm': [11, 12, 1, 2, 3],          
+        'mjjas': [5, 6, 7, 8, 9],
         'annual': [1,2,3,4,5,6,7,8,9,10,11,12] # all year
     }
     

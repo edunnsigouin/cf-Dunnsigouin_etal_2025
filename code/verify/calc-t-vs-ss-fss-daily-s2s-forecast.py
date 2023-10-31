@@ -27,13 +27,13 @@ import os
 from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
-time_flag                = 'time'                   # timescale or time?
-variable                 = 't2m24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+time_flag                = 'timescale'                   # timescale or time?
+variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
 first_forecast_date      = '20210104'               # first initialization date of forecast (either a monday or thursday)
 number_forecasts         = 104                      # number of forecasts 
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
-grids                    = ['0.25x0.25']
+grids                    = ['0.25x0.25','0.5x0.5']
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 number_shuffle_bootstrap = 10000                    # number of times to shuffle initialization dates for error bars
 comp_lev                 = 5                        # compression level (0-10) of netcdf putput file
@@ -44,7 +44,6 @@ misc.tic()
 
 # define stuff
 forecast_dates          = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
-number_sample_bootstrap = forecast_dates.size
 path_in_forecast        = config.dirs['s2s_forecast_daily_anomaly'] + variable + '/'
 path_in_verification    = config.dirs['era5_s2s_forecast_daily_anomaly'] + variable + '/'
 path_out                = config.dirs['verify_s2s_forecast_daily']
@@ -75,7 +74,7 @@ for grid in grids:
         forecast_error[i, ...], reference_error[i, ...] = verify.calc_forecast_and_reference_error(filename_verification, filename_forecast, variable, box_sizes_temp, dim, time_flag)
 
     # calc fss with bootstraping over all forecasts  
-    fss[:,:], fss_bootstrap[:,:,:] = verify.calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, number_sample_bootstrap, box_sizes_temp)
+    fss[:,:], fss_bootstrap[:,:,:] = verify.calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, box_sizes_temp)
 
     # write to fss and errors to file
     verify.write_error_to_file(forecast_error, reference_error, write2file, grid, box_sizes, time_flag, filename_error_out, path_out, comp_lev)
