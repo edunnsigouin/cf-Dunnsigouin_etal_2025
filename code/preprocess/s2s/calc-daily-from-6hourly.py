@@ -12,16 +12,17 @@ from matplotlib  import pyplot as plt
 
 # INPUT ----------------------------------------------- 
 variables           = ['t2m24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-product             = 'hindcast'              # hindcast or forecast ?
+product             = 'forecast'              # hindcast or forecast ?
 first_forecast_date = '20210104' # first initialization date of forecast (either a monday or thursday)
 number_forecasts    = 104        # number of forecast initializations  
+season              = 'annual'
 grid                = '0.5x0.5'             # '0.25x0.25' or '0.5x0.5'
 comp_lev            = 5                       # level of compression with nccopy (1-10)
 write2file          = True
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts).strftime('%Y-%m-%d')
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
 print(forecast_dates)
 
 for variable in variables:
@@ -57,7 +58,10 @@ for variable in variables:
                 ds[variable].attrs['long_name']     = 'daily accumulated precipitation'
                 ds[variable].attrs['forecastcycle'] = forecastcycle
 
-                if write2file: misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out) 
+                if write2file:
+                    #misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
+                    ds.to_netcdf(path_out + filename_out)
+                    
                 ds.close()
 
             elif variable == 'rn24': # daily accumulated rain (precip - snowfall, m)
@@ -86,7 +90,10 @@ for variable in variables:
                 ds1[variable].attrs['units']         = 'm'
                 ds1[variable].attrs['long_name']     = 'daily accumulated rainfall'
                 ds1[variable].attrs['forecastcycle'] = forecastcycle
-                if write2file: misc.to_netcdf_pack64bit(ds1[variable],path_out + filename_out) 
+                if write2file:
+                    #misc.to_netcdf_pack64bit(ds1[variable],path_out + filename_out)
+                    ds.to_netcdf(path_out + filename_out)
+                    
                 ds1.close()
                 ds2.close()
 
@@ -109,7 +116,10 @@ for variable in variables:
                 ds[variable].attrs['units']         = 'm'
                 ds[variable].attrs['long_name']     = 'daily maximum 6 hour accumulated precipitation'
                 ds[variable].attrs['forecastcycle'] = forecastcycle
-                if write2file: misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out) 
+                if write2file:
+                    #misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
+                    ds.to_netcdf(path_out + filename_out)
+                    
                 ds.close()
 
             elif variable == 'mx24rn6': # daily maximum 6 hour accumulated rainfall (m)
@@ -137,7 +147,10 @@ for variable in variables:
                 da.attrs['units']                = 'm'
                 da.attrs['long_name']            = 'daily maximum 6 hour accumulated rainfall'
                 da.attrs['forecastcycle']        = forecastcycle
-                if write2file: misc.to_netcdf_pack64bit(da,path_out + filename_out) 
+                if write2file:
+                    #misc.to_netcdf_pack64bit(da,path_out + filename_out)
+                    ds.to_netcdf(path_out + filename_out)
+                    
                 ds1.close()
                 ds2.close()
                 da.close()
@@ -154,7 +167,10 @@ for variable in variables:
                 ds[variable].attrs['units']         = 'kg m**-2 s**-1'
                 ds[variable].attrs['long_name']     = 'daily maximum timestep precipitation rate'
                 ds[variable].attrs['forecastcycle'] = forecastcycle
-                if write2file: misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
+                if write2file:
+                    #misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
+                    ds.to_netcdf(path_out + filename_out)
+                    
                 ds.close()
                 
             elif variable == 't2m24': # daily-mean 2-meter temperature (K)
@@ -163,7 +179,7 @@ for variable in variables:
                 path_out                            = config.dirs['s2s_' + product + '_daily'] + variable + '/'
                 filename_in                         = 't2m_' + basename + '.nc'
                 filename_out                        = variable + '_' + basename + '.nc'
-                ds                                  = xr.open_dataset(path_in + filename_in)
+                ds                                  = xr.open_dataset(path_in + filename_in)                
                 ds                                  = ds.resample(time='1D').mean('time')
                 ds                                  = ds.rename({'t2m':variable})
 
@@ -175,11 +191,14 @@ for variable in variables:
                 ds[variable].attrs['long_name']     = 'daily-mean 2-meter temperature'
                 ds[variable].attrs['forecastcycle'] = forecastcycle
                 
-                if write2file: misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
+                if write2file:
+                    #misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
+                    ds.to_netcdf(path_out + filename_out)
+                    
                 ds.close()
 
                 
-                
+
         if write2file:
             
             print('combine cf and pf files into one file..')
@@ -193,7 +212,8 @@ for variable in variables:
             ds_pf           = xr.open_dataset(path_out + filename_out_pf)
             ds_cf           = ds_cf.assign_coords(number=51).expand_dims(dim={"number": 1},axis=1)
             ds              = xr.concat([ds_pf,ds_cf], dim="number")
-            misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
+            ds.to_netcdf(path_out + filename_out)
+            #misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
             ds_pf.close()
             ds_cf.close()
             ds.close()

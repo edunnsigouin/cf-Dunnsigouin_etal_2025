@@ -12,6 +12,40 @@ from scipy      import signal, ndimage
 from forsikring  import misc
 
 
+
+def boxcar_smoother_xy_optimized(box_sizes, da):
+    """
+    Smooths an array in xy using a boxcar smoother where the last two
+    dimensions are latitude & longitude.
+    Note: only performs calculation on odd sized box sizes (e.g., 1,3,5,...)
+    where the size refers to the number of grid points per side of a square.  
+    """
+    # Ensure that the input is an xarray DataArray
+    if not isinstance(da, xr.DataArray):
+        raise ValueError("Input 'da' must be an xarray DataArray")
+
+    # Check if the last two dimensions are latitude and longitude
+    if (da.dims[-2], da.dims[-1]) != ('latitude', 'longitude'):
+        raise ValueError("The last two dimensions of 'da' must be 'latitude' and 'longitude'")
+
+    # Initialize output array
+    smooth_values = np.full((len(box_sizes),) + da.shape, np.nan)
+    coords        = {'box_size': box_sizes, **da.coords}
+    dims          = ['box_size'] + list(da.dims)
+
+    # Apply the uniform filter for each box size
+    for i, size in enumerate(box_sizes):
+        if size % 2 != 0:  # Ensure the box size is odd
+            print(size)
+            filter_size           = [1] * (da.ndim - 2) + [size, size]
+            smooth_values[i, ...] =  ndimage.uniform_filter(da, size=filter_size, mode='constant',cval=0.0)
+
+    # Create the DataArray
+    smooth = xr.DataArray(smooth_values, coords=coords, dims=dims)
+
+    return smooth
+
+
 def boxcar_smoother_xy(box_sizes,da):
     """
     Smooths an array in xy using a boxcar smoother where the last two 
@@ -40,6 +74,7 @@ def boxcar_smoother_xy(box_sizes,da):
     # the odd box_sizes are those that correspond to the box sizes at high resolution.
     for i, n in enumerate(box_sizes):
         if n % 2 != 0:  # odd
+            print(n)
             # Create kernel with the same number of dimensions as da
             kernel_shape     = [1] * len(da.dims)
             kernel_shape[-2] = kernel_shape[-1] = n
@@ -179,7 +214,15 @@ def initialize_smooth_forecast(box_sizes,variable,da_forecast):
     dims               = ["box_size","time","number","latitude","longitude"]
     coords             = dict(box_size=box_sizes,time=time,number=number,latitude=latitude,longitude=longitude)
     name               = variable
-    da_forecast_smooth = xr.DataArray(data=data,dims=dims,coords=coords,name=name)#.astype('float16')
+    da_forecast_smooth = xr.DataArray(data=data,dims=dims,coords=coords,name=name).astype('float32')
+    
+    if variable == 'tp24':
+        da_forecast_smooth.attrs['units']     = 'm'
+        da_forecast_smooth.attrs['long_name'] = 'daily accumulated precipitation'
+    elif variable == 't2m24':
+        da_forecast_smooth.attrs['units']     = 'K'
+        da_forecast_smooth.attrs['long_name'] = 'daily mean 2m-temperature'
+        
     return da_forecast_smooth
 
 

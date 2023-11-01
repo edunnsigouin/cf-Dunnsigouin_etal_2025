@@ -1,4 +1,0 @@
-"""
-Performs a spatial (x,y) smoothing on a range of spatial scales
-of forecast data and outputs the smoothed forecast fields to file.
-"""
