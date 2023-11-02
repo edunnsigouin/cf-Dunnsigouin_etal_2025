@@ -13,7 +13,7 @@ from forsikring  import misc
 
 
 
-def boxcar_smoother_xy_optimized(box_sizes, da):
+def boxcar_smoother_xy_optimized(box_sizes, da, output_type):
     """
     Smooths an array in xy using a boxcar smoother where the last two
     dimensions are latitude & longitude.
@@ -36,12 +36,12 @@ def boxcar_smoother_xy_optimized(box_sizes, da):
     # Apply the uniform filter for each box size
     for i, size in enumerate(box_sizes):
         if size % 2 != 0:  # Ensure the box size is odd
-            print(size)
             filter_size           = [1] * (da.ndim - 2) + [size, size]
             smooth_values[i, ...] =  ndimage.uniform_filter(da, size=filter_size, mode='constant',cval=0.0)
 
-    # Create the DataArray
-    smooth = xr.DataArray(smooth_values, coords=coords, dims=dims)
+    # Create the DataArray if desired. Else, remains numpy array
+    if output_type == 'xarray':
+        smooth = xr.DataArray(smooth_values, coords=coords, dims=dims)
 
     return smooth
 

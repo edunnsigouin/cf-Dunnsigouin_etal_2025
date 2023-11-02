@@ -17,16 +17,17 @@ from matplotlib  import pyplot as plt
 # INPUT ----------------------------------------------- 
 variables           = ['tp']                  
 dtypes              = ['cf','pf']             # control & perturbed forecasts/hindcasts
-product             = 'forecast'              # hindcast or forecast
+product             = 'hindcast'              # hindcast or forecast
 first_forecast_date = '20200102' # first initialization date of forecast (either a monday or thursday) 
-number_forecasts    = 1        # number of forecast initializations 
+number_forecasts    = 313        # number of forecast initializations 
+season              = 'annual'
 grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
 comp_lev            = 5                       # level of compression with nccopy (1-10)
-write2file          = False
+write2file          = True
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts).strftime('%Y-%m-%d')
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
 print(forecast_dates)
 
 for variable in variables:
@@ -48,7 +49,7 @@ for variable in variables:
             
             # read data
             ds = xr.open_dataset(path_in + filename_in)
-            
+
             if grid == '0.25x0.25': # first 15 days of hindcast/forecast @ high-resolution
                 
                 # to get 6 hour accumulated values do var(t) - var(t-1)
@@ -85,8 +86,9 @@ for variable in variables:
 
             if write2file:
                 print('writing to file..')
-                misc.to_netcdf_pack64bit(ds[variable_out],path_out + filename_out)
-                misc.compress_file(comp_lev,4,filename_out,path_out)
+                #misc.to_netcdf_pack64bit(ds[variable_out],path_out + filename_out)
+                ds.to_netcdf(path_out + filename_out)
+                misc.compress_file(comp_lev,3,filename_out,path_out)
                 print('')
                 
             ds.close()

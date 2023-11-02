@@ -9,6 +9,7 @@ from forsikring import s2s, verify, misc, config
 
 # Input -----------------------------------
 variables           = ['t2m24']                  # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+product             = 'forecast'              # hindcast or forecast
 first_forecast_date = '20210104'               # first initialization date of forecast (either a monday or thursday)
 number_forecasts    = 1                      # number of forecasts
 season              = 'annual'
@@ -28,11 +29,11 @@ for variable in variables:
     for grid in grids:
         for date in forecast_dates:
             
-            print('\nsmoothing ' + variable + ' in forecast initialized on ' + date + ' with resolution ' + grid)
+            print('\nsmoothing ' + variable + ' in ' + product + ' initialized on ' + date + ' with resolution ' + grid)
 
             # define stuff
-            path_in_forecast  = config.dirs['s2s_forecast_daily'] + variable + '/'
-            path_out          = config.dirs['s2s_forecast_daily_smooth'] + variable + '/'
+            path_in_forecast  = config.dirs['s2s_' + product + '_daily'] + variable + '/'
+            path_out          = config.dirs['s2s_' + product + '_daily_smooth'] + variable + '/'
             filename_forecast = variable + '_' + grid + '_' + date + '.nc'
             filename_out      = variable + '_' + grid + '_' + date + '.nc'
 
@@ -48,7 +49,7 @@ for variable in variables:
                 #da_forecast_smooth.to_netcdf(path_out+filename_out)
                 misc.to_netcdf_pack64bit(da_forecast_smooth,path_out + filename_out)
                 misc.compress_file(comp_lev,3,filename_out,path_out)
-            
+
             da_forecast.close()
             da_forecast_smooth.close()
                 
