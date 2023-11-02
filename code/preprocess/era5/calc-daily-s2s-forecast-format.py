@@ -16,16 +16,17 @@ import os
 from forsikring import config,misc,s2s
 
 # INPUT -----------------------------------------------
-variables           = ['t2m24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variables           = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 first_forecast_date = '20210104'           # first initialization date of forecast (either a monday or thursday)
 number_forecasts    = 104                    # number of forecasts   
+season              = 'annual'
 grids               = ['0.5x0.5']        # '0.25x0.25' or '0.5x0.5'
 comp_lev            = 5
 write2file          = True
 # -----------------------------------------------------         
 
 # get all dates for monday and thursday forecast initializations 
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts)
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
 print(forecast_dates)
 
 for variable in variables:
@@ -50,9 +51,8 @@ for variable in variables:
             # calculate explicitely
             with ProgressBar(): ds = xr.open_mfdataset([path_in + filename1_in,path_in + filename2_in]).sel(time=era5_dates).compute()
 
-            if write2file:
-                misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
-                misc.compress_file(comp_lev,3,filename_out,path_out)
+            # write to file
+            if write2file: misc.to_netcdf_with_compression(ds,comp_lev,path_out,filename_out)
 
             ds.close()
 

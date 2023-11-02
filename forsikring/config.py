@@ -11,17 +11,20 @@ raw                  = cf_space + "raw/"
 processed            = cf_space + "processed/cf-forsikring/"
 verify               = cf_space + "verify/"
 
-s2s_forecast_6hourly       = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
-s2s_forecast_daily         = processed + "s2s/ecmwf/forecast/daily/values/"
-s2s_forecast_daily_smooth  = processed + "s2s/ecmwf/forecast/daily/values_smooth/"
-s2s_forecast_daily_anomaly = processed + "s2s/ecmwf/forecast/daily/anomaly/"
-s2s_hindcast_6hourly       = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
-s2s_hindcast_daily         = processed + "s2s/ecmwf/hindcast/daily/values/"
-s2s_hindcast_daily_clim    = processed + "s2s/ecmwf/hindcast/daily/climatology/"
+s2s_forecast_6hourly          = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
+s2s_forecast_daily            = processed + "s2s/ecmwf/forecast/daily/values/"
+s2s_forecast_daily_smooth     = processed + "s2s/ecmwf/forecast/daily/values_smooth/"
+s2s_forecast_daily_anomaly    = processed + "s2s/ecmwf/forecast/daily/anomaly/"
+s2s_hindcast_6hourly          = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
+s2s_hindcast_daily            = processed + "s2s/ecmwf/hindcast/daily/values/"
+s2s_hindcast_daily_smooth     = processed + "s2s/ecmwf/hindcast/daily/values_smooth/"
+s2s_hindcast_daily_clim       = processed + "s2s/ecmwf/hindcast/daily/climatology/"
+s2s_hindcast_daily_percentile = processed + "s2s/ecmwf/hindcast/daily/percentile/values_smooth/"
 
 era5_6hourly                    = raw + "era5/6hourly/"
 era5_daily                      = processed + "era5/continuous-format/daily/"
 era5_s2s_forecast_daily         = processed + "era5/s2s-model-format/forecast/daily/values/"
+era5_s2s_forecast_daily_smooth  = processed + "era5/s2s-model-format/forecast/daily/values_smooth/"
 era5_s2s_forecast_daily_clim    = processed + "era5/s2s-model-format/forecast/daily/climatology/"
 era5_s2s_forecast_daily_anomaly = processed + "era5/s2s-model-format/forecast/daily/anomaly/"
 era5_s2s_hindcast_daily         = processed + "era5/s2s-model-format/hindcast/daily/"
@@ -64,11 +67,14 @@ dirs = {"proj":proj,
         "s2s_forecast_daily_anomaly":s2s_forecast_daily_anomaly,
         "s2s_hindcast_6hourly":s2s_hindcast_6hourly,
         "s2s_hindcast_daily":s2s_hindcast_daily,
+        "s2s_hindcast_daily_smooth":s2s_hindcast_daily_smooth,
         "s2s_hindcast_daily_clim":s2s_hindcast_daily_clim,
+        "s2s_hindcast_daily_percentile":s2s_hindcast_daily_percentile,
         "era5_6hourly":era5_6hourly,
 	"era5_daily":era5_daily,
         "era5_monthly":era5_monthly,
         "era5_s2s_forecast_daily":era5_s2s_forecast_daily,
+        "era5_s2s_forecast_daily_smooth":era5_s2s_forecast_daily_smooth,
         "era5_s2s_forecast_daily_clim":era5_s2s_forecast_daily_clim,
         "era5_s2s_forecast_daily_anomaly":era5_s2s_forecast_daily_anomaly,
         "era5_s2s_hindcast_daily":era5_s2s_hindcast_daily,        

@@ -29,10 +29,10 @@ def boxcar_smoother_xy_optimized(box_sizes, da, output_type):
         raise ValueError("The last two dimensions of 'da' must be 'latitude' and 'longitude'")
 
     # Initialize output array
-    smooth_values = np.full((len(box_sizes),) + da.shape, np.nan)
+    smooth_values = np.full((len(box_sizes),) + da.shape, np.nan, dtype='float32')
     coords        = {'box_size': box_sizes, **da.coords}
     dims          = ['box_size'] + list(da.dims)
-
+    
     # Apply the uniform filter for each box size
     for i, size in enumerate(box_sizes):
         if size % 2 != 0:  # Ensure the box size is odd
@@ -199,32 +199,6 @@ def resample_time_to_timescale(ds, time_flag):
         return resample_31_days(ds)
     else:
         raise ValueError(f"Unsupported time size: {ds.time.size}. Supported sizes are 15 or 31.")
-
-
-def initialize_smooth_forecast(box_sizes,variable,da_forecast):
-    """ 
-    initializes a forecast with an extra dimmension indicating smoothing
-    """
-    time      = da_forecast.time
-    number    = da_forecast.number
-    latitude  = da_forecast.latitude
-    longitude = da_forecast.longitude
-    
-    data               = np.zeros((box_sizes.size,time.size,number.size,latitude.size,longitude.size),dtype=np.float32)
-    dims               = ["box_size","time","number","latitude","longitude"]
-    coords             = dict(box_size=box_sizes,time=time,number=number,latitude=latitude,longitude=longitude)
-    name               = variable
-    da_forecast_smooth = xr.DataArray(data=data,dims=dims,coords=coords,name=name).astype('float32')
-    
-    if variable == 'tp24':
-        da_forecast_smooth.attrs['units']     = 'm'
-        da_forecast_smooth.attrs['long_name'] = 'daily accumulated precipitation'
-    elif variable == 't2m24':
-        da_forecast_smooth.attrs['units']     = 'K'
-        da_forecast_smooth.attrs['long_name'] = 'daily mean 2m-temperature'
-        
-    return da_forecast_smooth
-
 
 
 def initialize_error_array(dim,box_sizes,forecast_dates):

@@ -134,6 +134,28 @@ def subselect_xy_domain_from_dim(dim,domain,grid):
     return dim
 
 
+def to_netcdf_with_compression(data,comp_lev,path,filename):
+    """
+    Uses xarray's native compression to write to netcdf with compression
+    using to_netcdf function
+    """
+    # Define your compression options
+    #compression_opts = {'zlib': True, 'complevel': comp_lev, 'shuffle': True}
+    compression_opts = {'zlib': True, 'complevel': comp_lev}
+    
+    # Check if data is a DataArray or Dataset, set encoding and write to netcdf
+    if isinstance(data, xr.DataArray):
+        encoding = {data.name: compression_opts}  # Use the name of the DataArray
+        data.to_netcdf(path+filename, format='NETCDF4', engine='netcdf4', encoding=encoding)
+    elif isinstance(data, xr.Dataset):
+        encoding = {var: compression_opts for var in data.data_vars}  # Apply to all variables
+        data.to_netcdf(path+filename, format='NETCDF4', engine='netcdf4', encoding=encoding)
+    else:
+        raise TypeError("The array must be either an xarray DataArray or Dataset")
+    return
+
+
+
 def compress_file(comp_lev,ncfiletype,filename,path_out):
     """  
     wrapper for compressing file using nccopy

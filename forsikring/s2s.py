@@ -162,34 +162,3 @@ def mask_significant_values_from_bootstrap(data_array, threshold):
     return masked_significance
 
 
-
-def mask_significance_between_bootstraps(data_array1, data_array2, threshold):
-    """
-    Determine if two bootstrapped distributions are statistically different based on a given threshold
-    and mask values where they are significant.                                                                                                                                
-    Parameters:
-    - data_array1, data_array2 (xr.DataArray): The input data arrays with a dimension 'number_shuffle_bootstrap'.
-    - threshold (float): The quantile threshold for significance determination.                                                              
-   
-    Returns:
-    - xr.DataArray: A data array with 1s for non-significant differences and np.nan for significant differences.
-   """
-    
-    # two sided test. e.g. 5% significance means 2.5% percentile > 0.
-    threshold = threshold/2
-
-    # Calculate the lower and upper quantile values for both data array
-    lower_quantile1 = data_array1.quantile(threshold, dim='number_shuffle_bootstrap', skipna=True)
-    upper_quantile1 = data_array1.quantile(1 - threshold, dim='number_shuffle_bootstrap', skipna=True)
-
-    lower_quantile2 = data_array2.quantile(threshold, dim='number_shuffle_bootstrap', skipna=True)
-    upper_quantile2 = data_array2.quantile(1 - threshold, dim='number_shuffle_bootstrap', skipna=True)
-
-    # Determine where the two distributions are statistically different
-    significance_mask = (upper_quantile1 < lower_quantile2) | (upper_quantile2 < lower_quantile1)
-
-    # Mask the significant differences with np.nan
-    masked_significance = significance_mask.where(~significance_mask, np.nan).where(significance_mask, 1)
-
-    return masked_significance
-
