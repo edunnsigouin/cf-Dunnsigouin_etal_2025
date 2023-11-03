@@ -19,7 +19,7 @@ s2s_hindcast_6hourly          = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
 s2s_hindcast_daily            = processed + "s2s/ecmwf/hindcast/daily/values/"
 s2s_hindcast_daily_smooth     = processed + "s2s/ecmwf/hindcast/daily/values_smooth/"
 s2s_hindcast_daily_clim       = processed + "s2s/ecmwf/hindcast/daily/climatology/"
-s2s_hindcast_daily_percentile = processed + "s2s/ecmwf/hindcast/daily/percentile/values_smooth/"
+s2s_hindcast_daily_percentile = processed + "s2s/ecmwf/hindcast/percentile/values_smooth/"
 
 era5_6hourly                    = raw + "era5/6hourly/"
 era5_daily                      = processed + "era5/continuous-format/daily/"

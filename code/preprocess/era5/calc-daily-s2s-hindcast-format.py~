@@ -1,0 +1,89 @@
+"""
+Converts daily continuous era5 data in yearly files into the same format as ecmwf hindcasts
+initialized on mondays and thursdays.
+i.e. for each lead time in a hindcast file, we collect the analagous 
+era5 dates and put them into a new file.
+example: tp24_CY47R1_0.25x0.25_2021-01-04.nc is the hindcast file
+and the new era5 file is tp24_0.25x0.25_2021-01-04.nc with dates corresponding
+to jan 04 to jan 04 + 15 days.
+"""
+
+import numpy  as np
+import xarray as xr
+import pandas as pd
+from dask.diagnostics   import ProgressBar
+import os
+from forsikring import config,misc,s2s
+
+
+def initialize_hindcast_array(variable,box_sizes,time_flag,dim,pval):
+    """
+    Initializes hindcast array used below.
+    Written here to clean up code.
+    """
+
+    data       = np.zeros((box_sizes.size,pval.size,time.size,dim.nlatitude,dim.nlongitude),dtype=np.float32)
+    dims       = ["box_sizes","pval","time","latitude","longitude"]
+    coords     = dict(box_sizes=box_sizes,pval=pval,time=time,latitude=dim.latitude,longitude=dim.longitude)
+
+    if variable == 't2m24':
+        units       = 'K'
+        description = 'climatological quantiles of 2-meter temperature'
+    elif variable == 'tp24':
+        units       = 'm'
+        description = 'climatological quantiles of daily accumulated precipitation'
+
+    attrs      = dict(description=description,units=units)
+    name       = 'quantile'
+    return xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
+
+
+
+# INPUT -----------------------------------------------
+variables           = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+first_forecast_date = '20210104'           # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 1                    # number of forecasts   
+season              = 'annual'
+grids               = ['0.25x0.25']        # '0.25x0.25' or '0.5x0.5'
+comp_lev            = 5
+write2file          = False
+# -----------------------------------------------------         
+
+# get all dates for monday and thursday forecast initializations 
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
+print(forecast_dates)
+
+for variable in variables:
+    for date in forecast_dates:
+        for grid in grids:
+
+            print('\nvariable: ' + variable + ', date: ' + date.strftime('%Y-%m-%d'))
+            
+            # define some paths and strings
+            path_in      = config.dirs['era5_daily'] + variable + '/'
+            path_out     = config.dirs['era5_s2s_hindcast_daily'] + variable + '/'
+            datestring   = date.strftime('%Y-%m-%d')            
+            filename_out = '%s_%s_%s.nc'%(variable,grid,datestring)
+
+            # open forecast calendar dates for corresponding hindcasts
+            for i in range(1,21):
+                temp_date = date - np.timedelta64(i,'Y')
+
+                # pick out specific dates (46 = # of days in ecmwf forecast)
+                if grid == '0.25x0.25': era5_dates = pd.date_range(temp_date,periods=15,freq="D").strftime('%Y-%m-%d')
+                elif grid == '0.5x0.5': era5_dates = (pd.date_range(temp_date,periods=31,freq="D") + np.timedelta64(15,'D')).strftime('%Y-%m-%d')
+
+                # define input filenames
+                years        = pd.date_range(temp_date,periods=2,freq="Y").strftime('%Y')
+                filenames_in = path_in + variable + '_' + grid + '_' + years + '.nc'
+
+                # get data corresponding to era5 dates
+                with ProgressBar(): ds = xr.open_mfdataset(filenames_in).sel(time=era5_dates,method='nearest').compute()
+                print(ds)
+                
+            # write to file
+            if write2file: misc.to_netcdf_with_compression(ds,comp_lev,path_out,filename_out)
+
+            ds.close()
+            
+            

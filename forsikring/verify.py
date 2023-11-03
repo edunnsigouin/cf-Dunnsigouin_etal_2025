@@ -165,26 +165,32 @@ def calc_fss_bootstrap_difference(reference_error1, reference_error2, forecast_e
 
 
 def resample_15_days(ds):
-    """ 
-    Resamples dataset time dimention with 15 days to timescales 
     """
-    temp1                = ds.isel(time=1).drop_vars('time')
-    temp2                = ds.isel(time=slice(2, 3)).mean(dim='time')
-    temp3                = ds.isel(time=slice(4, 7)).mean(dim='time')
-    temp4                = ds.isel(time=slice(7, 13)).mean(dim='time')
-    ds_resampled         = xr.concat([temp1, temp2, temp3, temp4], "time")
+    Resamples dataset time dimension with 15 days to timescales.
+    """
+    slices = [
+        ds.isel(time=1).drop_vars('time'),
+        ds.isel(time=slice(2, 3)).mean(dim='time'),
+        ds.isel(time=slice(4, 7)).mean(dim='time'),
+        ds.isel(time=slice(7, 13)).mean(dim='time'),
+    ]
+    ds_resampled         = xr.concat(slices, "time")
     ds_resampled['time'] = np.arange(1, 5, 1)
     return ds_resampled
 
+
 def resample_31_days(ds):
     """
-    Resamples dataset time dimention with 31 days to timescales 
+    Resamples dataset time dimension with 31 days to timescales.
     """
-    temp1                = ds.isel(time=slice(0, 12)).mean(dim='time')
-    temp2                = ds.isel(time=slice(13, 31)).mean(dim='time')
-    ds_resampled         = xr.concat([temp1, temp2], "time")
+    ds_resampled = xr.concat([
+        ds.isel(time=slice(0, 12)).mean(dim='time'),
+        ds.isel(time=slice(13, 31)).mean(dim='time')
+    ], "time")
+    
     ds_resampled['time'] = np.arange(5, 7, 1)
     return ds_resampled
+
 
 def resample_time_to_timescale(ds, time_flag):
     """Resamples daily time into timescales following Wheeler et al. 2016 QJRMS.
@@ -199,6 +205,7 @@ def resample_time_to_timescale(ds, time_flag):
         return resample_31_days(ds)
     else:
         raise ValueError(f"Unsupported time size: {ds.time.size}. Supported sizes are 15 or 31.")
+
 
 
 def initialize_error_array(dim,box_sizes,forecast_dates):

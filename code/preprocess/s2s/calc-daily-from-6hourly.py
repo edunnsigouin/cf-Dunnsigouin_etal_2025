@@ -11,7 +11,7 @@ from forsikring import config,misc,s2s
 from matplotlib  import pyplot as plt
 
 # INPUT ----------------------------------------------- 
-variables           = ['t2m24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+variables           = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 product             = 'hindcast'              # hindcast or forecast ?
 first_forecast_date = '20210104' # first initialization date of forecast (either a monday or thursday)
 number_forecasts    = 104        # number of forecast initializations  
@@ -59,7 +59,6 @@ for variable in variables:
                 ds[variable].attrs['forecastcycle'] = forecastcycle
 
                 if write2file:
-                    #misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
                     ds.to_netcdf(path_out + filename_out)
                     
                 ds.close()
@@ -91,7 +90,6 @@ for variable in variables:
                 ds1[variable].attrs['long_name']     = 'daily accumulated rainfall'
                 ds1[variable].attrs['forecastcycle'] = forecastcycle
                 if write2file:
-                    #misc.to_netcdf_pack64bit(ds1[variable],path_out + filename_out)
                     ds.to_netcdf(path_out + filename_out)
                     
                 ds1.close()
@@ -117,7 +115,6 @@ for variable in variables:
                 ds[variable].attrs['long_name']     = 'daily maximum 6 hour accumulated precipitation'
                 ds[variable].attrs['forecastcycle'] = forecastcycle
                 if write2file:
-                    #misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
                     ds.to_netcdf(path_out + filename_out)
                     
                 ds.close()
@@ -148,7 +145,6 @@ for variable in variables:
                 da.attrs['long_name']            = 'daily maximum 6 hour accumulated rainfall'
                 da.attrs['forecastcycle']        = forecastcycle
                 if write2file:
-                    #misc.to_netcdf_pack64bit(da,path_out + filename_out)
                     ds.to_netcdf(path_out + filename_out)
                     
                 ds1.close()
@@ -168,7 +164,6 @@ for variable in variables:
                 ds[variable].attrs['long_name']     = 'daily maximum timestep precipitation rate'
                 ds[variable].attrs['forecastcycle'] = forecastcycle
                 if write2file:
-                    #misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
                     ds.to_netcdf(path_out + filename_out)
                     
                 ds.close()
@@ -192,7 +187,6 @@ for variable in variables:
                 ds[variable].attrs['forecastcycle'] = forecastcycle
                 
                 if write2file:
-                    #misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
                     ds.to_netcdf(path_out + filename_out)
                     
                 ds.close()
@@ -212,14 +206,13 @@ for variable in variables:
             ds_pf           = xr.open_dataset(path_out + filename_out_pf)
             ds_cf           = ds_cf.assign_coords(number=51).expand_dims(dim={"number": 1},axis=1)
             ds              = xr.concat([ds_pf,ds_cf], dim="number")
-            ds.to_netcdf(path_out + filename_out)
-            #misc.to_netcdf_pack64bit(ds[variable],path_out + filename_out)
+            misc.to_netcdf_with_compression(ds,comp_lev,path_out,filename_out)
             ds_pf.close()
             ds_cf.close()
             ds.close()
             os.system('rm ' + path_out + filename_out_cf)
             os.system('rm ' + path_out + filename_out_pf)
-            misc.compress_file(comp_lev,3,filename_out,path_out)
+
 
             
         misc.toc()
