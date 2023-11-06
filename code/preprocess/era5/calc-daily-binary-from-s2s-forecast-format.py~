@@ -1,0 +1,5 @@
+"""
+Converts era5 forecast format data into binary if greater or smaller 
+than a quantile threshold calculated from its corresponding hindcast
+format data
+"""

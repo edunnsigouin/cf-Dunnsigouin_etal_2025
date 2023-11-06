@@ -1,7 +1,7 @@
 """
-Calculates climatological percentiles per xy grid point from ecmwf 
-smoothed hindcast data. Estimate is taken from sample of 20 years x 
-11 ensemble members for each grid point, calendar day, and spatial smoothing.
+Calculates climatological percentiles per xy grid point from era5 
+smoothed hindcast format data. Estimate is taken from sample of 20 years 
+for each grid point, calendar day, and spatial smoothing.
 """
 
 import numpy           as np
@@ -27,7 +27,7 @@ def initialize_quantile_array(variable,box_sizes,time_flag,dim,pval):
     
     if variable == 't2m24':
         units       = 'K'
-        description = 'climatological quantiles of 2-meter temperature'
+        description = 'climatological quantiles of daily-mean 2-meter temperature'
     elif variable == 'tp24':
         units       = 'm'
         description = 'climatological quantiles of daily accumulated precipitation'
@@ -58,16 +58,16 @@ print(forecast_dates)
 for date in forecast_dates:
 
     misc.tic()
-    print('\ncalculating percentiles for smoothed hindcast ' + date + ' and grid: ' + grid)
+    print('\ncalculating percentiles for smoothed era5 hindcast format data with ' + date + ' and grid: ' + grid)
     quantile = initialize_quantile_array(variable,box_sizes,time_flag,dim,pval)
     
     for bs, box_size in enumerate(box_sizes):
 
         print('smoothing box size = ' + str(box_size))
-
+        
         # define stuff
-        path_in      = config.dirs['s2s_hindcast_daily_smooth'] + variable + '/'
-        path_out     = config.dirs['s2s_hindcast_daily_percentile'] + variable + '/'
+        path_in      = config.dirs['era5_s2s_hindcast_daily_smooth'] + variable + '/'
+        path_out     = config.dirs['era5_s2s_hindcast_daily_percentile'] + variable + '/'
         filename_in  = variable + '_' + grid + '_' + date + '.nc'
         filename_out = 'quantile_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
     
@@ -78,11 +78,10 @@ for date in forecast_dates:
         da = verify.resample_time_to_timescale(da, time_flag)
 
         # calculate percentiles
-        quantile[bs,:,:,:,:] = np.quantile(da.stack(temp_index=("number", "hdate")).values,pval,axis=3) # using numpy function for speed  
-        
+        quantile[bs,:,:,:,:] = np.quantile(da.values,pval,axis=0) # using numpy function for speed
+
         da.close()
         
     if write2file: misc.to_netcdf_with_compression(quantile,comp_lev,path_out,filename_out)
-
     misc.toc()
     

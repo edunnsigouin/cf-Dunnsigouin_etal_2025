@@ -1,7 +1,7 @@
 """
-Calculates climatological percentiles per xy grid point from ecmwf 
-smoothed hindcast data. Estimate is taken from sample of 20 years x 
-11 ensemble members for each grid point, calendar day, and spatial smoothing.
+Calculates climatological percentiles per xy grid point from era5 
+smoothed hindcast format data. Estimate is taken from sample of 20 years 
+for each grid point, calendar day, and spatial smoothing.
 """
 
 import numpy           as np
@@ -10,18 +10,24 @@ from dask.diagnostics  import ProgressBar
 from forsikring        import misc,s2s,config,verify
 import os
 
-def initialize_quantile_array(forecast_date,variable,dim):
+def initialize_quantile_array(variable,box_sizes,time_flag,dim,pval):
     """ 
     Initializes output array used below.  
     Written here to clean up code.    
     """
-    data       = np.zeros((time.size,pval.size,hdate.size,dim.nlatitude,dim.nlongitude),dtype=np.float32)
-    dims       = ["time","hdate","latitude","longitude"]
-    coords     = dict(time=time,hdate=hdate,latitude=dim.latitude,longitude=dim.longitude)
 
+    if time_flag == 'time':
+        time = dim.time
+    elif time_flag == 'timescale':
+        time = dim.timescale
+        
+    data       = np.zeros((box_sizes.size,pval.size,time.size,dim.nlatitude,dim.nlongitude),dtype=np.float32)
+    dims       = ["box_sizes","pval","time","latitude","longitude"]
+    coords     = dict(box_sizes=box_sizes,pval=pval,time=time,latitude=dim.latitude,longitude=dim.longitude)
+    
     if variable == 't2m24':
         units       = 'K'
-        description = 'climatological quantiles of 2-meter temperature'
+        description = 'climatological quantiles of daily-mean 2-meter temperature'
     elif variable == 'tp24':
         units       = 'm'
         description = 'climatological quantiles of daily accumulated precipitation'
@@ -39,7 +45,7 @@ number_forecasts    = 1                    # number of forecast initializations
 season              = 'annual'
 grid                = '0.25x0.25'              # '0.25x0.25' or '0.5x0.5'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
-pval                = np.array([0.75,0.9,0.95]) # percentile values  
+pval                = np.array([0.9]) # percentile values  
 comp_lev            = 5                        # level of compression with nccopy (1-10)
 write2file          = True
 # ----------------------------------------------------
@@ -51,18 +57,17 @@ print(forecast_dates)
 
 for date in forecast_dates:
 
-    print('\ncalculating percentiles for smoothed hindcast ' + date + ' and grid: ' + grid)
+    misc.tic()
+    print('\ncalculating percentiles for smoothed era5 hindcast format data with ' + date + ' and grid: ' + grid)
     quantile = initialize_quantile_array(variable,box_sizes,time_flag,dim,pval)
     
     for bs, box_size in enumerate(box_sizes):
 
         print('smoothing box size = ' + str(box_size))
-        misc.tic()
-
         
         # define stuff
-        path_in      = config.dirs['s2s_hindcast_daily_smooth'] + variable + '/'
-        path_out     = config.dirs['s2s_hindcast_daily_percentile'] + variable + '/'
+        path_in      = config.dirs['era5_s2s_hindcast_daily_smooth'] + variable + '/'
+        path_out     = config.dirs['era5_s2s_hindcast_daily_percentile'] + variable + '/'
         filename_in  = variable + '_' + grid + '_' + date + '.nc'
         filename_out = 'quantile_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
     
@@ -73,11 +78,10 @@ for date in forecast_dates:
         da = verify.resample_time_to_timescale(da, time_flag)
 
         # calculate percentiles
-        quantile[bs,:,:,:,:] = da.stack(temp_index=("number", "hdate")).quantile(pval,dim='temp_index').values 
+        quantile[bs,:,:,:,:] = np.quantile(da.values,pval,axis=0) # using numpy function for speed
 
         da.close()
-        misc.toc()
         
     if write2file: misc.to_netcdf_with_compression(quantile,comp_lev,path_out,filename_out)
-        
+    misc.toc()
     
