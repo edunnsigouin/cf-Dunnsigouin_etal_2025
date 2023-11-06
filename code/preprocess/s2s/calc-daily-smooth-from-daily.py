@@ -9,7 +9,7 @@ import xarray   as xr
 from forsikring import s2s, verify, misc, config
 
 # Input -----------------------------------
-variables           = ['tp24']                  # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variables           = ['t2m24']                  # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 product             = 'hindcast'              # hindcast or forecast
 first_forecast_date = '20210104'               # first initialization date of forecast (either a monday or thursday)
 number_forecasts    = 104                      # number of forecasts

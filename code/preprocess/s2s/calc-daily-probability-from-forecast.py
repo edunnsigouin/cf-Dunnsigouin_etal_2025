@@ -1,7 +1,6 @@
 """
-Converts era5 forecast format data into binary if greater or smaller 
-than a quantile threshold calculated from its corresponding hindcast
-format data
+Converts ecmwf forecast format data into probability of ensemble members greater or smaller 
+than a quantile threshold calculated from its corresponding hindcast data
 """
 
 import xarray    as xr
@@ -26,12 +25,12 @@ print(forecast_dates)
 for date in forecast_dates:
 
     misc.tic()
-    print('\ncalculating binary for smoothed era5 forecast format data with ' + date + ' and grid: ' + grid)
+    print('\ncalculating probability for smoothed forecast with ' + date + ' and grid: ' + grid)
 
     # define stuff                                                                                                                                                         
-    path_in_forecast     = config.dirs['era5_s2s_forecast_daily_smooth'] + variable + '/'
-    path_in_quantile     = config.dirs['era5_s2s_hindcast_daily_percentile'] + variable + '/'
-    path_out             = config.dirs['era5_s2s_forecast_daily_binary'] + str(pval) + '/' + variable + '/'
+    path_in_forecast     = config.dirs['s2s_forecast_daily_smooth'] + variable + '/'
+    path_in_quantile     = config.dirs['s2s_hindcast_daily_percentile'] + variable + '/'
+    path_out             = config.dirs['s2s_forecast_daily_probability'] + str(pval) + '/' + variable + '/'
     filename_in_forecast = variable + '_' + grid + '_' + date + '.nc'
     filename_in_quantile = 'quantile_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
     filename_out         = variable + '_' + grid + '_' + date + '.nc'
@@ -42,14 +41,23 @@ for date in forecast_dates:
 
     # convert time to timescale if applicable                                                                                                                              
     forecast = verify.resample_time_to_timescale(forecast, time_flag)
+    
+    # convert to probability (number of ensemble members > quantile) 
+    probability = (forecast >= quantile).mean(dim='number')
 
-    # convert to binary
-    binary = forecast.where(forecast < quantile, 1.0).where(forecast >= quantile, 0.0)
+    # fix metadata
+    probability = probability.rename(variable)
+    if variable == 'tp24':
+        probability.attrs['units']     = 'm'
+        probability.attrs['long_name'] = 'probability of daily accumulated precipitation over a given quantile threshold pval'
+    elif variable == 't2m24':
+        probability.attrs['units']     = 'K'
+        probability.attrs['long_name'] = 'probability of daily mean 2m-temperature over a given quantile threshold pval'
 
-    if write2file: misc.to_netcdf_with_compression(binary,comp_lev,path_out,filename_out)
+    if write2file: misc.to_netcdf_with_compression(probability,comp_lev,path_out,filename_out)
 
     forecast.close()
     quantile.close()
-    binary.close()
+    probability.close()
     
     misc.toc()

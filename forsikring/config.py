@@ -11,15 +11,17 @@ raw                  = cf_space + "raw/"
 processed            = cf_space + "processed/cf-forsikring/"
 verify               = cf_space + "verify/"
 
-s2s_forecast_6hourly          = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
-s2s_forecast_daily            = processed + "s2s/ecmwf/forecast/daily/values/"
-s2s_forecast_daily_smooth     = processed + "s2s/ecmwf/forecast/daily/values_smooth/"
-s2s_forecast_daily_anomaly    = processed + "s2s/ecmwf/forecast/daily/anomaly/"
-s2s_hindcast_6hourly          = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
-s2s_hindcast_daily            = processed + "s2s/ecmwf/hindcast/daily/values/"
-s2s_hindcast_daily_smooth     = processed + "s2s/ecmwf/hindcast/daily/values_smooth/"
-s2s_hindcast_daily_clim       = processed + "s2s/ecmwf/hindcast/daily/climatology/"
-s2s_hindcast_daily_percentile = processed + "s2s/ecmwf/hindcast/percentile/values_smooth/"
+s2s_forecast_6hourly           = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
+s2s_forecast_daily             = processed + "s2s/ecmwf/forecast/daily/values/"
+s2s_forecast_daily_smooth      = processed + "s2s/ecmwf/forecast/daily/values_smooth/"
+s2s_forecast_daily_anomaly     = processed + "s2s/ecmwf/forecast/daily/anomaly/"
+s2s_forecast_daily_probability = processed + "s2s/ecmwf/forecast/daily/probability_smooth/"
+s2s_hindcast_6hourly           = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
+s2s_hindcast_daily             = processed + "s2s/ecmwf/hindcast/daily/values/"
+s2s_hindcast_daily_smooth      = processed + "s2s/ecmwf/hindcast/daily/values_smooth/"
+s2s_hindcast_daily_clim        = processed + "s2s/ecmwf/hindcast/daily/climatology/"
+s2s_hindcast_daily_percentile  = processed + "s2s/ecmwf/hindcast/percentile/values_smooth/"
+
 
 era5_6hourly                       = raw + "era5/6hourly/"
 era5_daily                         = processed + "era5/continuous-format/daily/"
@@ -59,6 +61,7 @@ dirs = {"proj":proj,
         "s2s_forecast_daily":s2s_forecast_daily,
         "s2s_forecast_daily_smooth":s2s_forecast_daily_smooth,
         "s2s_forecast_daily_anomaly":s2s_forecast_daily_anomaly,
+	"s2s_forecast_daily_probability":s2s_forecast_daily_probability,        
         "s2s_hindcast_6hourly":s2s_hindcast_6hourly,
         "s2s_hindcast_daily":s2s_hindcast_daily,
         "s2s_hindcast_daily_smooth":s2s_hindcast_daily_smooth,
