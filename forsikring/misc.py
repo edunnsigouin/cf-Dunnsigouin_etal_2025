@@ -134,6 +134,63 @@ def subselect_xy_domain_from_dim(dim,domain,grid):
     return dim
 
 
+def to_netcdf_with_packing_and_compression(data, filename, dtype='int16', zlib=True, complevel=5):
+    """
+    Writes an xarray DataArray or Dataset to a NetCDF file, applying packing and zlib compression.
+    
+    Parameters:
+    - data (xarray.DataArray or xarray.Dataset): The data to write to file.
+    - filename (str): The path to the output NetCDF file.
+    - dtype (str): The target dtype for packing. Default is 'int16'.
+    - zlib (bool): Whether to apply zlib compression. Default is True.
+    - complevel (int): Compression level from 1 to 9. Default is 5.
+    """
+    
+    def calculate_scale_and_offset(min_val, max_val, dtype):
+        """
+        Calculate scale factor and add offset for packing data.
+        Adds a buffer to avoid the minimum value being set to the fill value.
+        """
+        data_range = max_val - min_val
+        int_min, int_max = np.iinfo(dtype).min, np.iinfo(dtype).max
+
+        # Add a buffer to min_val to prevent it from becoming a fill value due to rounding
+        buffer = data_range / (int_max - int_min)
+        add_offset = min_val - buffer
+        scale_factor = (max_val - add_offset) / (int_max - 1)  # Use int_max - 1 to ensure max value is representable
+
+        return scale_factor, add_offset
+
+    encoding = {}
+    fill_value = np.iinfo(np.dtype(dtype)).min  # Use minimum representable value as fill value
+    
+    data_vars = list(data.data_vars) if isinstance(data, xr.Dataset) else [data.name]
+    
+    for var in data_vars:
+        da = data[var] if isinstance(data, xr.Dataset) else data
+        
+        min_val = float(da.min())
+        max_val = float(da.max())
+        
+        scale_factor, add_offset = calculate_scale_and_offset(min_val, max_val, dtype)
+        
+        encoding[var] = {
+            'dtype': dtype,
+            'scale_factor': scale_factor,
+            'add_offset': add_offset,
+            'zlib': zlib,
+            '_FillValue': fill_value,
+            'complevel': complevel
+        }
+    
+    # Write the data to a NetCDF file with the specified encoding
+    data.to_netcdf(filename, encoding=encoding)
+
+    return
+
+
+
+
 def to_netcdf_with_compression(data,comp_lev,path,filename):
     """
     Uses xarray's native compression to write to netcdf with compression
@@ -155,7 +212,6 @@ def to_netcdf_with_compression(data,comp_lev,path,filename):
     return
 
 
-
 def compress_file(comp_lev,ncfiletype,filename,path_out):
     """  
     wrapper for compressing file using nccopy
@@ -167,30 +223,3 @@ def compress_file(comp_lev,ncfiletype,filename,path_out):
     return
 
 
-def to_netcdf_pack64bit(da,filename_out):
-    """ 
-    A wraper on xrray's to_netcdf with 64-bit
-    encoding to pack the data.                                                                                                                                             
-    Modified from: https://stackoverflow.com/questions/57179990/compression-of-arrays-in-netcdf-file
-    """
-    n    = 16
-    vmin = np.min(da).item()
-    vmax = np.max(da).item()
-
-    # stretch/compress data to the available packed range
-    scale_factor = (vmax - vmin) / (2 ** n - 1)
-
-    # translate the range to be symmetric about zero
-    add_offset = vmin + 2 ** (n - 1) * scale_factor
-
-    # write2file
-    encoding = {da.name:{
-                "dtype": 'int16',
-                "scale_factor": scale_factor,
-                "add_offset": add_offset,
-                "_FillValue": -9999,
-                "missing_value":-9999}}
-
-    da.to_netcdf(filename_out,encoding=encoding,format='NETCDF3_64BIT')
-    
-    return

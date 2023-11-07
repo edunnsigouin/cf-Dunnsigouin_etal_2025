@@ -16,7 +16,6 @@ number_forecasts    = 313                      # number of forecasts
 season              = 'annual'
 grids               = ['0.25x0.25']            # '0.25x0.25' & '0.5x0.5'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd! 
-comp_lev            = 5                        # compression level (0-10) of netcdf putput file 
 write2file          = True
 # -----------------------------------------
 
@@ -54,7 +53,7 @@ for variable in variables:
                 da_smooth.attrs['long_name'] = 'daily mean 2m-temperature'
 
             # write output 
-            if write2file: misc.to_netcdf_with_compression(da_smooth,comp_lev,path_out,filename_out)
+            if write2file: misc.to_netcdf_with_packing_and_compression(da_smooth, path_out + filename_out)
             
             da.close()
             da_smooth.close()

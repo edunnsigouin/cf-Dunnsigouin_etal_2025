@@ -17,7 +17,6 @@ first_forecast_date = '20200102' # first initialization date of forecast (either
 number_forecasts    = 313        # number of forecast initializations  
 season              = 'annual'
 grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
-comp_lev            = 5                       # level of compression with nccopy (1-10)
 write2file          = True
 # -----------------------------------------------------            
 
@@ -58,8 +57,7 @@ for variable in variables:
                 ds[variable].attrs['long_name']     = 'daily accumulated precipitation'
                 ds[variable].attrs['forecastcycle'] = forecastcycle
 
-                if write2file:
-                    ds.to_netcdf(path_out + filename_out)
+                if write2file: misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
                     
                 ds.close()
 
@@ -89,8 +87,8 @@ for variable in variables:
                 ds1[variable].attrs['units']         = 'm'
                 ds1[variable].attrs['long_name']     = 'daily accumulated rainfall'
                 ds1[variable].attrs['forecastcycle'] = forecastcycle
-                if write2file:
-                    ds.to_netcdf(path_out + filename_out)
+                
+                if write2file: misc.to_netcdf_with_packing_and_compression(ds1, path_out + filename_out)
                     
                 ds1.close()
                 ds2.close()
@@ -114,8 +112,8 @@ for variable in variables:
                 ds[variable].attrs['units']         = 'm'
                 ds[variable].attrs['long_name']     = 'daily maximum 6 hour accumulated precipitation'
                 ds[variable].attrs['forecastcycle'] = forecastcycle
-                if write2file:
-                    ds.to_netcdf(path_out + filename_out)
+                
+                if write2file: misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
                     
                 ds.close()
 
@@ -144,8 +142,8 @@ for variable in variables:
                 da.attrs['units']                = 'm'
                 da.attrs['long_name']            = 'daily maximum 6 hour accumulated rainfall'
                 da.attrs['forecastcycle']        = forecastcycle
-                if write2file:
-                    ds.to_netcdf(path_out + filename_out)
+                
+                if write2file: misc.to_netcdf_with_packing_and_compression(da, path_out + filename_out)
                     
                 ds1.close()
                 ds2.close()
@@ -163,8 +161,7 @@ for variable in variables:
                 ds[variable].attrs['units']         = 'kg m**-2 s**-1'
                 ds[variable].attrs['long_name']     = 'daily maximum timestep precipitation rate'
                 ds[variable].attrs['forecastcycle'] = forecastcycle
-                if write2file:
-                    ds.to_netcdf(path_out + filename_out)
+                if write2file: misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
                     
                 ds.close()
                 
@@ -186,8 +183,7 @@ for variable in variables:
                 ds[variable].attrs['long_name']     = 'daily-mean 2-meter temperature'
                 ds[variable].attrs['forecastcycle'] = forecastcycle
                 
-                if write2file:
-                    ds.to_netcdf(path_out + filename_out)
+                if write2file: misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
                     
                 ds.close()
 
@@ -206,7 +202,7 @@ for variable in variables:
             ds_pf           = xr.open_dataset(path_out + filename_out_pf)
             ds_cf           = ds_cf.assign_coords(number=51).expand_dims(dim={"number": 1},axis=1)
             ds              = xr.concat([ds_pf,ds_cf], dim="number")
-            misc.to_netcdf_with_compression(ds,comp_lev,path_out,filename_out)
+            misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
             ds_pf.close()
             ds_cf.close()
             ds.close()
