@@ -1,7 +1,9 @@
 """
 Performs a spatial (x,y) smoothing on a range of spatial scales
-of daily forecast/hindcast data and outputs the smoothed forecast 
+of daily forecast data and outputs the smoothed forecast 
 fields to file.
+
+This code is split from the hindcast version because of space issues.
 """
 
 import numpy    as np
@@ -12,12 +14,12 @@ from forsikring import s2s, verify, misc, config
 variables           = ['t2m24']                  # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 product             = 'hindcast'              # hindcast or forecast
 first_forecast_date = '20210104'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 104                      # number of forecasts
+number_forecasts    = 1                        # number of forecasts
 season              = 'annual'
-grids               = ['0.5x0.5']            # '0.25x0.25' & '0.5x0.5'
-box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd! 
+grids               = ['0.25x0.25']            # '0.25x0.25' & '0.5x0.5'
+box_sizes           = np.arange(1,3,2)        # smoothing box size in grid points per side. Must be odd! 
 comp_lev            = 5                        # compression level (0-10) of netcdf putput file 
-write2file          = True
+write2file          = False
 # -----------------------------------------
 
 # define stuff 
