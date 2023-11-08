@@ -27,12 +27,12 @@ era5_6hourly                       = raw + "era5/6hourly/"
 era5_daily                         = processed + "era5/continuous-format/daily/"
 era5_s2s_forecast_daily            = processed + "era5/s2s-model-format/forecast/daily/values/"
 era5_s2s_forecast_daily_smooth     = processed + "era5/s2s-model-format/forecast/daily/values_smooth/"
-era5_s2s_forecast_daily_clim       = processed + "era5/s2s-model-format/forecast/daily/climatology/"
-era5_s2s_forecast_daily_anomaly    = processed + "era5/s2s-model-format/forecast/daily/anomaly/"
+era5_s2s_forecast_daily_anomaly    = processed + "era5/s2s-model-format/forecast/daily/anomaly_smooth/"
 era5_s2s_forecast_daily_binary     = processed + "era5/s2s-model-format/forecast/daily/binary_smooth/"
 era5_s2s_hindcast_daily            = processed + "era5/s2s-model-format/hindcast/daily/values/"
 era5_s2s_hindcast_daily_smooth     = processed + "era5/s2s-model-format/hindcast/daily/values_smooth/"
-era5_s2s_hindcast_daily_percentile = processed + "era5/s2s-model-format/hindcast/percentile/values_smooth/"
+era5_s2s_hindcast_percentile       = processed + "era5/s2s-model-format/hindcast/percentile/values_smooth/"
+era5_s2s_hindcast_climatology      = processed + "era5/s2s-model-format/hindcast/climatology/values_smooth/"
 
 seasonal_hindcast                 = raw + "seasonal/ecmwf/monthly/hindcast/"
 seasonal_forecast                 = raw + "seasonal/ecmwf/monthly/forecast/"
@@ -72,12 +72,12 @@ dirs = {"proj":proj,
         "era5_monthly":era5_monthly,
         "era5_s2s_forecast_daily":era5_s2s_forecast_daily,
         "era5_s2s_forecast_daily_smooth":era5_s2s_forecast_daily_smooth,
-        "era5_s2s_forecast_daily_clim":era5_s2s_forecast_daily_clim,
         "era5_s2s_forecast_daily_anomaly":era5_s2s_forecast_daily_anomaly,
         "era5_s2s_forecast_daily_binary":era5_s2s_forecast_daily_binary,
         "era5_s2s_hindcast_daily":era5_s2s_hindcast_daily,
         "era5_s2s_hindcast_daily_smooth":era5_s2s_hindcast_daily_smooth,
-        "era5_s2s_hindcast_daily_percentile":era5_s2s_hindcast_daily_percentile,
+        "era5_s2s_hindcast_percentile":era5_s2s_hindcast_percentile,
+        "era5_s2s_hindcast_climatology":era5_s2s_hindcast_climatology,
         "seasonal_hindcast":seasonal_hindcast,
         "seasonal_forecast":seasonal_forecast,
         "seasonal_hindcast_monthly":seasonal_hindcast_monthly,

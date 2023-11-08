@@ -27,7 +27,7 @@ import os
 from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
-time_flag                = 'timescale'                   # timescale or time?
+time_flag                = 'time'                   # timescale or time?
 variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
 first_forecast_date      = '20210104'               # first initialization date of forecast (either a monday or thursday)
