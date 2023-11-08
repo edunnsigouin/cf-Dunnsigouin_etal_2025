@@ -19,7 +19,7 @@ s2s_forecast_daily_probability = processed + "s2s/ecmwf/forecast/daily/probabili
 s2s_hindcast_6hourly           = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
 s2s_hindcast_daily             = processed + "s2s/ecmwf/hindcast/daily/values/"
 s2s_hindcast_daily_smooth      = processed + "s2s/ecmwf/hindcast/daily/values_smooth/"
-s2s_hindcast_daily_clim        = processed + "s2s/ecmwf/hindcast/daily/climatology/"
+s2s_hindcast_climatology       = processed + "s2s/ecmwf/hindcast/climatology/values_smooth/"
 s2s_hindcast_daily_percentile  = processed + "s2s/ecmwf/hindcast/percentile/values_smooth/"
 
 
@@ -51,7 +51,6 @@ verify_s2s_forecast_daily        = verify + "s2s/ecmwf/daily/forecast/"
 verify_seasonal_forecast_monthly = verify + "seasonal/ecmwf/monthly/forecast/" 
 
 
-
 dirs = {"proj":proj,
         "data_interim":data_interim,
         "fig":fig,
@@ -65,7 +64,7 @@ dirs = {"proj":proj,
         "s2s_hindcast_6hourly":s2s_hindcast_6hourly,
         "s2s_hindcast_daily":s2s_hindcast_daily,
         "s2s_hindcast_daily_smooth":s2s_hindcast_daily_smooth,
-        "s2s_hindcast_daily_clim":s2s_hindcast_daily_clim,
+        "s2s_hindcast_climatology":s2s_hindcast_climatology,
         "s2s_hindcast_daily_percentile":s2s_hindcast_daily_percentile,
         "era5_6hourly":era5_6hourly,
 	"era5_daily":era5_daily,

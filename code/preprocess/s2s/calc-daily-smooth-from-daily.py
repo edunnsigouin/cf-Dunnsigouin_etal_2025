@@ -20,8 +20,6 @@ comp_lev            = 5                        # compression level (0-10) of net
 write2file          = True
 # -----------------------------------------
 
-misc.tic()
-
 # define stuff 
 forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d').values
 print(forecast_dates)
@@ -29,17 +27,18 @@ print(forecast_dates)
 for variable in variables:
     for grid in grids:
         for date in forecast_dates:
-            
+
+            misc.tic()
             print('\nsmoothing ' + variable + ' in ' + product + ' initialized on ' + date + ' with resolution ' + grid)
 
             # define stuff
-            path_in_forecast  = config.dirs['s2s_' + product + '_daily'] + variable + '/'
+            path_in           = config.dirs['s2s_' + product + '_daily'] + variable + '/'
             path_out          = config.dirs['s2s_' + product + '_daily_smooth'] + variable + '/'
-            filename_forecast = variable + '_' + grid + '_' + date + '.nc'
+            filename_in       = variable + '_' + grid + '_' + date + '.nc'
             filename_out      = variable + '_' + grid + '_' + date + '.nc'
 
             # read data
-            da = xr.open_dataset(path_in_forecast + filename_forecast)[variable]
+            da = xr.open_dataset(path_in + filename_in)[variable]
 
             # smooth
             da_smooth = verify.boxcar_smoother_xy_optimized(box_sizes, da, 'xarray')
@@ -54,9 +53,10 @@ for variable in variables:
                 da_smooth.attrs['long_name'] = 'daily mean 2m-temperature'
 
             # write output 
-            if write2file: misc.to_netcdf_with_compression(da_smooth,comp_lev,path_out,filename_out)
+            if write2file: misc.to_netcdf_with_packing_and_compression(da_smooth, path_out + filename_out)
             
             da.close()
             da_smooth.close()
-                
-misc.toc()
+
+            misc.toc()
+

@@ -45,19 +45,19 @@ for variable in variables:
             if variable == 'tp24':
                 da.attrs['units']     = 'm'
                 da.attrs['long_name'] = 'climatological mean daily accumulated precipitation'
-            if variable == 't2m24':
+            elif variable == 't2m24':
                 da.attrs['units']     = 'K'
                 da.attrs['long_name'] = 'climatological mean daily-mean 2-meter temperature'
-            if variable == 'rn24':
+            elif variable == 'rn24':
                 da.attrs['units']     = 'm'
                 da.attrs['long_name'] = 'climatological mean daily accumulated rainfall'
-            if variable == 'mx24tpr':
+            elif variable == 'mx24tpr':
                 da.attrs['units']     = 'kg m**-2 s**-1'
                 da.attrs['long_name'] = 'climatological mean daily maximum timestep precipitation rate'
-            if variable == 'mx24tp6':
+            elif variable == 'mx24tp6':
                 da.attrs['units']     = 'm'
                 da.attrs['long_name'] = 'climatological mean daily maximum 6 hour accumulated precipitation'
-            if variable == 'mx24rn6':
+            elif variable == 'mx24rn6':
                 da.attrs['units']     = 'm'
                 da.attrs['long_name'] = 'climatological mean daily maximum 6 hour accumulated rainfall'
 
