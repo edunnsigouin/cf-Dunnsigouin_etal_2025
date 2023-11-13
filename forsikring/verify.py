@@ -41,10 +41,10 @@ def boxcar_smoother_xy_optimized(box_sizes, da, output_type):
 
     # Create the DataArray if desired. Else, remains numpy array
     if output_type == 'xarray':
-        smooth = xr.DataArray(smooth_values, coords=coords, dims=dims)
-
-    return smooth
-
+        return xr.DataArray(smooth_values, coords=coords, dims=dims)
+    elif output_type == 'numpy':
+        return smooth_values
+    
 
 def boxcar_smoother_xy(box_sizes,da):
     """

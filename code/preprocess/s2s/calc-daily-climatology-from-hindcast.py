@@ -9,9 +9,10 @@ from forsikring        import misc,s2s,config,verify
 import os
 
 # input ----------------------------------------------
-variable             = 't2m24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-first_forecast_date  = '20210104'              # first initialization date of forecast (either a monday or thursday)   
-number_forecasts     = 1                     # number of forecast initializations 
+time_flag            = 'time'
+variable             = 'tp24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+first_forecast_date  = '20200102'              # first initialization date of forecast (either a monday or thursday)   
+number_forecasts     = 313                     # number of forecast initializations 
 season               = 'annual'
 grid                 = '0.25x0.25' # '0.25x0.25' or '0.5x0.5'
 box_sizes            = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
@@ -25,14 +26,13 @@ print(forecast_dates)
 for date in forecast_dates:
         
     misc.tic()
-    print('\ncalculating climatology for hindcast ' + date + ' and grid: ' + grid)
+    print('\ncalculating smoothed climatology for hindcast ' + date + ' and grid: ' + grid)
         
     # define stuff
-    dim             = misc.get_dim(grid,'time')
     path_in         = config.dirs['s2s_hindcast_daily'] + variable + '/'
     path_out        = config.dirs['s2s_hindcast_climatology'] + variable + '/'
     filename_in     = variable + '_' + grid + '_' + date + '.nc'
-    filename_out    = 'climatology_' + variable + '_' + grid + '_' + date + '.nc'
+    filename_out    = 'climatology_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
 
     # read in data
     da = xr.open_dataset(path_in + filename_in)[variable]
@@ -40,11 +40,14 @@ for date in forecast_dates:
     # calculate climatological and ensemble mean
     da = da.mean(dim='hdate').mean(dim='number')
 
+    # convert time to timescale if applicable                                                                                                                                                          
+    da = verify.resample_time_to_timescale(da, time_flag)
+        
     # smooth
     da_smooth = verify.boxcar_smoother_xy_optimized(box_sizes, da, 'xarray')
 
-    print(da_smooth)
     # modify metadata
+    da_smooth = da_smooth.rename(variable)
     if variable == 'tp24':
         da_smooth.attrs['units']     = 'm'
         da_smooth.attrs['long_name'] = 'climatological and ensemble mean daily accumulated precipitation'
@@ -63,11 +66,11 @@ for date in forecast_dates:
     elif variable == 'mx24rn6':
         da_smooth.attrs['units']     = 'm'
         da_smooth.attrs['long_name'] = 'climatological and ensemble mean daily maximum 6 hour accumulated rainfall'
-        
+
     if write2file: misc.to_netcdf_with_packing_and_compression(da_smooth, path_out + filename_out)
 
     da.close()
     da_smooth.close()
-    
+
     misc.toc()
 

@@ -1,7 +1,7 @@
 """
-Calculates climatological percentiles per xy grid point from ecmwf 
-smoothed hindcast data. Estimate is taken from sample of 20 years x 
-11 ensemble members for each grid point, calendar day, and spatial smoothing.
+Calculates smoothed climatological percentiles per xy grid point from ecmwf hindcast data. 
+Estimate is taken from sample of 20 years x 11 ensemble members for each grid point, calendar day,
+ and spatial smoothing.
 """
 
 import numpy           as np
@@ -22,9 +22,9 @@ def initialize_quantile_array(variable,box_sizes,time_flag,dim,pval):
     elif time_flag == 'timescale':
         time = dim.timescale
         
-    data       = np.zeros((box_sizes.size,pval.size,time.size,dim.nlatitude,dim.nlongitude),dtype=np.float32)
-    dims       = ["box_size","pval","time","latitude","longitude"]
-    coords     = dict(box_size=box_sizes,pval=pval,time=time,latitude=dim.latitude,longitude=dim.longitude)
+    data       = np.zeros((pval.size,box_sizes.size,time.size,dim.nlatitude,dim.nlongitude),dtype=np.float32)
+    dims       = ["pval","box_size","time","latitude","longitude"]
+    coords     = dict(pval=pval,box_size=box_sizes,time=time,latitude=dim.latitude,longitude=dim.longitude)
     
     if variable == 't2m24':
         units       = 'K'
@@ -39,14 +39,14 @@ def initialize_quantile_array(variable,box_sizes,time_flag,dim,pval):
 
 
 # input ----------------------------------------------
-time_flag           = 'time'                # time or timescale
-variable            = 't2m24'                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-first_forecast_date = '20210104'              # first initialization date of forecast (either a monday or thursday)   
-number_forecasts    = 104                    # number of forecast initializations 
+time_flag           = 'time'                   # time or timescale
+variable            = 't2m24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+first_forecast_date = '20210104'               # first initialization date of forecast (either a monday or thursday)   
+number_forecasts    = 104                        # number of forecast initializations 
 season              = 'annual'
 grid                = '0.5x0.5'              # '0.25x0.25' or '0.5x0.5'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
-pval                = np.array([0.9]) # percentile values  
+pval                = np.array([0.9])          # percentile values  
 comp_lev            = 5                        # level of compression with nccopy (1-10)
 write2file          = True
 # ----------------------------------------------------
@@ -67,24 +67,29 @@ for date in forecast_dates:
         print('smoothing box size = ' + str(box_size))
 
         # define stuff
-        path_in      = config.dirs['s2s_hindcast_daily_smooth'] + variable + '/'
-        path_out     = config.dirs['s2s_hindcast_daily_percentile'] + variable + '/'
+        path_in      = config.dirs['s2s_hindcast_daily'] + variable + '/'
+        path_out     = config.dirs['s2s_hindcast_daily_quantile'] + variable + '/'
         filename_in  = variable + '_' + grid + '_' + date + '.nc'
         filename_out = 'quantile_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
     
         # read data                                                                                                                                               
-        da = xr.open_dataset(path_in + filename_in)[variable].isel(box_size=bs).drop('box_size')
+        da = xr.open_dataset(path_in + filename_in)[variable]
 
         # convert time to timescale if applicable
         da = verify.resample_time_to_timescale(da, time_flag)
 
-        # calculate percentiles
+        # smooth 
+        da_smooth = np.squeeze(verify.boxcar_smoother_xy_optimized(np.array([box_size]), da, 'numpy'))
+
+        # calculate quantiles - use numpy arrays for speed 
+        dim_sizes            = da_smooth.shape
+        da_smooth            = np.reshape(da_smooth,[dim_sizes[0],dim_sizes[1]*dim_sizes[2],dim_sizes[3],dim_sizes[4]]) # concatenate hdate and number dims for sample
+        quantile[:,bs,:,:,:] = np.quantile(da_smooth,pval,axis=1)
         quantile['time']     = da['time'] # match time dimensions
-        quantile[bs,:,:,:,:] = np.quantile(da.stack(temp_index=("number", "hdate")).values,pval,axis=3) # using numpy function for speed  
-        
+
         da.close()
         
-    if write2file: misc.to_netcdf_with_compression(quantile,comp_lev,path_out,filename_out)
+    if write2file: misc.to_netcdf_with_packing_and_compression(quantile, path_out + filename_out)
 
     misc.toc()
     

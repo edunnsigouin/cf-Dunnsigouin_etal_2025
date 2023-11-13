@@ -1,6 +1,6 @@
 """
-Calculates climatological percentiles per xy grid point from era5 
-smoothed hindcast format data. Estimate is taken from sample of 20 years 
+Calculates smoothed climatological quantiles per xy grid point from era5 
+hindcast format data. Estimate is taken from sample of 20 years 
 for each grid point, calendar day, and spatial smoothing.
 """
 
@@ -21,9 +21,9 @@ def initialize_quantile_array(variable,box_sizes,time_flag,dim,pval):
     elif time_flag == 'timescale':
         time = dim.timescale
         
-    data       = np.zeros((box_sizes.size,pval.size,time.size,dim.nlatitude,dim.nlongitude),dtype=np.float32)
-    dims       = ["box_size","pval","time","latitude","longitude"]
-    coords     = dict(box_size=box_sizes,pval=pval,time=time,latitude=dim.latitude,longitude=dim.longitude)
+    data       = np.zeros((pval.size,box_sizes.size,time.size,dim.nlatitude,dim.nlongitude),dtype=np.float32)
+    dims       = ["pval","box_size","time","latitude","longitude"]
+    coords     = dict(pval=pval,box_size=box_sizes,time=time,latitude=dim.latitude,longitude=dim.longitude)
     
     if variable == 't2m24':
         units       = 'K'
@@ -59,30 +59,29 @@ for date in forecast_dates:
 
     misc.tic()
     print('\ncalculating percentiles for smoothed era5 hindcast format data with ' + date + ' and grid: ' + grid)
-    quantile = initialize_quantile_array(variable,box_sizes,time_flag,dim,pval)
-    
-    for bs, box_size in enumerate(box_sizes):
-
-        print('smoothing box size = ' + str(box_size))
         
-        # define stuff
-        path_in      = config.dirs['era5_s2s_hindcast_daily_smooth'] + variable + '/'
-        path_out     = config.dirs['era5_s2s_hindcast_daily_percentile'] + variable + '/'
-        filename_in  = variable + '_' + grid + '_' + date + '.nc'
-        filename_out = 'quantile_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
+    # define & initialize stuff
+    quantile     = initialize_quantile_array(variable,box_sizes,time_flag,dim,pval)
+    path_in      = config.dirs['era5_s2s_hindcast_daily'] + variable + '/'
+    path_out     = config.dirs['era5_s2s_hindcast_quantile'] + variable + '/'
+    filename_in  = variable + '_' + grid + '_' + date + '.nc'
+    filename_out = 'quantile_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
     
-        # read data                                                                                                                                               
-        da = xr.open_dataset(path_in + filename_in)[variable].isel(box_size=bs).drop('box_size')
+    # read data                                                                                                                                               
+    da = xr.open_dataset(path_in + filename_in)[variable]
 
-        # convert time to timescale if applicable
-        da = verify.resample_time_to_timescale(da, time_flag)
+    # convert time to timescale if applicable
+    da = verify.resample_time_to_timescale(da, time_flag)
 
-        # calculate percentiles
-        quantile['time']     = da['time'] # match time dimension
-        quantile[bs,:,:,:,:] = np.quantile(da.values,pval,axis=0) # using numpy function for speed
+    # smooth
+    da_smooth = verify.boxcar_smoother_xy_optimized(box_sizes, da, 'numpy')
 
-        da.close()
+    # calculate quantiles - use numpy arrays for speed
+    quantile[:,:,:,:,:] = np.quantile(da_smooth,pval,axis=1)
+    quantile['time']    = da['time'] # match time dimensions
+  
+    da.close()
         
-    if write2file: misc.to_netcdf_with_compression(quantile,comp_lev,path_out,filename_out)
+    if write2file: misc.to_netcdf_with_packing_and_compression(quantile, path_out + filename_out)
     misc.toc()
     

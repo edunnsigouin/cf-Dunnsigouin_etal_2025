@@ -10,7 +10,6 @@ from forsikring import s2s, verify, misc, config
 
 # Input -----------------------------------
 variables           = ['tp24']                  # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-product             = 'hindcast'
 first_forecast_date = '20200102'               # first initialization date of forecast (either a monday or thursday)
 number_forecasts    = 313                      # number of forecasts
 season              = 'annual'
@@ -29,11 +28,11 @@ for variable in variables:
     for grid in grids:
         for date in forecast_dates:
             
-            print('\nsmoothing ' + product + ' ' + variable + ' for ' + date + ' and grid ' + grid)
+            print('\nsmoothing forecast ' + variable + ' for ' + date + ' and grid ' + grid)
 
             # define stuff
-            path_in      = config.dirs['era5_s2s_' + product + '_daily'] + variable + '/'
-            path_out     = config.dirs['era5_s2s_' + product + '_daily_smooth'] + variable + '/'
+            path_in      = config.dirs['era5_s2s_forecast_daily'] + variable + '/'
+            path_out     = config.dirs['era5_s2s_forecast_daily_smooth'] + variable + '/'
             filename_in  = variable + '_' + grid + '_' + date + '.nc'
             filename_out = variable + '_' + grid + '_' + date + '.nc'
 
