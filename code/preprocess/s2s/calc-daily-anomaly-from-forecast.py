@@ -9,13 +9,13 @@ import os
 from forsikring import misc,s2s,config,verify
 
 # INPUT -----------------------------------------------
-time_flag           = 'time'              # time or timescale  
-variables           = ['t2m24']                # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20210104'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 104                      # number of forecasts 
+time_flag           = 'timescale'              # time or timescale  
+variables           = ['tp24']                # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+first_forecast_date = '20200102'               # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 313                      # number of forecasts 
 season              = 'annual'
 grids               = ['0.25x0.25']            # '0.25x0.25' & '0.5x0.5'
-write2file          = False
+write2file          = True
 # -----------------------------------------------------
 
 # define stuff  
@@ -34,19 +34,22 @@ for variable in variables:
             path_in_clim      = config.dirs['s2s_hindcast_climatology'] + variable + '/'
             path_out          = config.dirs['s2s_forecast_daily_anomaly'] + variable + '/'
             filename_forecast = variable + '_' + grid + '_' + date + '.nc'
-            filename_clim     = 'climatology_' + variable + '_' + grid + '_' + date + '.nc'
-            filename_out      = 'anomaly_' + variable + '_' + grid + '_' + time_flag + '_' + date + '.nc'
+            filename_clim     = 'climatology_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
+            filename_out      = 'anomaly_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
         
             # read data
             da_forecast = xr.open_dataset(path_in_forecast + filename_forecast)[variable].mean(dim='number') # ensemble mean
             da_clim     = xr.open_dataset(path_in_clim + filename_clim)[variable]
 
+            # Convert time to timescale if applicable
+            da_forecast = verify.resample_time_to_timescale(da_forecast, time_flag)
+            
 	    # calculate anomalies from climatology
             da_anomaly = da_forecast - da_clim
 
-            # Convert time to timescale if applicable
-            da_anomaly = verify.resample_time_to_timescale(da_anomaly, time_flag)
-
+            # fix dimension order for timescale type data 
+            if time_flag == 'timescale': da_anomaly = da_anomaly.transpose("box_size",...)
+                
             # modify metadata
             if variable == 'tp24':
                 da_anomaly.attrs['units']     = 'm'

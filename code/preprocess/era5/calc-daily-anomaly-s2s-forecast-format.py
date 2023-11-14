@@ -33,19 +33,22 @@ for variable in variables:
             path_in_clim      = config.dirs['era5_s2s_hindcast_climatology'] + variable + '/'
             path_out          = config.dirs['era5_s2s_forecast_daily_anomaly'] + variable + '/'
             filename_forecast = variable + '_' + grid + '_' + date + '.nc'
-            filename_clim     = 'climatology_' + variable + '_' + grid + '_' + date + '.nc'
-            filename_out      = 'anomaly_' + variable + '_' + grid + '_' + time_flag + '_' + date + '.nc'
+            filename_clim     = 'climatology_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
+            filename_out      = 'anomaly_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
         
             # read forecast and climatology in forecast format
             da_forecast = xr.open_dataset(path_in_forecast + filename_forecast)[variable]
             da_clim     = xr.open_dataset(path_in_clim + filename_clim)[variable]
 
+            # Convert time to timescale if applicable
+            da_forecast = verify.resample_time_to_timescale(da_forecast, time_flag)
+            
             # calc anomaly
             da_anomaly = da_forecast - da_clim
 
-            # Convert time to timescale if applicable
-            da_anomaly = verify.resample_time_to_timescale(da_anomaly, time_flag)
-            
+            # fix dimension order for timescale type data
+            if time_flag == 'timescale': da_anomaly = da_anomaly.transpose("box_size",...)
+                        
             # modify metadata
             if variable == 'tp24':
                 da_anomaly.attrs['units']     = 'm'

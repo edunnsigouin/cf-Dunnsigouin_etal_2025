@@ -283,8 +283,7 @@ def combine_high_and_low_res_files(filename_hr, filename_lr, filename, path, tim
                 ds = xr.concat([ds_hr, ds_lr], 'time')
             elif time_flag == 'timescale':
                 ds = xr.concat([ds_hr, ds_lr], 'timescale')
-            ds.to_netcdf(path + filename)
-            
+            misc.to_netcdf_with_packing_and_compression(ds, path + filename)
         print('Deleting original high and low-resolution files...')
         os.remove(hr_file_path)
         os.remove(lr_file_path)
@@ -298,6 +297,28 @@ def get_data_dimensions(grid, time_flag, domain):
     dim = misc.get_dim(grid, time_flag)
     return misc.subselect_xy_domain_from_dim(dim, domain, grid)
         
+
+def calc_forecast_and_reference_error_new(filename_verification, filename_forecast, variable, box_sizes_temp, dim):
+    """
+    calculates forecast and reference error for anomalies
+    """
+    # read data
+    verification          = xr.open_dataset(filename_verification)[variable]
+    forecast              = xr.open_dataset(filename_forecast)[variable]
+
+    # subselect domain
+    verification          = verification.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
+    forecast              = forecast.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
+
+    # calculate error terms
+    forecast_error_xy     = (forecast - verification) ** 2
+    reference_error_xy    = (verification) ** 2
+
+    verification.close()
+    forecast.close()
+
+    return misc.xy_mean(forecast_error_xy).values, misc.xy_mean(reference_error_xy).values
+
 
 
 def calc_forecast_and_reference_error(filename_verification, filename_forecast, variable, box_sizes_temp, dim, time_flag):
@@ -323,7 +344,8 @@ def calc_forecast_and_reference_error(filename_verification, filename_forecast, 
     return misc.xy_mean(forecast_error_xy).values, misc.xy_mean(reference_error_xy).values
 
 
-def write_fss_to_file(fss, fss_bootstrap, write2file, grid, box_sizes, time_flag, filename_out, path_out, comp_lev):
+
+def write_fss_to_file(fss, fss_bootstrap, write2file, grid, box_sizes, time_flag, filename_out, path_out):
     """Kitchen sink function to write fss to file""" 
     if write2file:
         ds = xr.merge([fss,fss_bootstrap])
@@ -331,13 +353,12 @@ def write_fss_to_file(fss, fss_bootstrap, write2file, grid, box_sizes, time_flag
             ds['box_size'] = box_sizes
         if time_flag == 'timescale':
             ds = ds.rename({'time': 'timescale'})
-        ds.to_netcdf(path_out + filename_out)
-        misc.compress_file(comp_lev, 3, filename_out, path_out)
+        misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
         ds.close()
     return
 
 
-def write_error_to_file(forecast_error, reference_error, write2file, grid, box_sizes, time_flag, filename_out, path_out, comp_lev):
+def write_error_to_file(forecast_error, reference_error, write2file, grid, box_sizes, time_flag, filename_out, path_out):
     """Kitchen sink function to write forecast or reference error to file"""
     if write2file:
         forecast_error  = forecast_error.rename('forecast_error')
@@ -347,7 +368,6 @@ def write_error_to_file(forecast_error, reference_error, write2file, grid, box_s
             ds['box_size']  = box_sizes
         if time_flag == 'timescale':
             ds  = ds.rename({'time': 'timescale'})
-        ds.to_netcdf(path_out + filename_out)
-        misc.compress_file(comp_lev, 3, filename_out, path_out)
+        misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
         ds.close()
     return
