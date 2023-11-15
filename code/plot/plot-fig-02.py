@@ -46,12 +46,12 @@ write2file = True
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
 figname_out       = 'fig_02.pdf'
-filename_in_1     = 'time_vs_ss_fss_anomaly_tp24_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
-filename_in_2     = 'time_vs_ss_fss_anomaly_tp24_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_3     = 'time_vs_ss_difference_tp24_europe_ndjfm_2020-01-02_2022-12-29_tp24_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
-filename_in_4     = 'time_vs_ss_fss_anomaly_t2m24_europe_mjjas_2021-05-03_2021-09-30_0.25x0.25.nc'
-filename_in_5     = 'time_vs_ss_fss_anomaly_t2m24_europe_ndjfm_2021-01-04_2021-12-30_0.25x0.25.nc'
-filename_in_6     = 'time_vs_ss_difference_t2m24_europe_ndjfm_2021-01-04_2021-12-30_t2m24_europe_mjjas_2021-05-03_2021-09-30_0.25x0.25.nc'
+filename_in_1     = 'fss_tp24_time_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
+filename_in_2     = 'fss_tp24_time_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_3     = 'fss_difference_time_tp24_europe_ndjfm_2020-01-02_2022-12-29_tp24_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
+filename_in_4     = 'fss_t2m24_time_europe_mjjas_2021-05-03_2021-09-30_0.25x0.25.nc'
+filename_in_5     = 'fss_t2m24_time_europe_ndjfm_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_6     = 'fss_difference_time_t2m24_europe_ndjfm_2021-01-04_2021-12-30_t2m24_europe_mjjas_2021-05-03_2021-09-30_0.25x0.25.nc'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)

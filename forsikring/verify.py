@@ -88,10 +88,10 @@ def boxcar_smoother_xy(box_sizes,da):
 
 
 
-def calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, box_sizes):
+def calc_score_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap, box_sizes):
     """ 
-    Calculates fractions skill score and generates bootstrapped estimates by boostrapping 
-    subsampling the forecasts/mse_forecasts                                                                           
+    Calculates skill score and generates bootstrapped estimates by boostrapping 
+    subsampling the forecast error term in the skill score.
     """
 
     number_forecasts = len(reference_error['forecast_dates'])
@@ -101,13 +101,13 @@ def calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap
     forecast_mse = forecast_error.mean(dim='forecast_dates')
     
     # Initialize results arrays
-    fss           = np.empty((len(box_sizes), forecast_mse.time.size))
-    fss_bootstrap = np.empty((len(box_sizes), forecast_mse.time.size, number_shuffle_bootstrap))
+    score           = np.empty((len(box_sizes), forecast_mse.time.size))
+    score_bootstrap = np.empty((len(box_sizes), forecast_mse.time.size, number_shuffle_bootstrap))
 
-    # compute fss without bootstrap
-    fss[:,:] = 1.0 - forecast_mse / reference_mse
+    # compute score without bootstrap
+    score[:,:] = 1.0 - forecast_mse / reference_mse
     
-    # compute fss with bootstrap
+    # compute score with bootstrap
     for i in range(number_shuffle_bootstrap):
         
         # subsample forecast dates with replacement
@@ -115,22 +115,22 @@ def calc_fss_bootstrap(reference_error, forecast_error, number_shuffle_bootstrap
         
         # bootstrap forecast mse
         forecast_mse_bootstrap = forecast_error.isel(forecast_dates=sampled_indices).mean(dim='forecast_dates')
-        fss_bootstrap[:,:,i]   = 1.0 - forecast_mse_bootstrap / reference_mse
+        score_bootstrap[:,:,i] = 1.0 - forecast_mse_bootstrap / reference_mse
 
-    return fss, fss_bootstrap
+    return score, score_bootstrap
 
 
 
-def calc_fss_bootstrap_difference(reference_error1, reference_error2, forecast_error1, forecast_error2, number_shuffle_bootstrap, box_sizes):
+def calc_score_bootstrap_difference(reference_error1, reference_error2, forecast_error1, forecast_error2, number_shuffle_bootstrap, box_sizes):
     """
-    Calculates fractions skill scores for two sets of forecast and reference errors.
+    Calculates skill scores for two sets of forecast and reference errors.
     Generates bootstrapped estimates of the DIFFERENCE in the fss values by bootsrapping
     the subsampled forecast_errors. 
     """
 
     # forecasts number can be different. Choose smallest amount for simplicity.
     number_forecasts = min(len(reference_error1['forecast_dates']),len(reference_error2['forecast_dates']))
-
+    
     # Compute the MSE                                                                                                                                                   
     reference_mse1 = reference_error1.mean(dim='forecast_dates')
     reference_mse2 = reference_error2.mean(dim='forecast_dates')
@@ -139,27 +139,27 @@ def calc_fss_bootstrap_difference(reference_error1, reference_error2, forecast_e
     
     # Initialize results arrays
     if 'time' in forecast_error1.dims:
-        fss_difference           = np.empty((len(box_sizes), forecast_mse1.time.size))
-        fss_bootstrap_difference = np.empty((len(box_sizes), forecast_mse1.time.size, number_shuffle_bootstrap))
+        score_difference           = np.empty((len(box_sizes), forecast_mse1.time.size))
+        score_bootstrap_difference = np.empty((len(box_sizes), forecast_mse1.time.size, number_shuffle_bootstrap))
     else:
-        fss_difference           = np.empty((len(box_sizes), forecast_mse1.timescale.size))
-        fss_bootstrap_difference = np.empty((len(box_sizes), forecast_mse1.timescale.size, number_shuffle_bootstrap))
+        score_difference           = np.empty((len(box_sizes), forecast_mse1.timescale.size))
+        score_bootstrap_difference = np.empty((len(box_sizes), forecast_mse1.timescale.size, number_shuffle_bootstrap))
 
-    # compute fss without bootstrap
-    fss_difference[:,:] = (1.0 - forecast_mse1 / reference_mse1) - (1.0 - forecast_mse2 / reference_mse2)
+    # compute score without bootstrap
+    score_difference[:,:] = (1.0 - forecast_mse1 / reference_mse1) - (1.0 - forecast_mse2 / reference_mse2)
 
-    # compute fss with bootstrap
+    # compute score with bootstrap
     for i in range(number_shuffle_bootstrap):
 
         # subsample forecast dates with replacement
         sampled_indices = np.random.choice(number_forecasts, number_forecasts, replace=True)
 
         # bootstrap forecast mse
-        forecast_mse_bootstrap1         = forecast_error1.isel(forecast_dates=sampled_indices).mean(dim='forecast_dates')
-        forecast_mse_bootstrap2         = forecast_error2.isel(forecast_dates=sampled_indices).mean(dim='forecast_dates')
-        fss_bootstrap_difference[:,:,i] = (1.0 - forecast_mse_bootstrap1 / reference_mse1) - (1.0 - forecast_mse_bootstrap2 / reference_mse2)
+        forecast_mse_bootstrap1           = forecast_error1.isel(forecast_dates=sampled_indices).mean(dim='forecast_dates')
+        forecast_mse_bootstrap2           = forecast_error2.isel(forecast_dates=sampled_indices).mean(dim='forecast_dates')
+        score_bootstrap_difference[:,:,i] = (1.0 - forecast_mse_bootstrap1 / reference_mse1) - (1.0 - forecast_mse_bootstrap2 / reference_mse2)
 
-    return fss_difference, fss_bootstrap_difference
+    return score_difference, score_bootstrap_difference
 
 
 
@@ -221,9 +221,9 @@ def initialize_error_array(dim,box_sizes,forecast_dates):
     return error
 
 
-def initialize_fss_array(dim,box_sizes,number_shuffle_bootstrap):
+def initialize_score_array(score_type,dim,box_sizes,number_shuffle_bootstrap):
     """
-    Initializes fss arrays.
+    Initializes score arrays.
     Written here to clean up code. 
     """
     data             = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
@@ -232,13 +232,17 @@ def initialize_fss_array(dim,box_sizes,number_shuffle_bootstrap):
     dims_bootstrap   = ["box_size","time","number_shuffle_bootstrap"]
     coords           = dict(box_size=box_sizes,time=dim.time)
     coords_bootstrap = dict(box_size=box_sizes,time=dim.time,number_shuffle_bootstrap=np.arange(0,number_shuffle_bootstrap,1))
-    attrs            = dict(description='fractions skill score of forecast',units='unitless')
-    attrs_bootstrap  = dict(description='fractions skill score of forecast bootstrapped',units='unitless')
-    name             = 'fss'
-    name_bootstrap   = 'fss_bootstrap'
-    fss              = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
-    fss_bootstrap    = xr.DataArray(data=data_bootstrap,dims=dims_bootstrap,coords=coords_bootstrap,attrs=attrs_bootstrap,name=name_bootstrap)
-    return fss,fss_bootstrap
+    if score_type == 'fss':
+        attrs            = dict(description='fractions skill score of forecast',units='unitless')
+        attrs_bootstrap  = dict(description='fractions skill score of forecast bootstrapped',units='unitless')
+    elif score_type == 'fbss':
+        attrs            = dict(description='fractions brier skill score of forecast',units='unitless')
+        attrs_bootstrap  = dict(description='fractions brier skill score of forecast bootstrapped',units='unitless')
+    name             = score_type
+    name_bootstrap   = score_type + '_bootstrap'
+    score            = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
+    score_bootstrap  = xr.DataArray(data=data_bootstrap,dims=dims_bootstrap,coords=coords_bootstrap,attrs=attrs_bootstrap,name=name_bootstrap)
+    return score,score_bootstrap
 
 
 def match_box_sizes_high_to_low_resolution(grid,box_sizes):
@@ -298,9 +302,9 @@ def get_data_dimensions(grid, time_flag, domain):
     return misc.subselect_xy_domain_from_dim(dim, domain, grid)
         
 
-def calc_forecast_and_reference_error_new(filename_verification, filename_forecast, variable, box_sizes_temp, dim):
+def calc_forecast_and_reference_error(score_type,filename_verification, filename_forecast, variable, box_sizes_temp, dim, pval=0.9):
     """
-    calculates forecast and reference error for anomalies
+    calculates forecast and reference error for fractional skill score
     """
     # read data
     verification          = xr.open_dataset(filename_verification)[variable]
@@ -311,9 +315,14 @@ def calc_forecast_and_reference_error_new(filename_verification, filename_foreca
     forecast              = forecast.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
 
     # calculate error terms
-    forecast_error_xy     = (forecast - verification) ** 2
-    reference_error_xy    = (verification) ** 2
-
+    if score_type == 'fss':
+        forecast_error_xy  = (forecast - verification) ** 2
+        reference_error_xy = (verification) ** 2
+    elif score_type == 'fbss':
+        climatological_probability = 1 - pval # e.g. if 90th quantile, then probability is 10%
+        forecast_error_xy          = (forecast - verification) ** 2
+        reference_error_xy         = (climatological_probability - verification) ** 2
+    
     verification.close()
     forecast.close()
 
@@ -321,34 +330,12 @@ def calc_forecast_and_reference_error_new(filename_verification, filename_foreca
 
 
 
-def calc_forecast_and_reference_error(filename_verification, filename_forecast, variable, box_sizes_temp, dim, time_flag):
-
-    verification          = xr.open_dataset(filename_verification)[variable]
-    forecast              = xr.open_dataset(filename_forecast)[variable]
-
-    verification          = resample_time_to_timescale(verification, time_flag)
-    forecast              = resample_time_to_timescale(forecast, time_flag)
-
-    verification          = verification.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
-    forecast              = forecast.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
-
-    verification_smoothed = boxcar_smoother_xy(box_sizes_temp, verification)
-    forecast_smoothed     = boxcar_smoother_xy(box_sizes_temp, forecast)
-
-    forecast_error_xy     = (forecast_smoothed - verification_smoothed) ** 2
-    reference_error_xy    = (verification_smoothed) ** 2
-
-    verification.close()
-    forecast.close()
-
-    return misc.xy_mean(forecast_error_xy).values, misc.xy_mean(reference_error_xy).values
-
-
-
-def write_fss_to_file(fss, fss_bootstrap, write2file, grid, box_sizes, time_flag, filename_out, path_out):
-    """Kitchen sink function to write fss to file""" 
+def write_score_to_file(score, score_bootstrap, forecast_error, reference_error, write2file, grid, box_sizes, time_flag, filename_out, path_out):
+    """Kitchen sink function to write score and error to file""" 
     if write2file:
-        ds = xr.merge([fss,fss_bootstrap])
+        forecast_error  = forecast_error.rename('forecast_error')
+        reference_error = reference_error.rename('reference_error')
+        ds              = xr.merge([score,score_bootstrap,forecast_error,reference_error])
         if grid == '0.5x0.5':
             ds['box_size'] = box_sizes
         if time_flag == 'timescale':
@@ -357,17 +344,3 @@ def write_fss_to_file(fss, fss_bootstrap, write2file, grid, box_sizes, time_flag
         ds.close()
     return
 
-
-def write_error_to_file(forecast_error, reference_error, write2file, grid, box_sizes, time_flag, filename_out, path_out):
-    """Kitchen sink function to write forecast or reference error to file"""
-    if write2file:
-        forecast_error  = forecast_error.rename('forecast_error')
-        reference_error = reference_error.rename('reference_error')
-        ds              = xr.merge([forecast_error,reference_error])
-        if grid == '0.5x0.5':
-            ds['box_size']  = box_sizes
-        if time_flag == 'timescale':
-            ds  = ds.rename({'time': 'timescale'})
-        misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
-        ds.close()
-    return

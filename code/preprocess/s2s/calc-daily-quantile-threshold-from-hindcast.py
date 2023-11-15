@@ -68,7 +68,7 @@ for date in forecast_dates:
 
         # define stuff
         path_in      = config.dirs['s2s_hindcast_daily'] + variable + '/'
-        path_out     = config.dirs['s2s_hindcast_daily_quantile'] + variable + '/'
+        path_out     = config.dirs['s2s_hindcast_quantile'] + variable + '/'
         filename_in  = variable + '_' + grid + '_' + date + '.nc'
         filename_out = 'quantile_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
     

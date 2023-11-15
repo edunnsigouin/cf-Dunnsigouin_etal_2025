@@ -49,12 +49,12 @@ write2file = False
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'time_vs_ss_fss_anomaly_tp24_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_2     = 'time_vs_ss_fss_anomaly_t2m24_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
-filename_in_3     = 'time_vs_ss_difference_t2m24_europe_annual_2021-01-04_2021-12-30_tp24_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
-filename_in_4     = 'timescale_vs_ss_fss_anomaly_tp24_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_5     = 'timescale_vs_ss_fss_anomaly_t2m24_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_6     = 'timescale_vs_ss_difference_t2m24_europe_annual_2021-01-04_2021-12-30_tp24_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_1     = 'fss_tp24_time_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_2     = 'fss_t2m24_time_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_3     = 'fss_difference_time_t2m24_europe_annual_2021-01-04_2021-12-30_tp24_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_4     = 'fss_tp24_timescale_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_5     = 'fss_t2m24_timescale_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_6     = 'fss_difference_timescale_t2m24_europe_annual_2021-01-04_2021-12-30_tp24_europe_annual_2021-01-04_2021-12-30.nc'
 figname_out       = 'fig_01.pdf'
 
 # read in data
