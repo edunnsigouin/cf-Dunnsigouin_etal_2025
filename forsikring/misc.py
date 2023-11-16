@@ -37,8 +37,8 @@ def get_dim(grid,time_flag):
         from forsikring import dim_05x05 as dim
     elif grid == '1.0x1.0':
         from forsikring import dim_1x1 as dim
-    else:
-        from forsikring import dim_1x1 as dim
+    elif grid == '0.25x0.25_0.5x0.5':
+        from forsikring import dim_025x025_05x05 as dim
         
     if time_flag == 'timescale':
         dim.time  = dim.timescale

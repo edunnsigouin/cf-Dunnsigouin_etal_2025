@@ -168,28 +168,37 @@ def resample_15_days(ds):
     """
     Resamples dataset time dimension with 15 days to timescales.
     """
+    # Store the original dimension order
+    original_dims = ds.dims
+    
     slices = [
         ds.isel(time=1).drop_vars('time'),
         ds.isel(time=slice(2, 3)).mean(dim='time'),
         ds.isel(time=slice(4, 7)).mean(dim='time'),
         ds.isel(time=slice(7, 13)).mean(dim='time'),
     ]
+
     ds_resampled         = xr.concat(slices, "time")
     ds_resampled['time'] = np.arange(1, 5, 1)
-    return ds_resampled
+    
+    return ds_resampled.transpose(*original_dims) # keeps original dimension order
 
 
 def resample_31_days(ds):
     """
     Resamples dataset time dimension with 31 days to timescales.
     """
+    # Store the original dimension order
+    original_dims = ds.dims
+    
     ds_resampled = xr.concat([
         ds.isel(time=slice(0, 12)).mean(dim='time'),
         ds.isel(time=slice(13, 31)).mean(dim='time')
     ], "time")
     
     ds_resampled['time'] = np.arange(5, 7, 1)
-    return ds_resampled
+    
+    return ds_resampled.transpose(*original_dims) # keeps original dimension order  
 
 
 def resample_time_to_timescale(ds, time_flag):

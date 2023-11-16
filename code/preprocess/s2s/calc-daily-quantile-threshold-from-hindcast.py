@@ -16,7 +16,6 @@ def initialize_quantile_array(variable,box_sizes,time_flag,dim,pval):
     Initializes output array used below.  
     Written here to clean up code.    
     """
-
     if time_flag == 'time':
         time = dim.time
     elif time_flag == 'timescale':
@@ -39,8 +38,8 @@ def initialize_quantile_array(variable,box_sizes,time_flag,dim,pval):
 
 
 # input ----------------------------------------------
-time_flag           = 'time'                   # time or timescale
-variable            = 't2m24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+time_flag           = 'timescale'                   # time or timescale
+variable            = 'tp24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 first_forecast_date = '20210104'               # first initialization date of forecast (either a monday or thursday)   
 number_forecasts    = 104                        # number of forecast initializations 
 season              = 'annual'
@@ -77,7 +76,7 @@ for date in forecast_dates:
 
         # convert time to timescale if applicable
         da = verify.resample_time_to_timescale(da, time_flag)
-
+        
         # smooth 
         da_smooth = np.squeeze(verify.boxcar_smoother_xy_optimized(np.array([box_size]), da, 'numpy'))
 
