@@ -9,12 +9,12 @@ import numpy    as np
 from forsikring import config,misc,s2s, verify
 
 # input ----------------------------------------------
-time_flag           = 'time'                   # time or timescale
+time_flag           = 'timescale'                   # time or timescale
 variable            = 'tp24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-first_forecast_date = '20200102'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 313                        # number of forecast initializations
+first_forecast_date = '20210104'               # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 104                        # number of forecast initializations
 season              = 'annual'
-grid                = '0.25x0.25'              # '0.25x0.25' or '0.5x0.5'
+grid                = '0.5x0.5'              # '0.25x0.25' or '0.5x0.5'
 pval                = 0.9          # percentile values
 comp_lev            = 5                        # level of compression
 write2file          = True

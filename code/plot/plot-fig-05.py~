@@ -1,5 +1,5 @@
 """
-Plots fig. 2 in Dunn-Sigouin et al. 
+Plots fig. 5 in Dunn-Sigouin et al. 
 """
 
 import numpy     as np
@@ -19,7 +19,8 @@ def setup_subplot(ax, time, box_size, fss_data, sig_data, title_text, clevs, cma
     ax.pcolor(time, box_size, sig_data, hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
 
     ax.set_xticks(time)
-    ax.set_xticklabels(['1', '', '3', '', '5', '', '7', '', '9', '', '11', '', '13', '', '15'], fontsize=fontsize)
+    #ax.set_xticklabels(['1', '', '3', '', '5', '', '7', '', '9', '', '11', '', '13', '', '15','','17','','19','','21'], fontsize=fontsize)
+    ax.set_xticklabels(['1', '', '3', '', '5', '', '7', '', '9', '', '11', '', '13', '', '15'], fontsize=fontsize) 
     ax.set_xlabel(r'lead time [days]', fontsize=fontsize)
     ax.set_xlim([time[0], time[-1]])
 
@@ -39,35 +40,35 @@ def setup_subplot(ax, time, box_size, fss_data, sig_data, title_text, clevs, cma
     return ax
 
 # INPUT -----------------------
-write2file = True
+write2file = False
 # -----------------------------
 
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-figname_out       = 'fig_02.pdf'
-filename_in_1     = 'fss_tp24_time_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
-filename_in_2     = 'fss_tp24_time_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_3     = 'fss_difference_time_tp24_europe_ndjfm_2020-01-02_2022-12-29_tp24_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
-filename_in_4     = 'fss_t2m24_time_europe_mjjas_2021-05-03_2021-09-30_0.25x0.25.nc'
-filename_in_5     = 'fss_t2m24_time_europe_ndjfm_2021-01-04_2021-12-30_0.25x0.25.nc'
-filename_in_6     = 'fss_difference_time_t2m24_europe_ndjfm_2021-01-04_2021-12-30_t2m24_europe_mjjas_2021-05-03_2021-09-30_0.25x0.25.nc'
+figname_out       = 'fig_05.pdf'
+filename_in_1     = 'fbss_tp24_time_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
+filename_in_2     = 'fbss_tp24_time_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_3     = 'fbss_difference_time_tp24_europe_ndjfm_2020-01-02_2022-12-29_tp24_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
+filename_in_4     = 'fbss_t2m24_time_europe_mjjas_2021-05-03_2021-09-30.nc'
+filename_in_5     = 'fbss_t2m24_time_europe_ndjfm_2021-01-04_2021-12-30.nc'
+filename_in_6     = 'fbss_difference_time_t2m24_europe_ndjfm_2021-01-04_2021-12-30_t2m24_europe_mjjas_2021-05-03_2021-09-30.nc'
 
 # read in data
-ds1        = xr.open_dataset(path_in + filename_in_1)
-ds2        = xr.open_dataset(path_in + filename_in_2)
-ds3        = xr.open_dataset(path_in + filename_in_3)
-ds4        = xr.open_dataset(path_in + filename_in_4)
-ds5        = xr.open_dataset(path_in + filename_in_5)
-ds6        = xr.open_dataset(path_in + filename_in_6)
+ds1        = xr.open_dataset(path_in + filename_in_1)#.isel(time=slice(0,21))
+ds2        = xr.open_dataset(path_in + filename_in_2)#.isel(time=slice(0,21))
+ds3        = xr.open_dataset(path_in + filename_in_3)#.isel(time=slice(0,21))
+ds4        = xr.open_dataset(path_in + filename_in_4).isel(time=slice(0,15))
+ds5        = xr.open_dataset(path_in + filename_in_5).isel(time=slice(0,15))
+ds6        = xr.open_dataset(path_in + filename_in_6).isel(time=slice(0,15))
 
 # calculate significance
-sig1       = s2s.mask_significant_values_from_bootstrap(ds1['fss_bootstrap'],0.05)
-sig2       = s2s.mask_significant_values_from_bootstrap(ds2['fss_bootstrap'],0.05)
-sig3       = s2s.mask_significant_values_from_bootstrap(ds3['fss_bootstrap'],0.05)
-sig4       = s2s.mask_significant_values_from_bootstrap(ds4['fss_bootstrap'],0.05)
-sig5       = s2s.mask_significant_values_from_bootstrap(ds5['fss_bootstrap'],0.05)
-sig6       = s2s.mask_significant_values_from_bootstrap(ds6['fss_bootstrap'],0.05)
+sig1       = s2s.mask_significant_values_from_bootstrap(ds1['fbss_bootstrap'],0.05)
+sig2       = s2s.mask_significant_values_from_bootstrap(ds2['fbss_bootstrap'],0.05)
+sig3       = s2s.mask_significant_values_from_bootstrap(ds3['fbss_bootstrap'],0.05)
+sig4       = s2s.mask_significant_values_from_bootstrap(ds4['fbss_bootstrap'],0.05)
+sig5       = s2s.mask_significant_values_from_bootstrap(ds5['fbss_bootstrap'],0.05)
+sig6       = s2s.mask_significant_values_from_bootstrap(ds6['fbss_bootstrap'],0.05)
 
 # plot 
 fontsize    = 11
@@ -81,22 +82,22 @@ fig,ax      = plt.subplots(nrows=2,ncols=3,sharey='row',figsize=(figsize[0],figs
 ax          = ax.ravel()
 
 # A) MJJAS precipitation
-setup_subplot(ax[0], ds1['time'], ds1['box_size'], ds1['fss'], sig1, 'a) MJJAS precipitation', clevs, cmap, fontsize)
+setup_subplot(ax[0], ds1['time'], ds1['box_size'], ds1['fbss'], sig1, 'a) MJJAS precipitation', clevs, cmap, fontsize)
 
 # B) NDJFM precipitation
-setup_subplot(ax[1], ds2['time'], ds2['box_size'], ds2['fss'], sig2, 'b) NDJFM precipitation', clevs, cmap, fontsize)
+setup_subplot(ax[1], ds2['time'], ds2['box_size'], ds2['fbss'], sig2, 'b) NDJFM precipitation', clevs, cmap, fontsize)
 
 # C) NDJFM minus MJJAS precipitation
-setup_subplot(ax[2], ds3['time'], ds3['box_size'], ds3['fss'], sig3, 'c) NDJFM minus MJJAS precipitation', clevs_anom1, cmap_anom, fontsize)
+setup_subplot(ax[2], ds3['time'], ds3['box_size'], ds3['fbss'], sig3, 'c) NDJFM minus MJJAS precipitation', clevs_anom1, cmap_anom, fontsize)
 
 # D) MJJAS temperature
-setup_subplot(ax[3], ds4['time'], ds4['box_size'], ds4['fss'], sig4, 'd) MJJAS temperature', clevs, cmap, fontsize)
+setup_subplot(ax[3], ds4['time'], ds4['box_size'], ds4['fbss'], sig4, 'd) MJJAS temperature', clevs, cmap, fontsize)
 
 # E) NDJFM temperature
-setup_subplot(ax[4], ds5['time'], ds5['box_size'], ds5['fss'], sig5, 'e) NDJFM temperature', clevs, cmap, fontsize)
+setup_subplot(ax[4], ds5['time'], ds5['box_size'], ds5['fbss'], sig5, 'e) NDJFM temperature', clevs, cmap, fontsize)
 
 # F) NDJFM minus MJJAS temperature
-setup_subplot(ax[5], ds6['time'], ds6['box_size'], ds6['fss'], sig6, 'f) NDJFM minus MJJAS temperature', clevs_anom2, cmap_anom, fontsize)
+setup_subplot(ax[5], ds6['time'], ds6['box_size'], ds6['fbss'], sig6, 'f) NDJFM minus MJJAS temperature', clevs_anom2, cmap_anom, fontsize)
 
 # write2file
 plt.tight_layout()

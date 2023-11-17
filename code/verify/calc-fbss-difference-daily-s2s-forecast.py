@@ -17,7 +17,7 @@ import os
 from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
-time_flag                = 'time'              # timescale or time?
+time_flag                = 'timescale'              # timescale or time?
 first_forecast_date      = '20210104'
 number_forecasts         = 104
 grid                     = '0.25x0.25_0.5x0.5'            	    # grid resolution
