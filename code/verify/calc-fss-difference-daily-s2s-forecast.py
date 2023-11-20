@@ -27,11 +27,11 @@ write2file               = True
 # fss number 1:
 variable1                = 'tp24'                   
 domain1                  = 'europe'                 
-season1                  = 'ndjfm'                 
+season1                  = 'annual'                 
 # fss number 2:
 variable2                = 'tp24'
-domain2                  = 'europe'
-season2                  = 'mjjas'
+domain2                  = 'southern_norway'
+season2                  = 'annual'
 # -----------------------------------------------------
 
 misc.tic()

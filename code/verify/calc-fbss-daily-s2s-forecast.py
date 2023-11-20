@@ -22,16 +22,16 @@ import os
 from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
-time_flag                = 'timescale'                   # timescale or time?
+time_flag                = 'time'                   # timescale or time?
 variable                 = 't2m24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
 first_forecast_date      = '20210104'               # first initialization date of forecast (either a monday or thursday)
 number_forecasts         = 104                      # number of forecasts 
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
-grids                    = ['0.25x0.25','0.5x0.5']
+grids                    = ['0.25x0.25']
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 number_shuffle_bootstrap = 10000                    # number of times to shuffle initialization dates for error bars
-pval                     = 0.9
+pval                     = 0.1
 write2file               = True
 # -----------------------------------------------------
 
@@ -42,7 +42,7 @@ forecast_dates          = s2s.get_forecast_dates(first_forecast_date,number_fore
 path_in_forecast        = config.dirs['s2s_forecast_daily_probability'] + str(pval) + '/' + variable + '/'
 path_in_verification    = config.dirs['era5_s2s_forecast_daily_binary'] + str(pval) + '/' + variable + '/'
 path_out                = config.dirs['verify_s2s_forecast_daily']
-prefix                  = 'fbss_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] 
+prefix                  = 'fbss_' + variable + '_pval' + str(pval) + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] 
 filename_hr_out         = prefix + '_0.25x0.25.nc'
 filename_lr_out         = prefix + '_0.5x0.5.nc'
 

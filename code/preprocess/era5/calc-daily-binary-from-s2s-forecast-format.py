@@ -9,13 +9,13 @@ import numpy    as np
 from forsikring import config,misc,s2s, verify
 
 # input ----------------------------------------------
-time_flag           = 'timescale'                   # time or timescale
+time_flag           = 'time'                   # time or timescale
 variable            = 'tp24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-first_forecast_date = '20210104'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 104                        # number of forecast initializations
+first_forecast_date = '20200102'               # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 313                        # number of forecast initializations
 season              = 'annual'
-grid                = '0.5x0.5'              # '0.25x0.25' or '0.5x0.5'
-pval                = 0.9          # percentile values
+grid                = '0.25x0.25'              # '0.25x0.25' or '0.5x0.5'
+pval                = 0.1          # percentile values
 comp_lev            = 5                        # level of compression
 write2file          = True
 # ----------------------------------------------------
@@ -44,8 +44,9 @@ for date in forecast_dates:
     forecast = verify.resample_time_to_timescale(forecast, time_flag)
 
     # convert to binary
-    binary = forecast.where(forecast < quantile, 1.0).where(forecast >= quantile, 0.0)
-
+    if pval > 0.5: binary = forecast.where(forecast < quantile, 1.0).where(forecast >= quantile, 0.0)
+    elif pval <= 0.5: binary = forecast.where(forecast > quantile, 1.0).where(forecast <= quantile, 0.0)
+        
     if write2file: misc.to_netcdf_with_packing_and_compression(binary, path_out + filename_out)
 
     forecast.close()

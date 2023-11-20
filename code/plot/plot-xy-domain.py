@@ -10,7 +10,7 @@ from forsikring      import misc,s2s,config
 from scipy           import signal, ndimage
 
 # INPUT -----------------------
-domain            = 'eastern_europe'            # europe/nordic/vestland                       
+domain            = 'southern_norway'            # europe/nordic/vestland                       
 write2file        = False
 # -----------------------------
 
@@ -44,7 +44,7 @@ fig,ax   = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]),\
 
 p0 = ax.contourf(dim.longitude,dim.latitude,da*np.nan,levels=clevs,cmap=cmap,extend='max',transform=ccrs.PlateCarree())
 ax.coastlines('10m',color='k')
-ax.set_aspect('auto')
+#ax.set_aspect('auto')
 
 
 plt.tight_layout()

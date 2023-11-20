@@ -8,14 +8,13 @@ import numpy    as np
 from forsikring import config,misc,s2s, verify
 
 # input ----------------------------------------------
-time_flag           = 'timescale'                   # time or timescale
+time_flag           = 'time'                   # time or timescale
 variable            = 'tp24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-first_forecast_date = '20210104'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 104                        # number of forecast initializations
+first_forecast_date = '20200102'               # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 313                        # number of forecast initializations
 season              = 'annual'
 grid                = '0.25x0.25'              # '0.25x0.25' or '0.5x0.5'
-pval                = 0.9          # percentile values
-comp_lev            = 5                        # level of compression
+pval                = 0.1                      # percentile values
 write2file          = True
 # ----------------------------------------------------
 
@@ -42,9 +41,10 @@ for date in forecast_dates:
     # convert time to timescale if applicable                                                                                                                              
     forecast = verify.resample_time_to_timescale(forecast, time_flag)
     
-    # convert to probability (number of ensemble members > quantile) 
-    probability = (forecast >= quantile).mean(dim='number')
-
+    # convert to probability (number of ensemble members > or < quantile) 
+    if pval > 0.5: probability = (forecast >= quantile).mean(dim='number')
+    elif pval <= 0.5: probability = (forecast < quantile).mean(dim='number')
+        
     # fix metadata
     probability = probability.rename(variable)
     if variable == 'tp24':
