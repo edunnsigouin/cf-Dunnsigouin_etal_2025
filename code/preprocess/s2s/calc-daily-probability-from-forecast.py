@@ -44,7 +44,7 @@ for date in forecast_dates:
     # convert to probability (number of ensemble members > or < quantile) 
     if pval > 0.5: probability = (forecast >= quantile).mean(dim='number')
     elif pval <= 0.5: probability = (forecast < quantile).mean(dim='number')
-        
+    
     # fix metadata
     probability = probability.rename(variable)
     if variable == 'tp24':
@@ -55,7 +55,7 @@ for date in forecast_dates:
         probability.attrs['long_name'] = 'probability of daily mean 2m-temperature over a given quantile threshold pval'
 
     if write2file: misc.to_netcdf_with_packing_and_compression(probability, path_out + filename_out)
-
+  
     forecast.close()
     quantile.close()
     probability.close()

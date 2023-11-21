@@ -328,7 +328,11 @@ def calc_forecast_and_reference_error(score_type,filename_verification, filename
         forecast_error_xy  = (forecast - verification) ** 2
         reference_error_xy = (verification) ** 2
     elif score_type == 'fbss':
-        climatological_probability = 1 - pval # e.g. if 90th quantile, then probability is 10%
+        if pval > 0.5:
+            climatological_probability = 1 - pval # e.g. if 90th quantile, then probability is 10%
+        elif pval < 0.5:
+            climatological_probability = pval
+
         forecast_error_xy          = (forecast - verification) ** 2
         reference_error_xy         = (climatological_probability - verification) ** 2
     

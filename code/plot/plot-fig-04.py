@@ -44,41 +44,41 @@ def setup_subplot(ax, time, box_size, fss_data, sig_data, title_text, clevs, cma
     return ax
 
 # INPUT -----------------------
-write2file = True
+write2file = False
 # -----------------------------
 
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fbss_tp24_time_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_2     = 'fbss_t2m24_time_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_3     = 'fbss_difference_time_t2m24_europe_annual_2021-01-04_2021-12-30_tp24_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_4     = 'fbss_tp24_timescale_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_5     = 'fbss_t2m24_timescale_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_6     = 'fbss_difference_timescale_t2m24_europe_annual_2021-01-04_2021-12-30_tp24_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_1     = 'fbss_tp24_pval0.9_time_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_2     = 'fbss_tp24_pval0.1_time_europe_annual_2022-01-03_2022-12-29_0.25x0.25.nc'
+filename_in_3     = ''
+filename_in_4     = 'fbss_t2m24_pval0.9_time_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_5     = 'fbss_t2m24_pval0.1_time_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_6     = ''
 figname_out       = 'fig_04.pdf'
 
 # read in data
-ds1        = xr.open_dataset(path_in + filename_in_1).isel(time=slice(0,15))
-ds2        = xr.open_dataset(path_in + filename_in_2).isel(time=slice(0,15))                              
-ds3        = xr.open_dataset(path_in + filename_in_3).isel(time=slice(0,15))
+ds1        = xr.open_dataset(path_in + filename_in_1)
+ds2        = xr.open_dataset(path_in + filename_in_2)
+#ds3        = xr.open_dataset(path_in + filename_in_3)
 ds4        = xr.open_dataset(path_in + filename_in_4)
 ds5        = xr.open_dataset(path_in + filename_in_5)
-ds6        = xr.open_dataset(path_in + filename_in_6)
+#ds6        = xr.open_dataset(path_in + filename_in_6)
 
 # Remove box sizes where low and high-res data don't overlap on the same grid in timescale dimension data
-index         = np.where(~np.isnan(ds4['fbss'][:,4]))[0]
-ds4           = ds4.isel(box_size=index)
-ds5           = ds5.isel(box_size=index)
-ds6           = ds6.isel(box_size=index)
+#index         = np.where(~np.isnan(ds4['fbss'][:,4]))[0]
+#ds4           = ds4.isel(box_size=index)
+#ds5           = ds5.isel(box_size=index)
+#ds6           = ds6.isel(box_size=index)
 
 # calculate significance
 sig1       = s2s.mask_significant_values_from_bootstrap(ds1['fbss_bootstrap'],0.05)
 sig2       = s2s.mask_significant_values_from_bootstrap(ds2['fbss_bootstrap'],0.05)
-sig3       = s2s.mask_significant_values_from_bootstrap(ds3['fbss_bootstrap'],0.05)
+#sig3       = s2s.mask_significant_values_from_bootstrap(ds3['fbss_bootstrap'],0.05)
 sig4       = s2s.mask_significant_values_from_bootstrap(ds4['fbss_bootstrap'],0.05)
 sig5       = s2s.mask_significant_values_from_bootstrap(ds5['fbss_bootstrap'],0.05)
-sig6       = s2s.mask_significant_values_from_bootstrap(ds6['fbss_bootstrap'],0.05)
+#sig6       = s2s.mask_significant_values_from_bootstrap(ds6['fbss_bootstrap'],0.05)
 
 # plot 
 fontsize   = 11
@@ -91,22 +91,22 @@ fig,ax     = plt.subplots(nrows=2,ncols=3,sharey='row',figsize=(figsize[0],figsi
 ax         = ax.ravel()
 
 # A) precipitation
-setup_subplot(ax[0], ds1['time'], ds1['box_size'], ds1['fbss'], sig1, 'a) precipitation', clevs, cmap, fontsize)
+setup_subplot(ax[0], ds1['time'], ds1['box_size'], ds1['fbss'], sig1, 'a) precipitation q90', clevs, cmap, fontsize)
 
 # B) temperature 
-setup_subplot(ax[1], ds2['time'], ds2['box_size'], ds2['fbss'], sig2, 'b) temperature', clevs, cmap, fontsize)
+setup_subplot(ax[1], ds2['time'], ds2['box_size'], ds2['fbss'], sig2, 'b) precipitation q10', clevs, cmap, fontsize)
 
 # C) precip minus temperature 
-setup_subplot(ax[2], ds3['time'], ds3['box_size'], ds3['fbss'], sig3, 'c) temperature minus precipitation', clevs_anom, cmap_anom, fontsize)
+#setup_subplot(ax[2], ds3['time'], ds3['box_size'], ds3['fbss'], sig3, 'c) temperature minus precipitation', clevs_anom, cmap_anom, fontsize)
 
 # D) precip 
-setup_subplot(ax[3], ds4['timescale'], ds4['box_size'], ds4['fbss'], sig4, 'd) precipitation', clevs, cmap, fontsize)
+setup_subplot(ax[3], ds4['time'], ds4['box_size'], ds4['fbss'], sig4, 'd) temperature q90', clevs, cmap, fontsize)
 
 # E) temperature 
-setup_subplot(ax[4], ds5['timescale'], ds5['box_size'], ds5['fbss'], sig5, 'e) temperature', clevs, cmap, fontsize)
+setup_subplot(ax[4], ds5['time'], ds5['box_size'], ds5['fbss'], sig5, 'e) temperature q10', clevs, cmap, fontsize)
 
 # F) temperature minus precipitation 
-setup_subplot(ax[5], ds6['timescale'],ds6['box_size'], ds6['fbss'], sig6, 'f) temperature minus precipitation', clevs_anom, cmap_anom, fontsize)
+#setup_subplot(ax[5], ds6['timescale'],ds6['box_size'], ds6['fbss'], sig6, 'f) temperature minus precipitation', clevs_anom, cmap_anom, fontsize)
 
 # write2file
 plt.tight_layout()

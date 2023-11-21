@@ -42,11 +42,11 @@ for date in forecast_dates:
 
     # convert time to timescale if applicable                                                                                                                              
     forecast = verify.resample_time_to_timescale(forecast, time_flag)
-
+    
     # convert to binary
-    if pval > 0.5: binary = forecast.where(forecast < quantile, 1.0).where(forecast >= quantile, 0.0)
+    if pval > 0.5: binary = forecast.where(forecast < quantile, 1.0).where(forecast >= quantile, 0.0)   
     elif pval <= 0.5: binary = forecast.where(forecast > quantile, 1.0).where(forecast <= quantile, 0.0)
-        
+
     if write2file: misc.to_netcdf_with_packing_and_compression(binary, path_out + filename_out)
 
     forecast.close()

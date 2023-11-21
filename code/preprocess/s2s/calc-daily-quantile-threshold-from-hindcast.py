@@ -46,7 +46,6 @@ season              = 'annual'
 grid                = '0.25x0.25'              # '0.25x0.25' or '0.5x0.5'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 pval                = np.array([0.1,0.9])          # percentile values  
-comp_lev            = 5                        # level of compression with nccopy (1-10)
 write2file          = True
 # ----------------------------------------------------
 
