@@ -7,6 +7,8 @@ import numpy  as np
 import xarray as xr
 from scipy    import signal
 import os
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 
 def tic():
     """
@@ -115,6 +117,13 @@ def subselect_xy_domain_from_dim(dim,domain,grid):
         elif domain == 'iberia':
             dim.latitude   = np.flip(np.arange(35,45.25,0.25))
             dim.longitude  = np.arange(-12,3.25,0.25)
+        elif domain == 'europe2':
+            dim.latitude   = np.flip(np.arange(43.5,63.75,0.25))
+            dim.longitude  = np.arange(-9,27.25,0.25)
+        elif domain == 'europe3':
+            dim.latitude   = np.flip(np.arange(48.5,58.75,0.25))
+            dim.longitude  = np.arange(0.25,18.25,0.25)
+            
     elif grid == '0.5x0.5':
         if domain == 'scandinavia':
             dim.latitude   = np.flip(np.arange(53,73.5,0.5))
@@ -226,3 +235,28 @@ def compress_file(comp_lev,ncfiletype,filename,path_out):
     return
 
 
+def create_custom_colormap_with_white_center(orig_cmap, levels):
+    """
+    Create a custom colormap that modifies an original colormap. If there is an even number of colors,
+    the middle two colors are set to white. If there is an odd number of colors, the middle color is set to white.
+
+    Parameters:
+    orig_cmap (matplotlib.colors.Colormap): Original colormap to modify.
+    levels (list of float): Levels at which the colors change.
+
+    Returns:
+    matplotlib.colors.Colormap: Customized colormap with white at the center.
+    """
+    n_colors = len(levels) - 1
+    new_colors = plt.cm.get_cmap(orig_cmap)(np.linspace(0, 1, n_colors))
+
+    if n_colors % 2 == 0:
+        # Even number of colors; set the middle two colors to white
+        middle_indices = [n_colors // 2 - 1, n_colors // 2]
+        new_colors[middle_indices] = [1, 1, 1, 1]  # RGBA for white
+    else:
+        # Odd number of colors; set the middle color to white
+        middle_index = n_colors // 2
+        new_colors[middle_index] = [1, 1, 1, 1]  # RGBA for white
+
+    return mcolors.ListedColormap(new_colors)

@@ -10,7 +10,7 @@ from forsikring      import misc,s2s,config
 from scipy           import signal, ndimage
 
 # INPUT -----------------------
-domain            = 'southern_norway'            # europe/nordic/vestland                       
+domain            = 'europe3'            # europe/nordic/vestland                       
 write2file        = False
 # -----------------------------
 
@@ -31,7 +31,7 @@ da = xr.open_dataset(path_in + filename_in).sel(time=date)[variable] # lead time
 dim     = misc.subselect_xy_domain_from_dim(dim,domain,grid)
 da      = da.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 
-print(dim.longitude)
+print(dim.latitude.size)
 print(dim.longitude.size)
 
 # plot 

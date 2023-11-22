@@ -50,7 +50,7 @@ write2file = False
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'forecast/'
-filename_in       = 'fbss_tp24_pval0.1_time_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in       = 'fbss_tp24_pval0.1_time_southern_norway_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
 figname_out       = 'fbss_tp24_pval0.9_time_europe_annual_2020-01-02_2022-12-29_0.25x0.25.pdf'
 
 # read in data
