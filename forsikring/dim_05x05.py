@@ -3,7 +3,7 @@
 
 import numpy as np
 
-timescale  = np.arange(5,7,1)
+timescale  = np.arange(3,7,1)
 time       = np.arange(16,47,1)
 latitude   = np.flip(np.arange(33,74,0.5))
 longitude  = np.arange(-27,45.5,0.5)

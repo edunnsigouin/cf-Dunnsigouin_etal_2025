@@ -9,12 +9,12 @@ from forsikring        import misc,s2s,config,verify
 import os
 
 # input ----------------------------------------------
-time_flag            = 'timescale'
-variable             = 'tp24'             # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-first_forecast_date  = '20200102'            # first initialization date of forecast (either a monday or thursday)   
-number_forecasts     = 313                     # number of forecast initializations 
+time_flag            = 'daily'
+variable             = 't2m24'             # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+first_forecast_date  = '20210104'            # first initialization date of forecast (either a monday or thursday)   
+number_forecasts     = 104                     # number of forecast initializations 
 season               = 'annual'
-grid                 = '0.25x0.25'         # '0.25x0.25' or '0.5x0.5'
+grid                 = '0.5x0.5'         # '0.25x0.25' or '0.5x0.5'
 box_sizes            = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!   
 write2file           = True
 # ----------------------------------------------------
@@ -29,10 +29,10 @@ for date in forecast_dates:
     print('\ncalculating smoothed climatology for era5 hindcast format data initialized ' + date + ' and grid: ' + grid)
         
     # define stuff
-    path_in         = config.dirs['era5_s2s_hindcast_daily'] + variable + '/'
-    path_out        = config.dirs['era5_s2s_hindcast_climatology'] + variable + '/'
+    path_in         = config.dirs['era5_hindcast_daily'] + variable + '/'
+    path_out        = config.dirs['era5_hindcast_' + time_flag + '_climatology'] + variable + '/'
     filename_in     = variable + '_' + grid + '_' + date + '.nc'
-    filename_out    = 'climatology_' + variable + '_' + time_flag + '_' + grid + '_' + date + '.nc'
+    filename_out    = variable + '_' + grid + '_' + date + '.nc'
 
     # read in data
     da = xr.open_dataset(path_in + filename_in)[variable]
@@ -40,8 +40,8 @@ for date in forecast_dates:
     # calculate climatological mean 
     da = da.mean(dim='hdate')
 
-    # convert time to timescale if applicable
-    da = verify.resample_time_to_timescale(da, time_flag)
+    # convert time to weekly if applicable
+    da = verify.resample_daily_to_weekly(da, time_flag, grid)
 
     # smooth                                                                                                                                              
     da_smooth = verify.boxcar_smoother_xy_optimized(box_sizes, da, 'xarray')
@@ -71,6 +71,6 @@ for date in forecast_dates:
 
     da.close()
     da_smooth.close()
-    
+
     misc.toc()
 

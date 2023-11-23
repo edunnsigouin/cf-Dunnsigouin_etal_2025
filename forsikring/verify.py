@@ -163,47 +163,74 @@ def calc_score_bootstrap_difference(reference_error1, reference_error2, forecast
 
 
 
-
-def resample_15_days(ds):
+def resample_daily_to_weekly(ds, time_flag, grid):
     """
-    Resamples dataset time dimension with 15 days to timescales.
+    Resamples daily time dimension into weekly 
     """
-    # Store the original dimension order
-    original_dims = ds.dims
+    def resample_days(ds,grid):
+        original_dims = ds.dims
+        if grid == '0.25x0.25':
+            ds_resampled = xr.concat([
+                ds.isel(time=slice(0, 7)).mean(dim='time'),
+                ds.isel(time=slice(7, 14)).mean(dim='time'),
+            ], "time")
+            ds_resampled['time'] = np.arange(1, 3, 1)
+        elif grid == '0.5x0.5':
+            ds_resampled = xr.concat([
+                ds.isel(time=slice(0, 6)).mean(dim='time'),
+                ds.isel(time=slice(6, 13)).mean(dim='time'),
+                ds.isel(time=slice(13, 20)).mean(dim='time'),
+                ds.isel(time=slice(20, 27)).mean(dim='time'),
+            ], "time")
+            ds_resampled['time'] = np.arange(3, 7, 1)
+        return ds_resampled.transpose(*original_dims)
     
-    slices = [
-        ds.isel(time=1).drop_vars('time'),
-        ds.isel(time=slice(2, 3)).mean(dim='time'),
-        ds.isel(time=slice(4, 7)).mean(dim='time'),
-        ds.isel(time=slice(7, 13)).mean(dim='time'),
-    ]
-
-    ds_resampled         = xr.concat(slices, "time")
-    ds_resampled['time'] = np.arange(1, 5, 1)
-    
-    return ds_resampled.transpose(*original_dims) # keeps original dimension order
-
-
-def resample_31_days(ds):
-    """
-    Resamples dataset time dimension with 31 days to timescales.
-    """
-    # Store the original dimension order
-    original_dims = ds.dims
-    
-    ds_resampled = xr.concat([
-        ds.isel(time=slice(0, 12)).mean(dim='time'),
-        ds.isel(time=slice(13, 31)).mean(dim='time')
-    ], "time")
-    
-    ds_resampled['time'] = np.arange(5, 7, 1)
-    
-    return ds_resampled.transpose(*original_dims) # keeps original dimension order  
+    if time_flag != 'weekly':
+        return ds
+    elif (grid == '0.25x0.25') or (grid == '0.5x0.5'):
+        return resample_days(ds,grid)
+    else:
+        raise ValueError(f"Unsupported grid: {grid}")
 
 
+
+    
 def resample_time_to_timescale(ds, time_flag):
     """Resamples daily time into timescales following Wheeler et al. 2016 QJRMS.
     Adjusted for hr to lr data occurring on day 15 not 14."""
+
+    def resample_31_days(ds):
+        """
+        Resamples dataset time dimension with 31 days to timescales.
+        """
+        # Store the original dimension order
+        original_dims = ds.dims
+
+        ds_resampled = xr.concat([
+            ds.isel(time=slice(0, 12)).mean(dim='time'),
+            ds.isel(time=slice(13, 31)).mean(dim='time')
+        ], "time")
+
+        ds_resampled['time'] = np.arange(5, 7, 1)
+        return ds_resampled.transpose(*original_dims) # keeps original dimension order
+
+    def resample_15_days(ds):
+        """
+        Resamples dataset time dimension with 15 days to timescales.
+        """
+        # Store the original dimension order
+        original_dims = ds.dims
+
+        slices = [
+            ds.isel(time=1).drop_vars('time'),
+            ds.isel(time=slice(2, 3)).mean(dim='time'),
+            ds.isel(time=slice(4, 7)).mean(dim='time'),
+            ds.isel(time=slice(7, 13)).mean(dim='time'),
+        ]
+
+        ds_resampled         = xr.concat(slices, "time")
+        ds_resampled['time'] = np.arange(1, 5, 1)
+        return ds_resampled.transpose(*original_dims) # keeps original dimension order 
     
     if time_flag != 'timescale':
         return ds
@@ -217,6 +244,11 @@ def resample_time_to_timescale(ds, time_flag):
 
 
 
+
+
+
+
+    
 def initialize_error_array(dim,box_sizes,forecast_dates):
     """
     Initializes error array.
