@@ -21,9 +21,9 @@ def setup_subplot(ax, time, box_size, fss_data, sig_data, title_text, clevs, cma
     ax.set_xticks(time)
     ax.set_xlim([time[0], time[-1]])
     if time.size == 6:
-        ax.set_xticklabels(['1d1d','2d2d','4d4d','1w1w','2w2w','4w3w'],fontsize=fontsize)
+        ax.set_xticklabels(['1','2','3','4','5','6'],fontsize=fontsize)
         if title_text == 'd) weekly-mean temperature':
-            ax.set_xlabel(r'lead time [timescale]',fontsize=fontsize)
+            ax.set_xlabel(r'lead time [weeks]',fontsize=fontsize)
     else:
         ax.set_xticklabels(['1', '', '3', '', '5', '', '7', '', '9', '', '11', '', '13', '', '15'], fontsize=fontsize)
         if title_text == 'c) daily-mean temperature':
@@ -50,10 +50,10 @@ write2file = True
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fss_tp24_time_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_2     = 'fss_tp24_timescale_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_3     = 'fss_t2m24_time_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
-filename_in_4     = 'fss_t2m24_timescale_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_1     = 'fss_tp24_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_2     = 'fss_tp24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_3     = 'fss_t2m24_daily_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_4     = 'fss_t2m24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
 figname_out       = 'fig_01.pdf'
 
 # read in data
@@ -86,13 +86,13 @@ ax         = ax.ravel()
 setup_subplot(ax[0], ds1['time'], ds1['box_size'], ds1['fss'], sig1, 'a) daily-mean precipitation', clevs, cmap1, fontsize)
 
 # B) weekly precipitation 
-setup_subplot(ax[1], ds2['timescale'], ds2['box_size'], ds2['fss'], sig2, 'b) weekly-mean precipitation', clevs, cmap1, fontsize)
+setup_subplot(ax[1], ds2['time'], ds2['box_size'], ds2['fss'], sig2, 'b) weekly-mean precipitation', clevs, cmap1, fontsize)
 
 # C) daily temperature
 setup_subplot(ax[2], ds3['time'], ds3['box_size'], ds3['fss'], sig3, 'c) daily-mean temperature', clevs, cmap2, fontsize)
 
 # D) weekly temperature
-setup_subplot(ax[3], ds4['timescale'], ds4['box_size'], ds4['fss'], sig4, 'd) weekly-mean temperature', clevs, cmap2, fontsize)
+setup_subplot(ax[3], ds4['time'], ds4['box_size'], ds4['fss'], sig4, 'd) weekly-mean temperature', clevs, cmap2, fontsize)
 
 # write2file
 plt.tight_layout()

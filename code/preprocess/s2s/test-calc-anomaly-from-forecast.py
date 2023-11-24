@@ -14,7 +14,7 @@ first_forecast_date = '20210104'             # first initialization date of fore
 number_forecasts    = 104                      # number of forecasts 
 season              = 'annual'
 grid                = '0.5x0.5'          # '0.25x0.25' & '0.5x0.5'
-domain              = 'europe'
+domain              = 'europe3'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!  
 write2file          = True
 # -----------------------------------------------------

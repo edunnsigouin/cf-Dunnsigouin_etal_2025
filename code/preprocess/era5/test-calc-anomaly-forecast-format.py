@@ -8,13 +8,13 @@ import xarray   as xr
 from forsikring import misc,s2s,config,verify
 
 # INPUT -----------------------------------------------
-time_flag           = 'daily'                 # daily or weekly
+time_flag           = 'weekly'                 # daily or weekly
 variable            = 't2m24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 first_forecast_date = '20210104'             # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 1                      # number of forecasts 
+number_forecasts    = 104                      # number of forecasts 
 season              = 'annual'
-grid                = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
-domain              = 'europe'
+grid                = '0.5x0.5'          # '0.25x0.25' & '0.5x0.5'
+domain              = 'europe3'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!  
 write2file          = True
 # -----------------------------------------------------

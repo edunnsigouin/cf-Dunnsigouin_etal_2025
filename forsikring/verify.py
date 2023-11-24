@@ -138,13 +138,9 @@ def calc_score_bootstrap_difference(reference_error1, reference_error2, forecast
     forecast_mse2  = forecast_error2.mean(dim='forecast_dates')
     
     # Initialize results arrays
-    if 'time' in forecast_error1.dims:
-        score_difference           = np.empty((len(box_sizes), forecast_mse1.time.size))
-        score_bootstrap_difference = np.empty((len(box_sizes), forecast_mse1.time.size, number_shuffle_bootstrap))
-    else:
-        score_difference           = np.empty((len(box_sizes), forecast_mse1.timescale.size))
-        score_bootstrap_difference = np.empty((len(box_sizes), forecast_mse1.timescale.size, number_shuffle_bootstrap))
-
+    score_difference           = np.empty((len(box_sizes), forecast_mse1.time.size))
+    score_bootstrap_difference = np.empty((len(box_sizes), forecast_mse1.time.size, number_shuffle_bootstrap))
+    
     # compute score without bootstrap
     score_difference[:,:] = (1.0 - forecast_mse1 / reference_mse1) - (1.0 - forecast_mse2 / reference_mse2)
 
@@ -324,11 +320,9 @@ def combine_high_and_low_res_files(filename_hr, filename_lr, filename, path, tim
     try:
         print('Combining high & low-resolution files into one file...')
         with xr.open_dataset(hr_file_path) as ds_hr, xr.open_dataset(lr_file_path) as ds_lr:
-            if time_flag == 'time':
-                ds = xr.concat([ds_hr, ds_lr], 'time')
-            elif time_flag == 'timescale':
-                ds = xr.concat([ds_hr, ds_lr], 'timescale')
+            ds = xr.concat([ds_hr, ds_lr], 'time')
             misc.to_netcdf_with_packing_and_compression(ds, path + filename)
+            
         print('Deleting original high and low-resolution files...')
         os.remove(hr_file_path)
         os.remove(lr_file_path)
@@ -343,7 +337,7 @@ def get_data_dimensions(grid, time_flag, domain):
     return misc.subselect_xy_domain_from_dim(dim, domain, grid)
         
 
-def calc_forecast_and_reference_error(score_type,filename_verification, filename_forecast, variable, box_sizes_temp, dim, pval=0.9):
+def calc_forecast_and_reference_error(score_type,filename_verification, filename_forecast, variable, box_sizes_temp, pval=0.9):
     """
     calculates forecast and reference error for fractional skill score
     """
@@ -351,19 +345,16 @@ def calc_forecast_and_reference_error(score_type,filename_verification, filename
     verification          = xr.open_dataset(filename_verification)[variable]
     forecast              = xr.open_dataset(filename_forecast)[variable]
 
-    # subselect domain
-    verification          = verification.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
-    forecast              = forecast.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
-
     # calculate error terms
     if score_type == 'fss':
         forecast_error_xy  = (forecast - verification) ** 2
         reference_error_xy = (verification) ** 2
+        
     elif score_type == 'fbss':
         if pval > 0.5:
             climatological_probability = 1 - pval # e.g. if 90th quantile, then probability is 10%
         elif pval < 0.5:
-            climatological_probability = pval
+            climatological_probability = pval # if 10th quantile, then probability 10%
 
         forecast_error_xy          = (forecast - verification) ** 2
         reference_error_xy         = (climatological_probability - verification) ** 2

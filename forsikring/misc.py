@@ -42,7 +42,7 @@ def get_dim(grid,time_flag):
     elif grid == '0.25x0.25_0.5x0.5':
         from forsikring import dim_025x025_05x05 as dim
         
-    if time_flag == 'timescale':
+    if time_flag == 'weekly':
         dim.time  = dim.timescale
         dim.ntime = dim.ntimescale
 
@@ -122,7 +122,7 @@ def subselect_xy_domain_from_dim(dim,domain,grid):
             dim.longitude  = np.arange(-9,27.25,0.25)
         elif domain == 'europe3':
             dim.latitude   = np.flip(np.arange(48.5,58.75,0.25))
-            dim.longitude  = np.arange(0.25,18.25,0.25)
+            dim.longitude  = np.arange(0,18.25,0.25)
             
     elif grid == '0.5x0.5':
         if domain == 'scandinavia':
@@ -140,6 +140,12 @@ def subselect_xy_domain_from_dim(dim,domain,grid):
         elif domain == 'iberia':
             dim.latitude   = np.flip(np.arange(35,45.5,0.5))
             dim.longitude  = np.arange(-12,3.5,0.5)
+        elif domain == 'europe2':
+            dim.latitude   = np.flip(np.arange(43.5,64,0.5))
+            dim.longitude  = np.arange(-9,27.5,0.5)
+        elif domain == 'europe3':
+            dim.latitude   = np.flip(np.arange(48.5,59,0.5))
+            dim.longitude  = np.arange(0,18.5,0.5)
             
     dim.nlatitude  = dim.latitude.size
     dim.nlongitude = dim.longitude.size
