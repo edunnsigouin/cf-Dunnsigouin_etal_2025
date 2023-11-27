@@ -37,11 +37,11 @@ def initialize_quantile_array(variable,box_sizes,time_flag,dim):
 
 # input ----------------------------------------------
 time_flag           = 'daily'                   # daily or weekly
-variable            = 't2m24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+variable            = 'tp24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 first_forecast_date = '20210104'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 1                        # number of forecast initializations
+number_forecasts    = 104                        # number of forecast initializations
 season              = 'annual'
-grid                = '0.25x0.25'              # '0.25x0.25' or '0.5x0.5'
+grid                = '0.5x0.5'              # '0.25x0.25' or '0.5x0.5'
 pval                = 0.1                      # percentile values
 domain              = 'europe'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
@@ -63,32 +63,43 @@ for date in forecast_dates:
     filename_in_forecast = variable + '_' + grid + '_' + date + '.nc'
     filename_in_hindcast = variable + '_' + grid + '_' + date + '.nc'
     filename_out         = variable + '_' + grid + '_' + date + '.nc'
-    
+
     # read data
     dim      = verify.get_data_dimensions(grid, time_flag, domain)
     forecast = xr.open_dataset(path_in_forecast + filename_in_forecast).sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')[variable]
     hindcast = xr.open_dataset(path_in_hindcast + filename_in_hindcast).sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')[variable]
 
-    # convert time to weekly if applicable                                                                                                                              
+    # convert time to weekly if applicable     
     forecast = verify.resample_daily_to_weekly(forecast, time_flag, grid)
     hindcast = verify.resample_daily_to_weekly(hindcast, time_flag, grid)
-
-    # spatial smoothing
+    
+    # spatial smoothing 
     forecast_smooth = verify.boxcar_smoother_xy_optimized(box_sizes, forecast, 'xarray')
     hindcast_smooth = verify.boxcar_smoother_xy_optimized(box_sizes, hindcast, 'numpy')
 
     # calculate quantiles - use numpy arrays for speed
     quantile            = initialize_quantile_array(variable,box_sizes,time_flag,dim)
     quantile[:,:,:,:]   = np.quantile(hindcast_smooth,pval,axis=1)
-    quantile['time']    = hindcast['time'] # match time dimensions    
-    
+    quantile['time']    = forecast['time'] # match time dimensions    
+
     # convert to binary
-    if pval > 0.5: binary = forecast.where(forecast < quantile, 1.0).where(forecast >= quantile, 0.0)   
-    elif pval <= 0.5: binary = forecast.where(forecast > quantile, 1.0).where(forecast <= quantile, 0.0)
+    if pval > 0.5: binary = forecast_smooth.where(forecast_smooth < quantile, 1.0).where(forecast_smooth >= quantile, 0.0)   
+    elif pval <= 0.5: binary = forecast_smooth.where(forecast_smooth > quantile, 1.0).where(forecast_smooth <= quantile, 0.0)
+    
+    # fix metadata
+    binary = binary.rename(variable)
+    if variable == 'tp24':
+        binary.attrs['units']     = 'unitless'
+        binary.attrs['long_name'] = 'binary daily accumulated precipitation over quantile pval'
+    elif variable == 't2m24':
+        binary.attrs['units']     = 'unitless'
+        binary.attrs['long_name'] = 'binary daily-mean temperature over quantile pval'
+    elif variable == 'rn24':
+        binary.attrs['units']     = 'unitless'
+        binary.attrs['long_name'] = 'binary daily accumulated rain over quantile pval'
 
-    binary = binary.transpose('box_size', 'time', ...)
     if write2file: misc.to_netcdf_with_packing_and_compression(binary, path_out + filename_out)
-
+    
     forecast.close()
     hindcast.close()
     quantile.close()
