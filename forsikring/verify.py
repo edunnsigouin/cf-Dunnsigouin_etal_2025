@@ -337,7 +337,7 @@ def get_data_dimensions(grid, time_flag, domain):
     return misc.subselect_xy_domain_from_dim(dim, domain, grid)
         
 
-def calc_forecast_and_reference_error(score_type,filename_verification, filename_forecast, variable, box_sizes_temp, pval=0.9):
+def calc_forecast_and_reference_error(score_type, filename_verification, filename_forecast, variable, box_sizes_temp, pval=0.9):
     """
     calculates forecast and reference error for fractional skill score
     """
@@ -351,13 +351,10 @@ def calc_forecast_and_reference_error(score_type,filename_verification, filename
         reference_error_xy = (verification) ** 2
         
     elif score_type == 'fbss':
-        if pval > 0.5:
-            climatological_probability = 1 - pval # e.g. if 90th quantile, then probability is 10%
-        elif pval < 0.5:
-            climatological_probability = pval # if 10th quantile, then probability 10%
-
-        forecast_error_xy          = (forecast - verification) ** 2
-        reference_error_xy         = (climatological_probability - verification) ** 2
+        if pval > 0.5: climatological_probability = 1 - pval # e.g. if 90th quantile, then probability is 10%
+        elif pval < 0.5: climatological_probability = pval # if 10th quantile, then probability 10%
+        forecast_error_xy  = (forecast - verification) ** 2
+        reference_error_xy = (climatological_probability - verification) ** 2
     
     verification.close()
     forecast.close()
