@@ -32,11 +32,11 @@ def setup_subplot(ax, time, box_size, fss_data, sig_data, title_text, clevs, cma
     if (title_text == 'a) daily-mean annual precipitation') or (title_text == 'c) daily-mean summer precipitation'):
         ax.set_ylabel(r'spatial scale [gridpoints$^2$/km$^2$]', fontsize=fontsize)
     ax.set_ylim([box_size[0], box_size[-2]])
-
+    
     ax.set_title(title_text, fontsize=fontsize + 3)
 
     # horizontal line to show edge effects of domain
-    ax.axhline(y=41,xmin=0,xmax=time.size,color='r',linewidth=2)
+    ax.axhline(y=37,xmin=0,xmax=time.size,color='r',linewidth=2)
     
     """
     cb = plt.colorbar(p, ax=ax, orientation='vertical', ticks=clevs, pad=0.025, aspect=15)
@@ -46,16 +46,16 @@ def setup_subplot(ax, time, box_size, fss_data, sig_data, title_text, clevs, cma
     return ax
 
 # INPUT -----------------------
-write2file = True
+write2file = False
 # -----------------------------
 
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fss_tp24_daily_europe3_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_2     = 'fss_tp24_weekly_europe3_annual_2021-01-04_2021-12-30.nc'
-filename_in_3     = 'fss_tp24_daily_europe3_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
-filename_in_4     = 'fss_tp24_daily_europe3_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_1     = 'fss_tp24_daily_southern_norway_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_2     = 'fss_tp24_weekly_southern_norway_annual_2021-01-04_2021-12-30.nc'
+filename_in_3     = 'fss_tp24_daily_southern_norway_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
+filename_in_4     = 'fss_tp24_daily_southern_norway_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
 figname_out       = 'fig_02.pdf'
 
 # read in data
