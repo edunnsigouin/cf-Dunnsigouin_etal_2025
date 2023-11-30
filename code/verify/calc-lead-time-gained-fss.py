@@ -10,14 +10,14 @@ from matplotlib import pyplot as plt
 
 # INPUT -----------------------------------------------
 score_flag               = 'fss'
-time_flag                = 'daily'                   # daily or weekly
+time_flag                = 'weekly'                   # daily or weekly
 variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only? 
-first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 313                      # number of forecasts
+first_forecast_date      = '20210104'               # first initialization date of forecast (either a monday or thursday)
+number_forecasts         = 104                      # number of forecasts
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
-grids                    = ['0.25x0.25']
-write2file               = False
+grids                    = ['0.25x0.25','0.5x0.5']
+write2file               = True
 # -----------------------------------------------------    
 
 misc.tic()
@@ -26,10 +26,15 @@ misc.tic()
 forecast_dates          = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
 path_in                 = config.dirs['verify_s2s_forecast_daily']
 path_out                = config.dirs['verify_s2s_forecast_daily']
-prefix                  = 'fss_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
-if len(grids) == 2: filename_in = prefix + '.nc'
-else: filename_in = prefix + '_' + grids[0] + '.nc'
-
+prefix_in               = 'fss_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
+prefix_out              = 'ltg_fss_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
+if len(grids) == 2:
+    filename_in  = prefix_in + '.nc'
+    filename_out = prefix_out + '.nc'
+else:
+    filename_in  = prefix_in + '_' + grids[0] + '.nc'
+    filename_out = prefix_out + '_' + grids[0] + '.nc'
+    
 # read score data
 score = xr.open_dataset(path_in + filename_in)
 time  = score.time.values
@@ -51,9 +56,9 @@ for bs in range(1,box_size.size):
 
 # merge with score 
 lead_time_gained = lead_time_gained.rename('lead_time_gained')
-score = xr.merge([score,lead_time_gained])
+score            = xr.merge([score,lead_time_gained])
 
 # write to file
-if write2file: score.to_netcdf(path_out + filename_in)
+if write2file: misc.to_netcdf_with_packing_and_compression(lead_time_gained, path_out + filename_out)
 
 misc.toc()
