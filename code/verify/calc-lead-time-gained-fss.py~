@@ -1,0 +1,4 @@
+"""
+calculates the lead-time gained by increasing spatial scale for a given
+forecast skill based off of lead-time vs spatial scale fss data.
+"""
