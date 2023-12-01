@@ -45,7 +45,8 @@ time_interp  = score_interp.time
 box_size     = score_interp.box_size
 
 # calculate lead time gained
-lead_time_gained = score_interp.copy()
+lead_time_gained      = score_interp.copy()
+lead_time_gained[:,:] = 0.0
 for bs in range(1,box_size.size):
     for t in range(0,time_interp.size):
         temp = np.absolute(score_interp[bs,t].values-score_interp[0,:].values)
