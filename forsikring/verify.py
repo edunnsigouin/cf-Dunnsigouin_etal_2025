@@ -120,6 +120,40 @@ def calc_score_bootstrap(reference_error, forecast_error, number_shuffle_bootstr
     return score, score_bootstrap
 
 
+def calc_score_bootstrap_xy(reference_error, forecast_error, number_shuffle_bootstrap):
+    """
+    Calculates skill score and generates bootstrapped estimates by boostrapping
+    subsampling the forecast error term in the skill score.
+    """
+
+    number_forecasts = len(reference_error['forecast_dates'])
+
+    # Compute the MSE
+    reference_mse = reference_error.mean(dim='forecast_dates')
+    forecast_mse = forecast_error.mean(dim='forecast_dates')
+
+    # Initialize results arrays
+    latitude        = forecast_error.latitude
+    longitude       = forecast_error.longitude
+    score           = np.empty((latitude.size,longitude.size))
+    score_bootstrap = np.empty((number_shuffle_bootstrap,latitude.size,longitude.size))
+
+    # compute score without bootstrap
+    score[:,:] = 1.0 - forecast_mse / reference_mse
+
+    # compute score with bootstrap
+    for i in range(number_shuffle_bootstrap):
+
+        # subsample forecast dates with replacement
+        sampled_indices = np.random.choice(number_forecasts, number_forecasts, replace=True)
+
+        # bootstrap forecast mse
+        forecast_mse_bootstrap   = forecast_error.isel(forecast_dates=sampled_indices).mean(dim='forecast_dates')
+        score_bootstrap[i, ...]  = 1.0 - forecast_mse_bootstrap / reference_mse
+
+    return score, score_bootstrap
+
+
 
 def calc_score_bootstrap_difference(reference_error1, reference_error2, forecast_error1, forecast_error2, number_shuffle_bootstrap, box_sizes):
     """
@@ -258,6 +292,20 @@ def initialize_error_array(dim,box_sizes,forecast_dates):
     return error
 
 
+def initialize_error_xy_array(dim,forecast_dates):
+    """ 
+    Initializes error array.
+    Written here to clean up code.
+    """
+    data   = np.zeros((forecast_dates.size,dim.nlatitude,dim.nlongitude),dtype=np.float32)
+    dims   = ["forecast_dates","latitude","longitude"]
+    coords = dict(forecast_dates=np.arange(0,forecast_dates.size),latitude=dim.latitude,longitude=dim.longitude)
+    name   = 'error'
+    error  = xr.DataArray(data=data,dims=dims,coords=coords,name=name)
+    return error
+
+
+
 def initialize_score_array(score_type,dim,box_sizes,number_shuffle_bootstrap):
     """
     Initializes score arrays.
@@ -280,6 +328,31 @@ def initialize_score_array(score_type,dim,box_sizes,number_shuffle_bootstrap):
     score            = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
     score_bootstrap  = xr.DataArray(data=data_bootstrap,dims=dims_bootstrap,coords=coords_bootstrap,attrs=attrs_bootstrap,name=name_bootstrap)
     return score,score_bootstrap
+
+
+def initialize_score_xy_array(score_type,dim,number_shuffle_bootstrap):
+    """
+    Initializes score arrays.
+    Written here to clean up code.
+    """
+    data             = np.zeros((dim.nlatitude,dim.nlongitude),dtype=np.float32)
+    data_bootstrap   = np.zeros((number_shuffle_bootstrap,dim.nlatitude,dim.nlongitude),dtype=np.float32)
+    dims             = ["latitude","longitude"]
+    dims_bootstrap   = ["number_shuffle_bootstrap","latitude","longitude"]
+    coords           = dict(latitude=dim.latitude,longitude=dim.longitude)
+    coords_bootstrap = dict(number_shuffle_bootstrap=np.arange(0,number_shuffle_bootstrap,1),latitude=dim.latitude,longitude=dim.longitude)
+    if score_type == 'fss':
+        attrs            = dict(description='fractions skill score of forecast',units='unitless')
+        attrs_bootstrap  = dict(description='fractions skill score of forecast bootstrapped',units='unitless')
+    elif score_type == 'fbss':
+        attrs            = dict(description='fractions brier skill score of forecast',units='unitless')
+        attrs_bootstrap  = dict(description='fractions brier skill score of forecast bootstrapped',units='unitless')
+    name             = score_type
+    name_bootstrap   = score_type + '_bootstrap'
+    score            = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
+    score_bootstrap  = xr.DataArray(data=data_bootstrap,dims=dims_bootstrap,coords=coords_bootstrap,attrs=attrs_bootstrap,name=name_bootstrap)
+    return score,score_bootstrap
+
 
 
 def match_box_sizes_high_to_low_resolution(grid,box_sizes):
@@ -362,6 +435,31 @@ def calc_forecast_and_reference_error(score_type, filename_verification, filenam
     return misc.xy_mean(forecast_error_xy).values, misc.xy_mean(reference_error_xy).values
 
 
+def calc_forecast_and_reference_error_xy(score_type, filename_verification, filename_forecast, variable, box_size, lead_time, pval=0.9):
+    """
+    calculates forecast and reference error for fractional skill score
+    """
+    # read data 
+    verification = xr.open_dataset(filename_verification)[variable].sel(box_size=box_size).isel(time=lead_time-1).squeeze()
+    forecast     = xr.open_dataset(filename_forecast)[variable].sel(box_size=box_size).isel(time=lead_time-1).squeeze()
+    
+    # calculate error terms
+    if score_type == 'fss':
+        forecast_error_xy  = (forecast - verification) ** 2
+        reference_error_xy = (verification) ** 2
+
+    elif score_type == 'fbss':
+        if pval > 0.5: climatological_probability = 1 - pval # e.g. if 90th quantile, then probability is 10%
+        elif pval < 0.5: climatological_probability = pval # if 10th quantile, then probability 10%
+        forecast_error_xy  = (forecast - verification) ** 2
+        reference_error_xy = (climatological_probability - verification) ** 2
+
+    verification.close()
+    forecast.close()
+
+    return forecast_error_xy.values, reference_error_xy.values
+
+
 
 def write_score_to_file(score, score_bootstrap, forecast_error, reference_error, write2file, grid, box_sizes, time_flag, filename_out, path_out):
     """Kitchen sink function to write score and error to file""" 
@@ -377,3 +475,11 @@ def write_score_to_file(score, score_bootstrap, forecast_error, reference_error,
         ds.close()
     return
 
+
+def write_score_to_file_xy(score, score_bootstrap, write2file, filename_out, path_out):
+    """Kitchen sink function to write score and error to file"""
+    if write2file:
+        ds = xr.merge([score,score_bootstrap])
+        misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
+        ds.close()
+    return
