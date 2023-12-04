@@ -22,11 +22,11 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product             = 'forecast' # forecast/vr_forecast
-first_forecast_date = '20200206' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 95        # number of forecast initializations   
+first_forecast_date = '20200102' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 52        # number of forecast initializations   
 grid                = '0.5/0.5' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var                 = 't2m'
+var                 = 'tp'
 comp_lev            = 5 # file compression level
 write2file          = True
 # -----------------------------------------
@@ -88,7 +88,7 @@ dic = {
 }    
 
 # get all dates for monday and thursday forecast initializations
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast)
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast,'annual')
 print(forecast_dates)
 
 # populate dictionary some more and download eachforcast one-by-one
