@@ -162,3 +162,12 @@ def mask_significant_values_from_bootstrap(data_array, threshold):
     return masked_significance
 
 
+
+def mask_skill_values(data_array):
+    """ 
+    test
+    """
+    significance_mask   = np.isnan(data_array)
+    masked_significance = significance_mask.where(significance_mask, np.nan)
+
+    return masked_significance

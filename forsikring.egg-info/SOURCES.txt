@@ -2,11 +2,13 @@ LICENSE
 README.md
 setup.py
 forsikring/config.py
-forsikring/date_to_model.py
-forsikring/dim_hr.py
-forsikring/dim_lr.py
+forsikring/dim_025x025.py
+forsikring/dim_025x025_05x05.py
+forsikring/dim_05x05.py
+forsikring/dim_1x1.py
 forsikring/misc.py
 forsikring/s2s.py
+forsikring/verify.py
 forsikring.egg-info/PKG-INFO
 forsikring.egg-info/SOURCES.txt
 forsikring.egg-info/dependency_links.txt

@@ -1,5 +1,5 @@
 """
-Plots fig. 1 in Dunn-Sigouin et al. 
+Plots fig. S1 in Dunn-Sigouin et al. 
 """
 
 import numpy     as np
@@ -10,7 +10,7 @@ import matplotlib as mpl
 
 def setup_subplot_fss(ax, time, box_size, fss_data, sig_data, title_text, clevs, cmap, fontsize):
     """ 
-    Sets up specifics of subplots for fig. 1
+    Sets up specifics of subplots for fig. S1
     """
     p = ax.contourf(time, box_size, fss_data, levels=clevs, cmap=cmap, extend='min')
     ax.pcolor(time, box_size, sig_data, hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
@@ -45,14 +45,15 @@ def setup_subplot_fss(ax, time, box_size, fss_data, sig_data, title_text, clevs,
 
 def setup_subplot_ltg(ax, time, box_size, fss_data, sig_data, ltg_data, dummy, title_text, clevs1, clevs2, cmap, fontsize):
     """
-    Sets up specifics of subplots for fig. 1
+    Sets up specifics of subplots for fig. S1
     """
     p = ax.contourf(ltg_data.time, box_size, ltg_data, levels=clevs2, cmap=cmap, extend='max')
     ax.pcolor(time, box_size, sig_data, hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
     ax.pcolor(dummy.time, box_size, dummy, hatch='xx', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
-
+    
     contour = ax.contour(time, box_size, fss_data, levels=clevs1, linewidths=1,linestyles='-',colors='grey')
     ax.clabel(contour, clevs1, inline=True, fmt='%1.1f', fontsize=fontsize)
+    
 
     ax.set_xticks(time)
     ax.set_xlim([time[0], time[-1]])
@@ -87,11 +88,11 @@ write2file = True
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fss_tp24_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_2     = 'fss_tp24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_3     = 'ltg_fss_tp24_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_4     = 'ltg_fss_tp24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
-figname_out       = 'fig_01.pdf'
+filename_in_1     = 'fss_t2m24_daily_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_2     = 'fss_t2m24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_3     = 'ltg_fss_t2m24_daily_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_4     = 'ltg_fss_t2m24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+figname_out       = 'fig_S1.pdf'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
@@ -111,7 +112,6 @@ sig2       = s2s.mask_significant_values_from_bootstrap(ds2['fss_bootstrap'],0.0
 dummy3 = s2s.mask_skill_values(ds3['lead_time_gained'])
 dummy4 = s2s.mask_skill_values(ds4['lead_time_gained'])
 
-
 # set ltg values to nan where fss not-significant. makes figure nicer. Hacky
 time_interp = ds3['lead_time_gained'].time.astype('int')
 time        = sig1.time.values
@@ -128,12 +128,11 @@ for bs in range(1,ds2['box_size'].size):
     ds4['lead_time_gained'][bs,index2:] = np.nan
 
     
-    
 # plot 
 fontsize   = 11
 clevs1     = np.arange(0,1.1,0.1)
 clevs2     = np.arange(0.0, 3.5, 0.5)
-clevs3     = np.arange(0.0, 1.1, 0.1)
+clevs3     = np.arange(0.0,1.1, 0.1)
 cmap1      = mpl.cm.get_cmap("GnBu").copy()
 cmap2      = mpl.cm.get_cmap("YlGn").copy()
 figsize    = np.array([12,8])
@@ -144,7 +143,7 @@ setup_subplot_fss(ax[0], ds1['time'], ds1['box_size'], ds1['fss'], sig1, 'a) dai
 
 setup_subplot_fss(ax[1], ds2['time'], ds2['box_size'], ds2['fss'], sig2, 'b) weekly mean square error skill score', clevs1, cmap1, fontsize)
 
-setup_subplot_ltg(ax[2], ds1['time'], ds1['box_size'], ds1['fss'], sig1, ds3['lead_time_gained'], dummy3, 'c) daily lead time gained', clevs1, clevs2, cmap2, fontsize)
+setup_subplot_ltg(ax[2], ds1['time'], ds1['box_size'], ds1['fss'], sig1, np.absolute(ds3['lead_time_gained']), dummy3,'c) daily lead time gained', clevs1, clevs2, cmap2, fontsize)
 
 setup_subplot_ltg(ax[3], ds2['time'], ds2['box_size'], ds2['fss'], sig2, ds4['lead_time_gained'], dummy4, 'd) weekly lead time gained', clevs1, clevs3, cmap2, fontsize)
 
