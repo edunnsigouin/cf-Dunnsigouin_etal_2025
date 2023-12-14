@@ -8,7 +8,7 @@ from matplotlib  import pyplot as plt
 from forsikring  import misc,s2s,config
 import matplotlib as mpl
 
-def setup_subplot_fss(ax, time, box_size, fss_data, sig_data, title_text, clevs, cmap, fontsize):
+def setup_subplot_fss(flag, ax, time, box_size, fss_data, sig_data, title_text, clevs, cmap, fontsize):
     """ 
     Sets up specifics of subplots for fig. S1
     """
@@ -20,17 +20,10 @@ def setup_subplot_fss(ax, time, box_size, fss_data, sig_data, title_text, clevs,
 
     ax.set_xticks(time)
     ax.set_xlim([time[0], time[-1]])
-    """
-    if time.size == 6:
-        ax.set_xticklabels(['1','2','3','4','5','6'],fontsize=fontsize)
-        ax.set_xlabel(r'lead time [weeks]',fontsize=fontsize)
-    else:
-        ax.set_xticklabels(['1', '', '3', '', '5', '', '7', '', '9', '', '11', '', '13', '', '15'], fontsize=fontsize)
-        ax.set_xlabel(r'lead time [days]', fontsize=fontsize)
-    """
+
     ax.set_yticks(np.array([1, 9, 17, 25, 33, 41, 49, 57]))
     ax.set_yticklabels(['1/9', '9/81', '17/153', '25/225', '33/297', '41/369', '49/441', '57/513'], fontsize=fontsize)
-    if title_text == 'a) daily mean square error skill score':
+    if flag == 1:
         ax.set_ylabel(r'spatial scale [gridpoints$^2$/km$^2$]', fontsize=fontsize)
     ax.set_ylim([box_size[0], box_size[-2]])
 
@@ -43,7 +36,7 @@ def setup_subplot_fss(ax, time, box_size, fss_data, sig_data, title_text, clevs,
     return ax
 
 
-def setup_subplot_ltg(ax, time, box_size, fss_data, sig_data, ltg_data, dummy, title_text, clevs1, clevs2, cmap, fontsize):
+def setup_subplot_ltg(flag, ax, time, box_size, fss_data, sig_data, ltg_data, dummy, title_text, clevs1, clevs2, cmap, fontsize):
     """
     Sets up specifics of subplots for fig. S1
     """
@@ -66,16 +59,16 @@ def setup_subplot_ltg(ax, time, box_size, fss_data, sig_data, ltg_data, dummy, t
 
     ax.set_yticks(np.array([1, 9, 17, 25, 33, 41, 49, 57]))
     ax.set_yticklabels(['1/9', '9/81', '17/153', '25/225', '33/297', '41/369', '49/441', '57/513'], fontsize=fontsize)
-    if title_text == 'c) daily lead time gained':
+    if flag == 3:
         ax.set_ylabel(r'spatial scale [gridpoints$^2$/km$^2$]', fontsize=fontsize)
     ax.set_ylim([box_size[0], box_size[-2]])
 
     ax.set_title(title_text, fontsize=fontsize + 3)
 
     cb = plt.colorbar(p, ax=ax, orientation='vertical', ticks=clevs2, pad=0.025, aspect=15)
-    if (title_text == 'c) daily lead time gained'):
+    if flag == 3:
         cb.ax.set_title('[days]', fontsize=fontsize)
-    elif (title_text == 'd) weekly lead time gained'):
+    elif flag == 4:
         cb.ax.set_title('[weeks]', fontsize=fontsize)
     cb.ax.tick_params(labelsize=fontsize, size=0)
 
@@ -139,14 +132,18 @@ figsize    = np.array([12,8])
 fig,ax     = plt.subplots(nrows=2,ncols=2,sharey='row',sharex='col',figsize=(figsize[0],figsize[1]))
 ax         = ax.ravel()
 
-setup_subplot_fss(ax[0], ds1['time'], ds1['box_size'], ds1['fss'], sig1, 'a) daily mean square error skill score', clevs1, cmap1, fontsize)
+title1 = 'a) daily temperature\n mean square error skill score'
+title2 = 'b) weekly temperature\n mean square error skill score'
+title3 = 'c) daily temperature\n lead time gained'
+title4 = 'd) weekly temperature\n lead time gained'
 
-setup_subplot_fss(ax[1], ds2['time'], ds2['box_size'], ds2['fss'], sig2, 'b) weekly mean square error skill score', clevs1, cmap1, fontsize)
+setup_subplot_fss(1, ax[0], ds1['time'], ds1['box_size'], ds1['fss'], sig1, title1, clevs1, cmap1, fontsize)
 
-setup_subplot_ltg(ax[2], ds1['time'], ds1['box_size'], ds1['fss'], sig1, np.absolute(ds3['lead_time_gained']), dummy3,'c) daily lead time gained', clevs1, clevs2, cmap2, fontsize)
+setup_subplot_fss(2, ax[1], ds2['time'], ds2['box_size'], ds2['fss'], sig2, title2, clevs1, cmap1, fontsize)
 
-setup_subplot_ltg(ax[3], ds2['time'], ds2['box_size'], ds2['fss'], sig2, ds4['lead_time_gained'], dummy4, 'd) weekly lead time gained', clevs1, clevs3, cmap2, fontsize)
+setup_subplot_ltg(3, ax[2], ds1['time'], ds1['box_size'], ds1['fss'], sig1, np.absolute(ds3['lead_time_gained']), dummy3, title3, clevs1, clevs2, cmap2, fontsize)
 
+setup_subplot_ltg(4, ax[3], ds2['time'], ds2['box_size'], ds2['fss'], sig2, ds4['lead_time_gained'], dummy4, title4, clevs1, clevs3, cmap2, fontsize)
 
 # write2file
 plt.tight_layout()

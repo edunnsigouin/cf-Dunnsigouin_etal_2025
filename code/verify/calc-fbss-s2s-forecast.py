@@ -23,16 +23,16 @@ from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
 score_flag               = 'fbss'
-time_flag                = 'daily'                  # daily or weekly
+time_flag                = 'weekly'                  # daily or weekly
 variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
-first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 313                      # number of forecasts 
-season                   = 'ndjfm'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
-grids                    = ['0.25x0.25']
+first_forecast_date      = '20210104'               # first initialization date of forecast (either a monday or thursday)
+number_forecasts         = 104                      # number of forecasts 
+season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
+grids                    = ['0.25x0.25','0.5x0.5']
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 number_shuffle_bootstrap = 10000                    # number of times to shuffle initialization dates for error bars
-pval                     = 0.1
+pval                     = 0.9
 write2file               = True
 # -----------------------------------------------------
 

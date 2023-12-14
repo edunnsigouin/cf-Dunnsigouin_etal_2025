@@ -9,14 +9,15 @@ from forsikring import misc,s2s,verify,config
 from matplotlib import pyplot as plt
 
 # INPUT -----------------------------------------------
-score_flag               = 'fss'
-time_flag                = 'weekly'                   # daily or weekly
-variable                 = 't2m24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+score_flag               = 'fbss'
+time_flag                = 'daily'                   # daily or weekly
+variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only? 
-first_forecast_date      = '20210104'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 104                      # number of forecasts
+first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
+number_forecasts         = 313                      # number of forecasts
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
-grids                    = ['0.25x0.25','0.5x0.5']
+pval                     = 0.9
+grids                    = ['0.25x0.25']
 write2file               = True
 # -----------------------------------------------------    
 
@@ -26,8 +27,13 @@ misc.tic()
 forecast_dates          = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
 path_in                 = config.dirs['verify_s2s_forecast_daily']
 path_out                = config.dirs['verify_s2s_forecast_daily']
-prefix_in               = 'fss_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
-prefix_out              = 'ltg_fss_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
+if score_flag == 'fss':
+    prefix_in  = score_flag + '_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
+    prefix_out = 'ltg_' + score_flag + '_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
+elif score_flag == 'fbss':
+    prefix_in  = score_flag + '_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
+    prefix_out = 'ltg_' + score_flag + '_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
+    
 if len(grids) == 2:
     filename_in  = prefix_in + '.nc'
     filename_out = prefix_out + '.nc'
