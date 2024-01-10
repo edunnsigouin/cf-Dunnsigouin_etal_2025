@@ -193,19 +193,33 @@ def calc_score_bootstrap_difference(reference_error1, reference_error2, forecast
 
 
 
-def resample_daily_to_weekly(ds, time_flag, grid):
+def resample_daily_to_weekly(ds, time_flag, grid, variable):
     """
     Resamples daily time dimension into weekly 
     """
     def resample_days(ds,grid):
         original_dims = ds.dims
-        if grid == '0.25x0.25':
+        if ((grid == '0.25x0.25') and (variable == 'tp24')):
             ds_resampled = xr.concat([
-                ds.isel(time=slice(0, 7)).mean(dim='time'),
+                ds.isel(time=slice(0, 7)).sum(dim='time'), # accumulated precip
+                ds.isel(time=slice(7, 14)).sum(dim='time'),
+            ], "time")
+            ds_resampled['time'] = np.arange(1, 3, 1)
+        elif ((grid == '0.25x0.25') and (variable == 't2m24')):
+            ds_resampled = xr.concat([
+                ds.isel(time=slice(0, 7)).mean(dim='time'), # mean temp
                 ds.isel(time=slice(7, 14)).mean(dim='time'),
             ], "time")
             ds_resampled['time'] = np.arange(1, 3, 1)
-        elif grid == '0.5x0.5':
+        elif ((grid == '0.5x0.5') and (variable == 'tp24')):
+            ds_resampled = xr.concat([
+                ds.isel(time=slice(0, 6)).sum(dim='time'),
+                ds.isel(time=slice(6, 13)).sum(dim='time'),
+                ds.isel(time=slice(13, 20)).sum(dim='time'),
+                ds.isel(time=slice(20, 27)).sum(dim='time'),
+            ], "time")
+            ds_resampled['time'] = np.arange(3, 7, 1)
+        elif ((grid == '0.5x0.5') and (variable == 't2m24')):
             ds_resampled = xr.concat([
                 ds.isel(time=slice(0, 6)).mean(dim='time'),
                 ds.isel(time=slice(6, 13)).mean(dim='time'),
@@ -213,6 +227,7 @@ def resample_daily_to_weekly(ds, time_flag, grid):
                 ds.isel(time=slice(20, 27)).mean(dim='time'),
             ], "time")
             ds_resampled['time'] = np.arange(3, 7, 1)
+            
         return ds_resampled.transpose(*original_dims)
     
     if time_flag != 'weekly':
