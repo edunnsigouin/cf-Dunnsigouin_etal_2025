@@ -29,6 +29,7 @@ s2s_hindcast_weekly             = processed + "s2s/ecmwf/hindcast/weekly/values/
 era5_6hourly                     = raw + "era5/6hourly/"
 era5_daily                       = processed + "era5/continuous-format/daily/"
 era5_forecast_daily              = processed + "era5/s2s-model-format/forecast/daily/values/"
+era5_forecast_daily_student      = processed + "era5/s2s-model-format/forecast/daily/student/"
 era5_forecast_daily_smooth       = processed + "era5/s2s-model-format/forecast/daily/values_smooth/"
 era5_forecast_daily_anomaly      = processed + "era5/s2s-model-format/forecast/daily/anomaly_smooth/"
 era5_forecast_daily_binary       = processed + "era5/s2s-model-format/forecast/daily/binary_smooth/"
@@ -81,6 +82,7 @@ dirs = {"proj":proj,
 	"era5_daily":era5_daily,
         "era5_monthly":era5_monthly,
         "era5_forecast_daily":era5_forecast_daily,
+        "era5_forecast_daily_student":era5_forecast_daily_student,
         "era5_forecast_daily_smooth":era5_forecast_daily_smooth,
         "era5_forecast_daily_anomaly":era5_forecast_daily_anomaly,
         "era5_forecast_daily_binary":era5_forecast_daily_binary,

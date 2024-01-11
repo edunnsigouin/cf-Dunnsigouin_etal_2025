@@ -36,7 +36,7 @@ path_in           = config.dirs['s2s_' + product + '_daily'] + variable + '/'
 path_out          = config.dirs['s2s_' + product + '_daily_student'] + variable + '/' 
 filename_in       = variable + '_' + grid + '_' + forecast_dates.strftime('%Y-%m-%d') + '.nc'
 timestamp         = forecast_dates[0].strftime('%Y-%m-%d') + '_' + forecast_dates[-1].strftime('%Y-%m-%d')
-filename_out      = variable + '_' + domain + '_' + grid + '_' + timestamp  + '.nc' 
+filename_out      = 'forecast_' + variable + '_' + domain + '_' + grid + '_' + timestamp  + '.nc' 
 
 # read daily forecast data 
 data = xr.open_mfdataset(path_in + filename_in,preprocess=preprocess,combine='nested',concat_dim='init_time')
