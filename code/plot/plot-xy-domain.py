@@ -10,7 +10,7 @@ from forsikring      import misc,s2s,config
 from scipy           import signal, ndimage
 
 # INPUT -----------------------
-domain            = 'southern_norway'            # europe/nordic/vestland                       
+domain            = 'bergen'# europe/nordic/vestland                       
 write2file        = False
 # -----------------------------
 
@@ -31,8 +31,8 @@ da = xr.open_dataset(path_in + filename_in).sel(time=date)[variable] # lead time
 dim     = misc.subselect_xy_domain_from_dim(dim,domain,grid)
 da      = da.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 
-print(dim.latitude.size)
-print(dim.longitude.size)
+print(dim.latitude)
+print(dim.longitude)
 
 # plot 
 fontsize = 11
@@ -42,7 +42,8 @@ figsize  = np.array([1.618*4,4])
 fig,ax   = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]),\
                         subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 
-p0 = ax.contourf(dim.longitude,dim.latitude,da*np.nan,levels=clevs,cmap=cmap,extend='max',transform=ccrs.PlateCarree())
+#p0 = ax.contourf(dim.longitude,dim.latitude,da*np.nan,cmap=cmap,extend='max',transform=ccrs.PlateCarree())
+p0 = ax.pcolormesh(dim.longitude,dim.latitude,da,cmap=cmap,transform=ccrs.PlateCarree()) 
 ax.coastlines('10m',color='k')
 #ax.set_aspect('auto')
 
