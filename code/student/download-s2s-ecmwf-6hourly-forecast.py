@@ -9,7 +9,8 @@ Note: You need special access to download raw forecasts (at higher
 resolution). Contact the person from Norway here:
 https://www.ecmwf.int/en/about/contact-us/computing-representatives 
 
-Note: this code is only to download forecast data (not hindcasts)
+Note: this code is only to download forecast data (not hindcasts) & is 
+used to download the data for NHH masters students.
 """
 
 from ecmwfapi                    import *
@@ -22,11 +23,11 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product             = 'forecast' # forecast/vr_forecast
-first_forecast_date = '20200102' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 105        # number of forecast initializations   
-grid                = '0.5/0.5' # degree lat/lon resolution
-area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var                 = 'tp'
+first_forecast_date = '20190701' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 53        # number of forecast initializations   
+grid                = '0.25/0.25' # degree lat/lon resolution
+domain              = 'southern_norway'
+variables           = ['tp','t2m','sd']
 comp_lev            = 5 # file compression level
 write2file          = False
 # -----------------------------------------
@@ -35,40 +36,29 @@ write2file          = False
 server = ECMWFService("mars")
 
 # define stuff
-if product == 'forecast':
-    if grid == '0.25/0.25':
-        step = '0/to/360/by/6'
-    elif grid == '0.5/0.5':
-        step = '366/to/1104/by/6'
-    number = '1/to/50'
-    stream = 'enfo'
-    path   = config.dirs['s2s_forecast_6hourly'] + var + '/'
-    dtypes = ['cf','pf']
-elif product == 'vr_forecast':
-    step   = '360'
-    number = '1/to/50'
-    stream = 'efov'
-    path   = config.dirs['s2s_forecast_6hourly'] + var + '/'
-    dtypes = ['cf','pf']
-    grid   = '0.5/0.5' # need to use low-res
-    
+if grid == '0.25/0.25': step = '0/to/360/by/6'
+elif grid == '0.5/0.5': step = '366/to/1104/by/6'
+number = '1/to/50'
+stream = 'enfo'
+path   = config.dirs['s2s_forecast_6hourly_student'] 
+dtypes = ['cf','pf']
+
+if domain == 'bergen': area = '60.75/5/60.25/5.5'
+elif domain == 'oslo': area = '60/10.25/59.5/10.75'
+elif domain == 'southern_norway': area = '66/3.5/57/12.5'
+
 if grid == '0.25/0.25': gridstring = '0.25x0.25'
 elif grid == '0.5/0.5': gridstring = '0.5x0.5'
-    
-if var == 'tp': # total precipitation per 6 hours (m)
-    if product == 'forecast':
-        param = '228.128'
-    elif product == 'vr_forecast':
-        param = '228.230' # note different variable for variable resolution
-elif var == 'sf': # snowfall per 6 hours (m)
-    if product == 'forecast':
-        param = '144.128'
-    elif product == 'vr_forecast':
-        param = '144.230' # note different variable for variable resolution
-elif var == 'mx6tpr': # maximum 6-hourly precipitation rate after last post-processing (kgm-2s-1)
-    param = '226.228'
-elif var =='t2m': # 2 meter temperature
-    param = '167.128'
+
+param = ''
+for variable in variables:
+    if variable == 'tp':
+        param = param + '228.128/'
+    elif variable == 't2m':
+        param =	param + '167.128/'
+    elif variable == 'sd':
+        param = param + '141.128/'        
+    if variable == variables[-1]: param = param[:-1]
 
 # populate API dictionary
 dic = {
@@ -102,10 +92,9 @@ if write2file:
             datestring       = date.strftime('%Y-%m-%d')
             refyear          = int(datestring[:4])
             forcastcycle     = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
-        
-            if product == 'forecast': base_name = '%s_%s_%s_%s_%s'%(var,forcastcycle,gridstring,datestring,dtype)
-            elif product == 'vr_forecast': base_name = '%s_%s_%s_%s_%s_%s'%(var,forcastcycle,'vr',gridstring,datestring,dtype)
 
+            variable_string  = '-'.join(variables)
+            base_name        = '%s_%s_%s_%s_%s'%(variable_string,forcastcycle,gridstring,datestring,dtype)
             filename_grb     = base_name + '.grb'
             filename_nc      = base_name + '.nc'
 

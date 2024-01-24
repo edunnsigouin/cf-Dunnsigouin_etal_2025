@@ -26,8 +26,8 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product             = 'hindcast' # hindcast/vr_hindcast
-first_forecast_date = '20200702' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 53          # number of forecast initializations      
+first_forecast_date = '20201001' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 27          # number of forecast initializations      
 nhdates             = 20 # number of hindcast years  
 grid                = '0.5/0.5' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
@@ -168,5 +168,4 @@ if write2file:
 
             
             misc.toc()
-
 

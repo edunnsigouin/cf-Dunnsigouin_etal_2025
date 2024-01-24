@@ -20,10 +20,10 @@ from forsikring import config,s2s
 area       = '73.5/-27/33/45' # or 'E' for europe
 grid       = '0.25/0.25' # '0.25/0.25' or '0.5/0.5'
 variables  = ['tp6'] # tp6,sf6
-date_start = '2013-01-01'
-date_end   = '2013-01-02'
+date_start = '2023-01-01'
+date_end   = '2024-01-01'
 comp_lev   = 5 # file compression level
-write2file = False
+write2file = True
 # -----------------------------------------------------
 
 c         = cdsapi.Client()
