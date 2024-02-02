@@ -20,57 +20,28 @@ def setup_subplot_fss(flag, ax, time, box_size, fss_data, sig_data, title_text, 
 
     ax.set_xticks(time)
     ax.set_xlim([time[0], time[-1]])
+    if flag == 4:
+        ax.set_xticklabels(['1','2','3','4','5','6'],fontsize=fontsize)
+        ax.set_xlabel(r'lead time [weeks]',fontsize=fontsize)
+    elif flag == 3:
+        ax.set_xticklabels(['1', '', '', '', '5', '', '', '', '', '10', '', '', '', '', '15'], fontsize=fontsize)
+        ax.set_xlabel(r'lead time [days]', fontsize=fontsize)
 
     ax.set_yticks(np.array([1, 9, 17, 25, 33, 41, 49, 57]))
     ax.set_yticklabels(['1/9', '9/81', '17/153', '25/225', '33/297', '41/369', '49/441', '57/513'], fontsize=fontsize)
-    if flag == 1:
+    if (flag == 1) or (flag == 3):
         ax.set_ylabel(r'spatial scale [gridpoints$^2$/km$^2$]', fontsize=fontsize)
     ax.set_ylim([box_size[0], box_size[-2]])
 
     ax.set_title(title_text, fontsize=fontsize + 3)
     
     cb = plt.colorbar(p, ax=ax, orientation='vertical', ticks=clevs, pad=0.025, aspect=15)
-    #cb.ax.set_title('fss', fontsize=fontsize)
+    if (flag == 1) or (flag == 2):
+        cb.ax.set_title('[MSESS]', fontsize=fontsize,y=1.01)
+    elif (flag == 3) or (flag == 4):
+        cb.ax.set_title('[BSS]', fontsize=fontsize,y=1.01)
     cb.ax.tick_params(labelsize=fontsize, size=0)
     
-    return ax
-
-
-def setup_subplot_ltg(flag, ax, time, box_size, fss_data, sig_data, ltg_data, dummy, title_text, clevs1, clevs2, cmap, fontsize):
-    """
-    Sets up specifics of subplots for fig. 1
-    """
-    p = ax.contourf(ltg_data.time, box_size, ltg_data, levels=clevs2, cmap=cmap, extend='max')
-    ax.pcolor(time, box_size, sig_data, hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
-    ax.pcolor(dummy.time, box_size, dummy, hatch='xx', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
-
-    contour = ax.contour(time, box_size, fss_data, levels=clevs1, linewidths=1,linestyles='-',colors='grey')
-    ax.clabel(contour, clevs1, inline=True, fmt='%1.1f', fontsize=fontsize)
-
-    ax.set_xticks(time)
-    ax.set_xlim([time[0], time[-1]])
-    if time.size == 6:
-        ax.set_xticklabels(['1','2','3','4','5','6'],fontsize=fontsize)
-        ax.set_xlabel(r'lead time [weeks]',fontsize=fontsize)
-    else:
-        ax.set_xticklabels(['1', '', '3', '', '5', '', '7', '', '9', '', '11', '', '13', '', '15'], fontsize=fontsize)
-        ax.set_xlabel(r'lead time [days]', fontsize=fontsize)
-
-    ax.set_yticks(np.array([1, 9, 17, 25, 33, 41, 49, 57]))
-    ax.set_yticklabels(['1/9', '9/81', '17/153', '25/225', '33/297', '41/369', '49/441', '57/513'], fontsize=fontsize)
-    if flag == 3:
-        ax.set_ylabel(r'spatial scale [gridpoints$^2$/km$^2$]', fontsize=fontsize)
-    ax.set_ylim([box_size[0], box_size[-2]])
-
-    ax.set_title(title_text, fontsize=fontsize + 3)
-
-    cb = plt.colorbar(p, ax=ax, orientation='vertical', ticks=clevs2, pad=0.025, aspect=15)
-    if flag == 3:
-        cb.ax.set_title('[days]', fontsize=fontsize)
-    elif flag == 4:
-        cb.ax.set_title('[weeks]', fontsize=fontsize)
-    cb.ax.tick_params(labelsize=fontsize, size=0)
-
     return ax
 
 # INPUT -----------------------
@@ -82,8 +53,8 @@ path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
 filename_in_1     = 'fss_tp24_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
 filename_in_2     = 'fss_tp24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_3     = 'ltg_fss_tp24_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_4     = 'ltg_fss_tp24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_3     = 'fbss_tp24_pval0.9_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_4     = 'fbss_tp24_pval0.9_weekly_europe_annual_2021-01-04_2021-12-30.nc'
 figname_out       = 'fig_01.pdf'
 
 # read in data
@@ -95,57 +66,37 @@ ds4        = xr.open_dataset(path_in + filename_in_4)
 # Remove box sizes where low and high-res data don't overlap on the same grid in timescale dimension data
 index      = np.where(~np.isnan(ds2['fss'][:,4]))[0]
 ds2        = ds2.isel(box_size=index)
+index      = np.where(~np.isnan(ds4['fbss'][:,4]))[0]
 ds4        = ds4.isel(box_size=index)
 
 # calculate significance
 sig1       = s2s.mask_significant_values_from_bootstrap(ds1['fss_bootstrap'],0.05)
 sig2       = s2s.mask_significant_values_from_bootstrap(ds2['fss_bootstrap'],0.05)
+sig3       = s2s.mask_significant_values_from_bootstrap(ds3['fbss_bootstrap'],0.05)
+sig4       = s2s.mask_significant_values_from_bootstrap(ds4['fbss_bootstrap'],0.05)
 
-dummy3 = s2s.mask_skill_values(ds3['lead_time_gained'])
-dummy4 = s2s.mask_skill_values(ds4['lead_time_gained'])
-
-
-# set ltg values to nan where fss not-significant. makes figure nicer. Hacky
-time_interp = ds3['lead_time_gained'].time.astype('int')
-time        = sig1.time.values
-for bs in range(1,ds1['box_size'].size):
-    index1                              = time[np.where(sig1[bs,:] == 1.0)[0]]
-    index2                              = np.where(time_interp == index1[0])[0][0]-2
-    ds3['lead_time_gained'][bs,index2:] = np.nan
-
-time_interp = ds4['lead_time_gained'].time.astype('int')
-time        = sig2.time.values
-for bs in range(1,ds2['box_size'].size):
-    index1                              = time[np.where(sig2[bs,:] == 1.0)[0]]
-    index2                              = np.where(time_interp == index1[0])[0][0]-2
-    ds4['lead_time_gained'][bs,index2:] = np.nan
-
-    
-    
 # plot 
 fontsize   = 11
 clevs1     = np.arange(0,1.1,0.1)
 clevs2     = np.arange(0.0, 3.5, 0.5)
 clevs3     = np.arange(0.0, 1.1, 0.1)
 cmap1      = mpl.cm.get_cmap("GnBu").copy()
-cmap2      = mpl.cm.get_cmap("YlGn").copy()
 figsize    = np.array([12,8])
 fig,ax     = plt.subplots(nrows=2,ncols=2,sharey='row',sharex='col',figsize=(figsize[0],figsize[1]))
 ax         = ax.ravel()
 
-title1 = 'a) daily precipitation\n mean square error skill score'
-title2 = 'b) weekly precipitation\n mean square error skill score'
-title3 = 'c) daily precipitation\n lead time gained'
-title4 = 'd) weekly precipitation\n lead time gained'
+title1 = 'a) daily precipitation'
+title2 = 'b) weekly precipitation'
+title3 = 'c) daily 90$^{th}$ quantile precipitation'
+title4 = 'd) weekly 90$^{th}$ quantile precipitation'
 
 setup_subplot_fss(1, ax[0], ds1['time'], ds1['box_size'], ds1['fss'], sig1, title1, clevs1, cmap1, fontsize)
 
 setup_subplot_fss(2, ax[1], ds2['time'], ds2['box_size'], ds2['fss'], sig2, title2, clevs1, cmap1, fontsize)
 
-setup_subplot_ltg(3, ax[2], ds1['time'], ds1['box_size'], ds1['fss'], sig1, ds3['lead_time_gained'], dummy3, title3, clevs1, clevs2, cmap2, fontsize)
+setup_subplot_fss(3, ax[2], ds3['time'], ds3['box_size'], ds3['fbss'], sig3, title3, clevs1, cmap1, fontsize)
 
-setup_subplot_ltg(4, ax[3], ds2['time'], ds2['box_size'], ds2['fss'], sig2, ds4['lead_time_gained'], dummy4, title4, clevs1, clevs3, cmap2, fontsize)
-
+setup_subplot_fss(4, ax[3], ds4['time'], ds4['box_size'], ds4['fbss'], sig4, title4, clevs1, cmap1, fontsize)
 
 # write2file
 plt.tight_layout()
