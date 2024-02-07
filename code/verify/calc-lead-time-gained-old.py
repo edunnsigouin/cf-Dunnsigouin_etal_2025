@@ -16,7 +16,7 @@ domain                   = 'europe'                 # europe or norway only?
 first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
 number_forecasts         = 313                      # number of forecasts
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
-pval                     = 0.9
+pval                     = 0.1
 grids                    = ['0.25x0.25']
 write2file               = True
 # -----------------------------------------------------    
@@ -31,8 +31,8 @@ if score_flag == 'fss':
     prefix_in  = score_flag + '_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
     prefix_out = 'ltg_' + score_flag + '_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
 elif score_flag == 'fbss':
-    prefix_in  = score_flag + '_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
-    prefix_out = 'ltg_' + score_flag + '_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
+    prefix_in  = score_flag + '_' + variable + '_pval' + str(pval) + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
+    prefix_out = 'ltg_' + score_flag + '_' + variable + '_pval' + str(pval) + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
     
 if len(grids) == 2:
     filename_in  = prefix_in + '.nc'

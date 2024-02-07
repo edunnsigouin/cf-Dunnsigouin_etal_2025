@@ -9,7 +9,7 @@ from forsikring import misc,s2s,verify,config
 from matplotlib import pyplot as plt
 
 # INPUT -----------------------------------------------
-score_flag               = 'fbss'
+score_flag               = 'fss'
 time_flag                = 'weekly'                   # daily or weekly
 variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only? 
@@ -52,6 +52,8 @@ box_size     = score_interp.box_size
 
 # calculate lead time gained
 lead_time_gained      = score_interp.copy()
+lead_time_gained      = lead_time_gained.rename({'time':'time_interp'})
+lead_time_gained      = lead_time_gained.rename('lead_time_gained')
 lead_time_gained[:,:] = 0.0
 for bs in range(1,box_size.size):
     for t in range(0,time_interp.size):
@@ -61,11 +63,32 @@ for bs in range(1,box_size.size):
         else:
             lead_time_gained[bs,t] = time_interp[t].values - time_interp[np.nanargmin(temp)].values
 
-# merge with score 
-lead_time_gained = lead_time_gained.rename('lead_time_gained')
-score            = xr.merge([score,lead_time_gained])
+# calculate significance of score            
+sig = s2s.mask_significant_values_from_bootstrap(score[score_flag + '_bootstrap'],0.05)
+
+# calculate accuracy not acheivable at the grid score
+max_skill = s2s.mask_skill_values(lead_time_gained)
+max_skill = max_skill.rename('max_skill')
+
+# set ltg values to nan where score not-significant
+time_interp_int = lead_time_gained.time_interp.astype('int')
+for bs in range(1,box_size.size):
+    index1                              = time[np.where(sig[bs,:] == 1.0)[0]]
+    index2                              = np.where(time_interp_int == index1[0])[0][0]-2
+    lead_time_gained[bs,index2:]        = np.nan
+
+# merge all variables
+output = xr.merge([score,lead_time_gained,sig,max_skill])
+
+# generalize score names
+output = output.rename({score_flag:'score'})
+output = output.rename({score_flag + '_bootstrap':'score_bootstrap'})
+
+# change units of weekly ltg to days from weeks.
+if time_flag == 'weekly':
+    output['lead_time_gained'] = output['lead_time_gained']*7
 
 # write to file
-if write2file: misc.to_netcdf_with_packing_and_compression(lead_time_gained, path_out + filename_out)
+if write2file: output.to_netcdf(path_out+filename_out) 
 
 misc.toc()

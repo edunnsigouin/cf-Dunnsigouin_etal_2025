@@ -159,7 +159,7 @@ def mask_significant_values_from_bootstrap(data_array, threshold):
     significance_mask   = quantile_values < 0
     masked_significance = significance_mask.where(significance_mask, np.nan)
 
-    return masked_significance
+    return masked_significance.rename('significance')
 
 
 
