@@ -159,6 +159,9 @@ def mask_significant_values_from_bootstrap(data_array, threshold):
     significance_mask   = quantile_values < 0
     masked_significance = significance_mask.where(significance_mask, np.nan)
 
+    # drop unnecessary coordinate
+    masked_significance = masked_significance.drop('quantile')
+    
     return masked_significance.rename('significance')
 
 

@@ -491,10 +491,11 @@ def write_score_to_file(score, score_bootstrap, forecast_error, reference_error,
     return
 
 
-def write_score_to_file_xy(score, score_bootstrap, write2file, filename_out, path_out):
+def write_score_to_file_xy(score, sig, write2file, filename_out, path_out):
     """Kitchen sink function to write score and error to file"""
     if write2file:
-        ds = xr.merge([score,score_bootstrap])
-        misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
+        ds = xr.merge([score,sig])
+        ds.to_netcdf(path_out + filename_out)
+        #misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
         ds.close()
     return
