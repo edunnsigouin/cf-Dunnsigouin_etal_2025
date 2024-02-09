@@ -321,25 +321,25 @@ def initialize_error_xy_array(dim,forecast_dates):
 
 
 
-def initialize_score_array(score_type,dim,box_sizes,number_shuffle_bootstrap):
+def initialize_score_array(score_type,dim,box_sizes,number_bootstrap):
     """
     Initializes score arrays.
     Written here to clean up code. 
     """
     data             = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
-    data_bootstrap   = np.zeros((box_sizes.size,dim.ntime,number_shuffle_bootstrap),dtype=np.float32)
+    data_bootstrap   = np.zeros((box_sizes.size,dim.ntime,number_bootstrap),dtype=np.float32)
     dims             = ["box_size","time"]
-    dims_bootstrap   = ["box_size","time","number_shuffle_bootstrap"]
+    dims_bootstrap   = ["box_size","time","number_bootstrap"]
     coords           = dict(box_size=box_sizes,time=dim.time)
-    coords_bootstrap = dict(box_size=box_sizes,time=dim.time,number_shuffle_bootstrap=np.arange(0,number_shuffle_bootstrap,1))
-    if score_type == 'fss':
-        attrs            = dict(description='fractions skill score of forecast',units='unitless')
-        attrs_bootstrap  = dict(description='fractions skill score of forecast bootstrapped',units='unitless')
+    coords_bootstrap = dict(box_size=box_sizes,time=dim.time,number_bootstrap=np.arange(0,number_bootstrap,1))
+    if score_type == 'fmsess':
+        attrs            = dict(description='fractions mean square error skill score of forecast',units='unitless')
+        attrs_bootstrap  = dict(description='bootstrapped score',units='unitless')
     elif score_type == 'fbss':
         attrs            = dict(description='fractions brier skill score of forecast',units='unitless')
-        attrs_bootstrap  = dict(description='fractions brier skill score of forecast bootstrapped',units='unitless')
-    name             = score_type
-    name_bootstrap   = score_type + '_bootstrap'
+        attrs_bootstrap  = dict(description='bootstrapped score',units='unitless')
+    name             = 'score'
+    name_bootstrap   = 'score_bootstrap'
     score            = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
     score_bootstrap  = xr.DataArray(data=data_bootstrap,dims=dims_bootstrap,coords=coords_bootstrap,attrs=attrs_bootstrap,name=name_bootstrap)
     return score,score_bootstrap
@@ -391,7 +391,7 @@ def match_box_sizes_high_to_low_resolution(grid,box_sizes):
 
 
 
-def combine_high_and_low_res_files(filename_hr, filename_lr, filename, path, time_flag, write2file):
+def combine_high_and_low_res_files(filename_hr, filename_lr, filename, path, write2file):
 
     hr_file_path  = path + filename_hr
     lr_file_path  = path + filename_lr
@@ -427,14 +427,14 @@ def get_data_dimensions(grid, time_flag, domain):
 
 def calc_forecast_and_reference_error(score_type, filename_verification, filename_forecast, variable, box_sizes_temp, pval=0.9):
     """
-    calculates forecast and reference error for fractional skill score
+    calculates forecast and reference error for skill scores
     """
     # read data
     verification          = xr.open_dataset(filename_verification)[variable]
     forecast              = xr.open_dataset(filename_forecast)[variable]
 
     # calculate error terms
-    if score_type == 'fss':
+    if score_type == 'fmsess':
         forecast_error_xy  = (forecast - verification) ** 2
         reference_error_xy = (verification) ** 2
         
@@ -476,7 +476,7 @@ def calc_forecast_and_reference_error_xy(score_type, filename_verification, file
 
 
 
-def write_score_to_file(score, score_bootstrap, forecast_error, reference_error, write2file, grid, box_sizes, time_flag, filename_out, path_out):
+def write_score_to_file(score, score_bootstrap, forecast_error, reference_error, write2file, grid, box_sizes, filename_out, path_out):
     """Kitchen sink function to write score and error to file""" 
     if write2file:
         forecast_error  = forecast_error.rename('forecast_error')
@@ -484,8 +484,6 @@ def write_score_to_file(score, score_bootstrap, forecast_error, reference_error,
         ds              = xr.merge([score,score_bootstrap,forecast_error,reference_error])
         if grid == '0.5x0.5':
             ds['box_size'] = box_sizes
-        if time_flag == 'timescale':
-            ds = ds.rename({'time': 'timescale'})
         misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
         ds.close()
     return
