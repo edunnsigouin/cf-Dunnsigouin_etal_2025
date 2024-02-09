@@ -9,7 +9,7 @@ import pandas   as pd
 import os
 from datetime   import datetime
 from scipy      import signal, ndimage
-from forsikring  import misc
+from forsikring  import misc,s2s
 
 
 
@@ -321,13 +321,16 @@ def initialize_error_xy_array(dim,forecast_dates):
 
 
 
-def initialize_score_array(score_type,dim,box_sizes,number_bootstrap):
+def initialize_misc_arrays(score_type,dim,box_sizes,number_bootstrap):
     """
     Initializes score arrays.
     Written here to clean up code. 
     """
     data             = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
     data_bootstrap   = np.zeros((box_sizes.size,dim.ntime,number_bootstrap),dtype=np.float32)
+    sig              = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
+    lead_time_gained = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
+    max_skill        = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
     dims             = ["box_size","time"]
     dims_bootstrap   = ["box_size","time","number_bootstrap"]
     coords           = dict(box_size=box_sizes,time=dim.time)
@@ -338,11 +341,17 @@ def initialize_score_array(score_type,dim,box_sizes,number_bootstrap):
     elif score_type == 'fbss':
         attrs            = dict(description='fractions brier skill score of forecast',units='unitless')
         attrs_bootstrap  = dict(description='bootstrapped score',units='unitless')
-    name             = 'score'
-    name_bootstrap   = 'score_bootstrap'
-    score            = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
-    score_bootstrap  = xr.DataArray(data=data_bootstrap,dims=dims_bootstrap,coords=coords_bootstrap,attrs=attrs_bootstrap,name=name_bootstrap)
-    return score,score_bootstrap
+    name                  = 'score'
+    name_bootstrap        = 'score_bootstrap'
+    name_sig              = 'significance'
+    name_lead_time_gained = 'lead_time_gained'
+    name_max_skill        = 'max_skill'
+    score                 = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
+    score_bootstrap       = xr.DataArray(data=data_bootstrap,dims=dims_bootstrap,coords=coords_bootstrap,attrs=attrs_bootstrap,name=name_bootstrap)
+    sig                   = xr.DataArray(data=sig,dims=dims,coords=coords,name=name_sig)
+    lead_time_gained      = xr.DataArray(data=lead_time_gained,dims=dims,coords=coords,name=name_lead_time_gained)
+    max_skill             = xr.DataArray(data=max_skill,dims=dims,coords=coords,name=name_max_skill)
+    return score,score_bootstrap,sig,lead_time_gained,max_skill
 
 
 def initialize_score_xy_array(score_type,dim,number_shuffle_bootstrap):
@@ -409,7 +418,7 @@ def combine_high_and_low_res_files(filename_hr, filename_lr, filename, path, wri
         print('Combining high & low-resolution files into one file...')
         with xr.open_dataset(hr_file_path) as ds_hr, xr.open_dataset(lr_file_path) as ds_lr:
             ds = xr.concat([ds_hr, ds_lr], 'time')
-            misc.to_netcdf_with_packing_and_compression(ds, path + filename)
+            ds.to_netcdf(path+filename)
             
         print('Deleting original high and low-resolution files...')
         os.remove(hr_file_path)
@@ -476,15 +485,15 @@ def calc_forecast_and_reference_error_xy(score_type, filename_verification, file
 
 
 
-def write_score_to_file(score, score_bootstrap, forecast_error, reference_error, write2file, grid, box_sizes, filename_out, path_out):
+def write_score_to_file(score, score_bootstrap, sig, lead_time_gained, max_skill, forecast_error, reference_error, write2file, grid, box_sizes, filename_out, path_out):
     """Kitchen sink function to write score and error to file""" 
     if write2file:
         forecast_error  = forecast_error.rename('forecast_error')
         reference_error = reference_error.rename('reference_error')
-        ds              = xr.merge([score,score_bootstrap,forecast_error,reference_error])
-        if grid == '0.5x0.5':
-            ds['box_size'] = box_sizes
-        misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
+        ds              = xr.merge([score, score_bootstrap, sig, lead_time_gained, max_skill, forecast_error, reference_error])
+        if grid == '0.5x0.5': ds['box_size'] = box_sizes
+        #misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
+        ds.to_netcdf(path_out + filename_out)
         ds.close()
     return
 
@@ -497,3 +506,45 @@ def write_score_to_file_xy(score, sig, write2file, filename_out, path_out):
         #misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
         ds.close()
     return
+
+
+
+def calc_lead_time_gained(score,sig,dt=0.2):
+    """calculates the lead time gained (or lost) of increasing the spatial
+    scale of the forecast for a given skill level at the grid scale""" 
+
+    # interpolate lead time dimension
+    time         = score.time.values
+    score_interp = score.interp(time=np.arange(time[0],time[-1]+dt,dt))
+    time_interp  = score_interp.time
+    box_size     = score_interp.box_size
+
+    print(score_interp.values)
+    
+    # calculate lead time gained                                                                                                                                                                           
+    lead_time_gained      = score_interp.copy()
+    lead_time_gained      = lead_time_gained.rename({'time':'time_interp'})
+    lead_time_gained      = lead_time_gained.rename('lead_time_gained')
+    lead_time_gained[:,:] = 0.0
+    for bs in range(1,box_size.size):
+        for t in range(0,time_interp.size):
+            print(bs,t)
+            temp = np.absolute(score_interp[bs,t].values-score_interp[0,:].values)
+            print(temp)
+            if time_interp[np.nanargmin(temp)].values == 1.0: # where there is no skill equivalent at grid resolution
+                lead_time_gained[bs,t] = np.nan
+            else:
+                lead_time_gained[bs,t] = time_interp[t].values - time_interp[np.nanargmin(temp)].values
+
+    # calculate accuracy not acheivable at the grid score
+    max_skill = s2s.mask_skill_values(lead_time_gained)
+    max_skill = max_skill.rename('max_skill')
+    
+    # set ltg values to nan where score not-significant
+    time_interp_int = lead_time_gained.time_interp.astype('int')
+    for bs in range(1,box_size.size):
+        index1                              = time[np.where(sig[bs,:] == 1.0)[0]]
+        index2                              = np.where(time_interp_int == index1[0])[0][0]-2
+        lead_time_gained[bs,index2:]        = np.nan
+                
+    return lead_time_gained, max_skill

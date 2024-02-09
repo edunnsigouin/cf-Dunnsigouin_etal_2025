@@ -25,17 +25,17 @@ import os
 from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
-score_flag               = 'fmsess'
-time_flag                = 'daily'                   # daily or weekly
+score_flag               = 'fbss'
+time_flag                = 'weekly'                   # daily or weekly
 variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
 first_forecast_date      = '20210104'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 5                      # number of forecasts 
+number_forecasts         = 104                      # number of forecasts 
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
 grids                    = ['0.25x0.25']
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
-number_bootstrap         = 10                    # number of times to shuffle initialization dates for error bars
-pval                     = 0.9
+number_bootstrap         = 10000                    # number of times to shuffle initialization dates for error bars
+pval                     = 0.1
 write2file               = True
 # -----------------------------------------------------
 
@@ -46,14 +46,15 @@ forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,sea
 if score_flag == 'fmsess':
     path_in_forecast        = config.dirs['s2s_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
     path_in_verification    = config.dirs['era5_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
+    prefix                  = score_flag + '_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
 elif score_flag == 'fbss':
     path_in_forecast        = config.dirs['s2s_forecast_' + time_flag + '_probability'] + str(pval) + '/' + domain + '/' + variable + '/'
     path_in_verification    = config.dirs['era5_forecast_' + time_flag + '_binary'] + str(pval) + '/' + domain + '/' + variable + '/'
+    prefix                  = score_flag + '_' + variable + '_pval' + str(pval) + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
 
-path_out                = config.dirs['verify_s2s_forecast_daily']
-prefix                  = score_flag + '_' + variable + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1] 
-filename_hr_out         = prefix + '_0.25x0.25.nc'
-filename_lr_out         = prefix + '_0.5x0.5.nc'
+path_out        = config.dirs['verify_s2s_forecast_daily']
+filename_hr_out = prefix + '_0.25x0.25.nc'
+filename_lr_out = prefix + '_0.5x0.5.nc'
 
 # loop through forecasts with different grids
 for grid in grids:
@@ -66,10 +67,10 @@ for grid in grids:
     box_sizes_temp      = verify.match_box_sizes_high_to_low_resolution(grid,box_sizes)
 
     # initialize output arrays
-    [score,score_bootstrap] = verify.initialize_score_array(score_flag,dim,box_sizes_temp,number_bootstrap)
-    forecast_error          = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)
-    reference_error         = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)
-    
+    [score,score_bootstrap,sig,lead_time_gained,max_skill] = verify.initialize_misc_arrays(score_flag,dim,box_sizes_temp,number_bootstrap)
+    forecast_error                                         = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)
+    reference_error                                        = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)
+
     # loop over forecast dates
     for  i, date in enumerate(forecast_dates):
         print('forecast date: ' + date)
@@ -77,14 +78,17 @@ for grid in grids:
         filename_forecast                               = path_in_forecast + variable + '_' + grid + '_' + date + '.nc'
         forecast_error[i, ...], reference_error[i, ...] = verify.calc_forecast_and_reference_error(score_flag,filename_verification, filename_forecast, variable, box_sizes_temp, pval)
        
-    # calc fss with bootstraping over all forecasts  
+    # calc score with bootstraping over all forecasts  
     score[:,:], score_bootstrap[:,:,:] = verify.calc_score_bootstrap(reference_error, forecast_error, number_bootstrap, box_sizes_temp)
 
     # calculate significance of score (95%)            
-    sig = s2s.mask_significant_values_from_bootstrap(score_bootstrap,0.05)
+    sig[:,:] = s2s.calc_significant_values_using_bootstrap(score_bootstrap,0.05)
+
+    # calculate lead time gained by increasing spatial scale
+    lead_time_gained[:,:], max_skill[:,:] = verify.calc_lead_time_gained(score, sig)
     
     # write to fss and errors to file
-    verify.write_score_to_file(score, score_bootstrap, sig, forecast_error, reference_error, write2file, grid, box_sizes, filename_out, path_out)
+    verify.write_score_to_file(score, score_bootstrap, sig, lead_time_gained, max_skill, forecast_error, reference_error, write2file, grid, box_sizes, filename_out, path_out)
 
 # combine low and high resolution files into one file if both exist
 verify.combine_high_and_low_res_files(filename_hr_out, filename_lr_out, prefix + '.nc', path_out, write2file)

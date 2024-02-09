@@ -139,12 +139,12 @@ def preprocess(ds,grid,time_flag):
 
 
 
-def mask_significant_values_from_bootstrap(data_array, threshold):
+def calc_significant_values_using_bootstrap(data_array, threshold):
     """
     Determine significance from bootstrapped samples based on a given threshold.
 
     Parameters:
-    - data_array (xr.DataArray): The input data array with a dimension 'number_shuffle_bootstrap'. 
+    - data_array (xr.DataArray): The input data array with a dimension 'number_bootstrap'. 
     - threshold (float): The quantile threshold for significance determination.                                                                                               
     Returns: 
     - xr.DataArray: A data array with 1s for non-significant values and nan values for significant ones. 
@@ -153,7 +153,7 @@ def mask_significant_values_from_bootstrap(data_array, threshold):
     threshold = threshold/2
 
     # Calculate the quantile values
-    quantile_values = data_array.quantile(threshold, dim='number_shuffle_bootstrap', skipna=True)
+    quantile_values = data_array.quantile(threshold, dim='number_bootstrap', skipna=True)
 
     # Determine significance and mask significant values with nan
     significance_mask   = quantile_values < 0

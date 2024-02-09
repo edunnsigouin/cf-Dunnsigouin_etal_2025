@@ -9,14 +9,17 @@ from forsikring  import misc,s2s,config
 import matplotlib as mpl
 
 
-def setup_subplot_fss(flag, ax, time, box_size, fss_data, sig_data, title_text, clevs, cmap, fontsize):
+def setup_subplot_fss(flag, ax, ds, title_text, clevs, cmap, fontsize):
     """ 
     Sets up specifics of subplots for fig. 1
     """
-    p = ax.contourf(time, box_size, fss_data, levels=clevs, cmap=cmap, extend='min')
-    ax.pcolor(time, box_size, sig_data, hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
+    time     = ds['time']
+    box_size = ds['box_size']
+    
+    p = ax.contourf(time, box_size, ds['score'], levels=clevs, cmap=cmap, extend='min')
+    ax.pcolor(time, box_size, ds['significance'], hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
 
-    contour = ax.contour(time, box_size, fss_data, levels=clevs, linewidths=1,linestyles='-',colors='grey')
+    contour = ax.contour(time, box_size, ds['score'], levels=clevs, linewidths=1,linestyles='-',colors='grey')
     ax.clabel(contour, clevs, inline=True, fmt='%1.1f', fontsize=fontsize)
 
     ax.set_xticks(time)
@@ -46,43 +49,45 @@ def setup_subplot_fss(flag, ax, time, box_size, fss_data, sig_data, title_text, 
     return p
 
 # INPUT -----------------------
-write2file = True
+write2file = False
 # -----------------------------
 
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fss_tp24_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_2     = 'fss_tp24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_3     = 'fbss_tp24_pval0.9_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_4     = 'fbss_tp24_pval0.9_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_1     = 'fmsess_tp24_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc' #'fss_tp24_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
+#filename_in_2     = 'fss_tp24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_3     = 'fbss_tp24_pval0.9_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'# 'fbss_tp24_pval0.9_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
+#filename_in_4     = 'fbss_tp24_pval0.9_weekly_europe_annual_2021-01-04_2021-12-30.nc'
 filename_in_5     = 'fbss_tp24_pval0.1_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
 filename_in_6     = 'fbss_tp24_pval0.1_weekly_europe_annual_2021-01-04_2021-12-30.nc'
 figname_out       = 'fig_01.pdf'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
-ds2        = xr.open_dataset(path_in + filename_in_2)    
+#ds2        = xr.open_dataset(path_in + filename_in_2)    
 ds3        = xr.open_dataset(path_in + filename_in_3)
-ds4        = xr.open_dataset(path_in + filename_in_4)
+#ds4        = xr.open_dataset(path_in + filename_in_4)
 ds5        = xr.open_dataset(path_in + filename_in_5)
 ds6        = xr.open_dataset(path_in + filename_in_6)
 
+print(ds6['significance'].values)
 
 # Remove box sizes where low and high-res data don't overlap on the same grid in timescale dimension data
-index      = np.where(~np.isnan(ds2['fss'][:,4]))[0]
-ds2        = ds2.isel(box_size=index)
-index      = np.where(~np.isnan(ds4['fbss'][:,4]))[0]
-ds4        = ds4.isel(box_size=index)
+#index      = np.where(~np.isnan(ds2['fss'][:,4]))[0]
+#ds2        = ds2.isel(box_size=index)
+#index      = np.where(~np.isnan(ds4['fbss'][:,4]))[0]
+#ds4        = ds4.isel(box_size=index)
+index      = np.where(~np.isnan(ds6['score'][:,4]))[0] 
 ds6        = ds6.isel(box_size=index)
 
 # calculate significance
-sig1       = s2s.mask_significant_values_from_bootstrap(ds1['fss_bootstrap'],0.05)
-sig2       = s2s.mask_significant_values_from_bootstrap(ds2['fss_bootstrap'],0.05)
-sig3       = s2s.mask_significant_values_from_bootstrap(ds3['fbss_bootstrap'],0.05)
-sig4       = s2s.mask_significant_values_from_bootstrap(ds4['fbss_bootstrap'],0.05)
-sig5       = s2s.mask_significant_values_from_bootstrap(ds5['fbss_bootstrap'],0.05)
-sig6       = s2s.mask_significant_values_from_bootstrap(ds6['fbss_bootstrap'],0.05)
+#sig1       = s2s.mask_significant_values_from_bootstrap(ds1['fss_bootstrap'],0.05)
+#sig2       = s2s.mask_significant_values_from_bootstrap(ds2['fss_bootstrap'],0.05)
+#sig3       = s2s.mask_significant_values_from_bootstrap(ds3['fbss_bootstrap'],0.05)
+#sig4       = s2s.mask_significant_values_from_bootstrap(ds4['fbss_bootstrap'],0.05)
+#sig5       = s2s.mask_significant_values_from_bootstrap(ds5['fbss_bootstrap'],0.05)
+#sig6       = s2s.mask_significant_values_from_bootstrap(ds6['fbss_bootstrap'],0.05)
 
 # plot 
 fontsize   = 11
@@ -101,26 +106,26 @@ title4 = 'd) weekly 90$^{th}$ quantile precipitation'
 title5 = 'e) daily 10$^{th}$ quantile precipitation'
 title6 = 'f) weekly 10$^{th}$ quantile precipitation'
 
-setup_subplot_fss(1, ax[0], ds1['time'], ds1['box_size'], ds1['fss'], sig1, title1, clevs1, cmap1, fontsize)
+setup_subplot_fss(1, ax[0], ds1, title1, clevs1, cmap1, fontsize)
 
-setup_subplot_fss(2, ax[1], ds2['time'], ds2['box_size'], ds2['fss'], sig2, title2, clevs1, cmap1, fontsize)
+#setup_subplot_fss(2, ax[1], ds2['time'], ds2['box_size'], ds2['fss'], sig2, title2, clevs1, cmap1, fontsize)
 
-setup_subplot_fss(3, ax[2], ds3['time'], ds3['box_size'], ds3['fbss'], sig3, title3, clevs1, cmap1, fontsize)
+setup_subplot_fss(3, ax[2], ds3, title3, clevs1, cmap1, fontsize)
 
-setup_subplot_fss(4, ax[3], ds4['time'], ds4['box_size'], ds4['fbss'], sig4, title4, clevs1, cmap1, fontsize)
+#setup_subplot_fss(4, ax[3], ds4['time'], ds4['box_size'], ds4['fbss'], sig4, title4, clevs1, cmap1, fontsize)
 
-setup_subplot_fss(5, ax[4], ds5['time'], ds5['box_size'], ds5['fbss'], sig5, title5, clevs1, cmap1, fontsize)
+setup_subplot_fss(5, ax[4], ds5 , title5, clevs1, cmap1, fontsize)
 
-p = setup_subplot_fss(6, ax[5], ds6['time'], ds6['box_size'], ds6['fbss'], sig6, title6, clevs1, cmap1, fontsize)
+p = setup_subplot_fss(6, ax[5], ds6, title6, clevs1, cmap1, fontsize)
 
 fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.15,wspace=0.075)
 cbar_ax = fig.add_axes([0.2, 0.035, 0.6, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs1, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize, size=0) 
-cb.ax.set_title('[MSESS/BSS]', fontsize=fontsize,y=1.01)
- 
+cb.ax.set_title('[fmsess/fbss]', fontsize=fontsize,y=1.01)
+
+
 # write2file
-#plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)
 plt.show()
 
