@@ -515,36 +515,36 @@ def calc_lead_time_gained(score,sig,dt=0.2):
 
     # interpolate lead time dimension
     time         = score.time.values
-    score_interp = score.interp(time=np.arange(time[0],time[-1]+dt,dt))
-    time_interp  = score_interp.time
+    time_interp  = np.linspace(time[0],time[-1],int((time[-1]-time[0])/dt+1.0))
+    score_interp = score.interp(time=time_interp)
     box_size     = score_interp.box_size
 
-    print(score_interp.values)
-    
-    # calculate lead time gained                                                                                                                                                                           
+    # calculate lead time gained 
     lead_time_gained      = score_interp.copy()
     lead_time_gained      = lead_time_gained.rename({'time':'time_interp'})
     lead_time_gained      = lead_time_gained.rename('lead_time_gained')
     lead_time_gained[:,:] = 0.0
     for bs in range(1,box_size.size):
         for t in range(0,time_interp.size):
-            print(bs,t)
             temp = np.absolute(score_interp[bs,t].values-score_interp[0,:].values)
-            print(temp)
-            if time_interp[np.nanargmin(temp)].values == 1.0: # where there is no skill equivalent at grid resolution
+            if time_interp[np.nanargmin(temp)] == 1.0: # where there is no skill equivalent at grid resolution
                 lead_time_gained[bs,t] = np.nan
             else:
-                lead_time_gained[bs,t] = time_interp[t].values - time_interp[np.nanargmin(temp)].values
+                lead_time_gained[bs,t] = time_interp[t] - time_interp[np.nanargmin(temp)]
 
     # calculate accuracy not acheivable at the grid score
     max_skill = s2s.mask_skill_values(lead_time_gained)
     max_skill = max_skill.rename('max_skill')
-    
+
     # set ltg values to nan where score not-significant
+    """
     time_interp_int = lead_time_gained.time_interp.astype('int')
     for bs in range(1,box_size.size):
         index1                              = time[np.where(sig[bs,:] == 1.0)[0]]
         index2                              = np.where(time_interp_int == index1[0])[0][0]-2
         lead_time_gained[bs,index2:]        = np.nan
-                
+    """
+    index = np.where(sig == 1.0)
+    lead_time_gained[index] = np.nan
+    
     return lead_time_gained, max_skill

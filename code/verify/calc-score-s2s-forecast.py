@@ -25,12 +25,12 @@ import os
 from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
-score_flag               = 'fbss'
-time_flag                = 'weekly'                   # daily or weekly
+score_flag               = 'fmsess'
+time_flag                = 'daily'                   # daily or weekly
 variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
-first_forecast_date      = '20210104'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 104                      # number of forecasts 
+first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
+number_forecasts         = 313                      # number of forecasts 
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
 grids                    = ['0.25x0.25']
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
@@ -85,7 +85,7 @@ for grid in grids:
     sig[:,:] = s2s.calc_significant_values_using_bootstrap(score_bootstrap,0.05)
 
     # calculate lead time gained by increasing spatial scale
-    lead_time_gained[:,:], max_skill[:,:] = verify.calc_lead_time_gained(score, sig)
+    lead_time_gained[:,:], max_skill[:,:] = verify.calc_lead_time_gained(score, sig, dt=1.0)
     
     # write to fss and errors to file
     verify.write_score_to_file(score, score_bootstrap, sig, lead_time_gained, max_skill, forecast_error, reference_error, write2file, grid, box_sizes, filename_out, path_out)
