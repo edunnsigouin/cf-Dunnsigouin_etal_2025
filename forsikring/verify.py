@@ -321,20 +321,25 @@ def initialize_error_xy_array(dim,forecast_dates):
 
 
 
-def initialize_misc_arrays(score_type,dim,box_sizes,number_bootstrap):
+def initialize_misc_arrays(score_type,dim,box_sizes,number_bootstrap,dt):
     """
     Initializes score arrays.
     Written here to clean up code. 
     """
+    time         = dim.time
+    time_interp  = np.linspace(time[0],time[-1],int((time[-1]-time[0])/dt+1.0))
+    
     data             = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
     data_bootstrap   = np.zeros((box_sizes.size,dim.ntime,number_bootstrap),dtype=np.float32)
     sig              = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
-    lead_time_gained = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
-    max_skill        = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
+    lead_time_gained = np.zeros((box_sizes.size,time_interp.size),dtype=np.float32)
+    max_skill_mask   = np.zeros((box_sizes.size,time_interp.size),dtype=np.float32)
     dims             = ["box_size","time"]
     dims_bootstrap   = ["box_size","time","number_bootstrap"]
+    dims_interp      = ["box_size","time_interp"]
     coords           = dict(box_size=box_sizes,time=dim.time)
     coords_bootstrap = dict(box_size=box_sizes,time=dim.time,number_bootstrap=np.arange(0,number_bootstrap,1))
+    coords_interp    = dict(box_size=box_sizes,time_interp=time_interp)
     if score_type == 'fmsess':
         attrs            = dict(description='fractions mean square error skill score of forecast',units='unitless')
         attrs_bootstrap  = dict(description='bootstrapped score',units='unitless')
@@ -345,13 +350,13 @@ def initialize_misc_arrays(score_type,dim,box_sizes,number_bootstrap):
     name_bootstrap        = 'score_bootstrap'
     name_sig              = 'significance'
     name_lead_time_gained = 'lead_time_gained'
-    name_max_skill        = 'max_skill'
+    name_max_skill_mask   = 'max_skill_mask'
     score                 = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
     score_bootstrap       = xr.DataArray(data=data_bootstrap,dims=dims_bootstrap,coords=coords_bootstrap,attrs=attrs_bootstrap,name=name_bootstrap)
     sig                   = xr.DataArray(data=sig,dims=dims,coords=coords,name=name_sig)
-    lead_time_gained      = xr.DataArray(data=lead_time_gained,dims=dims,coords=coords,name=name_lead_time_gained)
-    max_skill             = xr.DataArray(data=max_skill,dims=dims,coords=coords,name=name_max_skill)
-    return score,score_bootstrap,sig,lead_time_gained,max_skill
+    lead_time_gained      = xr.DataArray(data=lead_time_gained,dims=dims_interp,coords=coords_interp,name=name_lead_time_gained)
+    max_skill_mask        = xr.DataArray(data=max_skill_mask,dims=dims_interp,coords=coords_interp,name=name_max_skill_mask)
+    return score,score_bootstrap,sig,lead_time_gained,max_skill_mask
 
 
 def initialize_score_xy_array(score_type,dim,number_shuffle_bootstrap):
@@ -485,12 +490,12 @@ def calc_forecast_and_reference_error_xy(score_type, filename_verification, file
 
 
 
-def write_score_to_file(score, score_bootstrap, sig, lead_time_gained, max_skill, forecast_error, reference_error, write2file, grid, box_sizes, filename_out, path_out):
+def write_score_to_file(score, score_bootstrap, sig, lead_time_gained, max_skill_mask, forecast_error, reference_error, write2file, grid, box_sizes, filename_out, path_out):
     """Kitchen sink function to write score and error to file""" 
     if write2file:
         forecast_error  = forecast_error.rename('forecast_error')
         reference_error = reference_error.rename('reference_error')
-        ds              = xr.merge([score, score_bootstrap, sig, lead_time_gained, max_skill, forecast_error, reference_error])
+        ds              = xr.merge([score, score_bootstrap, sig, lead_time_gained, max_skill_mask, forecast_error, reference_error])
         if grid == '0.5x0.5': ds['box_size'] = box_sizes
         #misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
         ds.to_netcdf(path_out + filename_out)
@@ -509,42 +514,44 @@ def write_score_to_file_xy(score, sig, write2file, filename_out, path_out):
 
 
 
-def calc_lead_time_gained(score,sig,dt=0.2):
+def calc_lead_time_gained(score,sig,dt):
     """calculates the lead time gained (or lost) of increasing the spatial
     scale of the forecast for a given skill level at the grid scale""" 
 
     # interpolate lead time dimension
     time         = score.time.values
     time_interp  = np.linspace(time[0],time[-1],int((time[-1]-time[0])/dt+1.0))
-    score_interp = score.interp(time=time_interp)
-    box_size     = score_interp.box_size
+    score_interp = score.interp(time=time_interp).values
+    box_size     = score.box_size
 
     # calculate lead time gained 
-    lead_time_gained      = score_interp.copy()
-    lead_time_gained      = lead_time_gained.rename({'time':'time_interp'})
-    lead_time_gained      = lead_time_gained.rename('lead_time_gained')
-    lead_time_gained[:,:] = 0.0
+    lead_time_gained = np.zeros(score_interp.shape)
     for bs in range(1,box_size.size):
         for t in range(0,time_interp.size):
-            temp = np.absolute(score_interp[bs,t].values-score_interp[0,:].values)
-            if time_interp[np.nanargmin(temp)] == 1.0: # where there is no skill equivalent at grid resolution
+            # finds the equivalent score at a larger box size to the smallest box size (i.e. tracks the isoline of equal score)
+            index = np.nanargmin(np.absolute(score_interp[bs,t] - score_interp[0,:]))
+            if time_interp[index] == 1.0: # where there is no skill equivalent at grid resolution
                 lead_time_gained[bs,t] = np.nan
             else:
-                lead_time_gained[bs,t] = time_interp[t] - time_interp[np.nanargmin(temp)]
+                lead_time_gained[bs,t] = time_interp[t] - time_interp[index]
 
-    # calculate accuracy not acheivable at the grid score
-    max_skill = s2s.mask_skill_values(lead_time_gained)
-    max_skill = max_skill.rename('max_skill')
+    # calculate maximum skill not acheivable at the grid scale
+    # i.e. not achievable = 1.0, and achievable = np.nan
+    max_skill_mask         = np.zeros(lead_time_gained.shape)
+    index1                 = np.where(np.isnan(lead_time_gained))
+    index2                 = np.where(~np.isnan(lead_time_gained))
+    max_skill_mask[index1] = 1.0
+    max_skill_mask[index1] = np.nan
 
     # set ltg values to nan where score not-significant
-    """
-    time_interp_int = lead_time_gained.time_interp.astype('int')
+    time_interp = time_interp.astype('int')
     for bs in range(1,box_size.size):
-        index1                              = time[np.where(sig[bs,:] == 1.0)[0]]
-        index2                              = np.where(time_interp_int == index1[0])[0][0]-2
+        index1                              = time[np.where(sig[bs,:] == 1.0)[0]] # 'time' where score is not significant
+        index2                              = np.where(time_interp == index1[0])[0][-1]#-2 # time_interp corresponding to first index1 'time'
         lead_time_gained[bs,index2:]        = np.nan
-    """
-    index = np.where(sig == 1.0)
-    lead_time_gained[index] = np.nan
     
-    return lead_time_gained, max_skill
+    #for bs in range(0,box_size.size):
+    #    index = np.where(sig[bs,:] == 1.0)[0]
+    #    lead_time_gained[bs,index] = np.nan
+        
+    return lead_time_gained, max_skill_mask

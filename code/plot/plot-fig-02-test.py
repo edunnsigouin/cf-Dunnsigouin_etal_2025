@@ -14,13 +14,13 @@ def setup_subplot_ltg(flag, ax, ds, title_text, clevs1, clevs2, cmap, fontsize):
     Sets up specifics of subplots for fig. 2
     """
     time        = ds['time']
-    time_interp = ds['time']
+    time_interp = ds['time_interp']
     box_size    = ds['box_size']
-
-    p = ax.contourf(time_interp, box_size, ds['lead_time_gained'], levels=clevs2, cmap=cmap, extend='both')
-    #p = ax.pcolor(time_interp, box_size, ds['lead_time_gained'], cmap=cmap, vmin=-1.5,vmax=1.5) 
+            
+    p = ax.pcolor(time_interp, box_size, ds['lead_time_gained'], vmin=clevs2[0], vmax=clevs2[-1], cmap=cmap, shading='auto')
+    #p = ax.contourf(time_interp, box_size, ds['lead_time_gained'], levels=clevs2, cmap=cmap, extend='both')
     ax.pcolor(time, box_size, ds['significance'], hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
-    ax.pcolor(time_interp, box_size, ds['max_skill'], hatch='xx', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
+    #ax.pcolor(time_interp, box_size, ds['max_skill_mask'], hatch='xx', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
 
     contour = ax.contour(time, box_size,ds['score'], levels=clevs1, linewidths=1,linestyles='-',colors='grey')
     ax.clabel(contour, clevs1, inline=True, fmt='%1.1f', fontsize=fontsize)
@@ -76,18 +76,21 @@ ds2        = xr.open_dataset(path_in + filename_in_2)
 #ds5        = xr.open_dataset(path_in + filename_in_5)
 #ds6        = xr.open_dataset(path_in + filename_in_6)
 
+print(ds1)
 
 # Remove box sizes where low and high-res data don't overlap on the same grid in time dimension data
-index      = np.where(~np.isnan(ds2['lead_time_gained'][:,4]))[0]
-ds2        = ds2.isel(box_size=index)
+#index      = np.where(~np.isnan(ds2['lead_time_gained'][:,4]))[0]
+#ds2        = ds2.isel(box_size=index)
 #ds4        = ds4.isel(box_size=index)
 #ds6        = ds6.isel(box_size=index)
+
 
 # plot 
 fontsize   = 11
 clevs1     = np.arange(0,1.1,0.1)
-clevs2     = np.arange(-1.5, 1.55, 0.05)
-cmap_new       = 'PiYG'
+clevs2     = np.arange(-3.5, 3.75, 0.25)
+#cmap_new   = 'PiYG'
+cmap_new   = plt.get_cmap('PiYG', clevs2.size)
 #cmap_new   = misc.create_custom_colormap_with_white_center(cmap, clevs2)
 figsize    = np.array([12,12])
 fig,ax     = plt.subplots(nrows=3,ncols=2,sharey='row',sharex='col',figsize=(figsize[0],figsize[1]))
@@ -114,7 +117,7 @@ p = setup_subplot_ltg(1, ax[0], ds1, title1, clevs1, clevs2, cmap_new, fontsize)
 
 fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.15,wspace=0.075)
 cbar_ax = fig.add_axes([0.2, 0.5, 0.6, 0.02])
-cb      = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs2[2::4], pad=0.025)
+cb      = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs2[2::2], pad=0.025)
 cb.ax.tick_params(labelsize=fontsize, size=0)
 cb.ax.set_title('[days]', fontsize=fontsize,y=1.01)
 
