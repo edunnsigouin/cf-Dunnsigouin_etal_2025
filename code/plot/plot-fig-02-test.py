@@ -9,21 +9,20 @@ from forsikring  import misc,s2s,config
 import matplotlib as mpl
 
 
-def setup_subplot_ltg(flag, ax, ds, title_text, clevs1, clevs2, cmap, fontsize):
+def setup_subplot_ltg(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap, fontsize):
     """
     Sets up specifics of subplots for fig. 2
     """
     time        = ds['time']
     time_interp = ds['time_interp']
     box_size    = ds['box_size']
-            
-    p = ax.pcolor(time_interp, box_size, ds['lead_time_gained'], vmin=clevs2[0], vmax=clevs2[-1], cmap=cmap, shading='auto')
-    #p = ax.contourf(time_interp, box_size, ds['lead_time_gained'], levels=clevs2, cmap=cmap, extend='both')
-    ax.pcolor(time, box_size, ds['significance'], hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
-    #ax.pcolor(time_interp, box_size, ds['max_skill_mask'], hatch='xx', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
 
-    contour = ax.contour(time, box_size,ds['score'], levels=clevs1, linewidths=1,linestyles='-',colors='grey')
-    ax.clabel(contour, clevs1, inline=True, fmt='%1.1f', fontsize=fontsize)
+    p = ax.pcolor(time_interp, box_size, ds['lead_time_gained'], vmin=clevs_ltg[0], vmax=clevs_ltg[-1], cmap=cmap, shading='auto')
+    ax.pcolor(time, box_size, ds['significance'], hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
+    ax.pcolor(time_interp, box_size, ds['max_skill_mask'], hatch='xx', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
+
+    contour = ax.contour(time, box_size,ds['score'], levels=clevs_score, linewidths=1,linestyles='-',colors='grey')
+    ax.clabel(contour, clevs_score, inline=True, fmt='%1.1f', fontsize=fontsize)
 
     ax.set_xticks(time)
     ax.set_xlim([time[0], time[-1]])
@@ -62,21 +61,22 @@ path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
 filename_in_1     = 'fmsess_tp24_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
 filename_in_2     = 'fmsess_tp24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
-#filename_in_3     = 'ltg_fbss_tp24_pval0.9_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-#filename_in_4     = 'ltg_fbss_tp24_pval0.9_weekly_europe_annual_2021-01-04_2021-12-30.nc'
-#filename_in_5     = 'ltg_fbss_tp24_pval0.1_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-#filename_in_6     = 'ltg_fbss_tp24_pval0.1_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_3     = 'fbss_tp24_pval0.9_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_4     = 'fbss_tp24_pval0.9_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_5     = 'fbss_tp24_pval0.1_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_6     = 'fbss_tp24_pval0.1_weekly_europe_annual_2021-01-04_2021-12-30.nc'
 figname_out       = 'fig_02.pdf'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
 ds2        = xr.open_dataset(path_in + filename_in_2)    
-#ds3        = xr.open_dataset(path_in + filename_in_3)
+ds3        = xr.open_dataset(path_in + filename_in_3)
 #ds4        = xr.open_dataset(path_in + filename_in_4)
-#ds5        = xr.open_dataset(path_in + filename_in_5)
+ds5        = xr.open_dataset(path_in + filename_in_5)
 #ds6        = xr.open_dataset(path_in + filename_in_6)
 
-print(ds1)
+# convert weekly lead_time_gained to units of days
+ds2['lead_time_gained'] = ds2['lead_time_gained']*7
 
 # Remove box sizes where low and high-res data don't overlap on the same grid in time dimension data
 #index      = np.where(~np.isnan(ds2['lead_time_gained'][:,4]))[0]
@@ -84,17 +84,14 @@ print(ds1)
 #ds4        = ds4.isel(box_size=index)
 #ds6        = ds6.isel(box_size=index)
 
-
 # plot 
-fontsize   = 11
-clevs1     = np.arange(0,1.1,0.1)
-clevs2     = np.arange(-3.5, 3.75, 0.25)
-#cmap_new   = 'PiYG'
-cmap_new   = plt.get_cmap('PiYG', clevs2.size)
-#cmap_new   = misc.create_custom_colormap_with_white_center(cmap, clevs2)
-figsize    = np.array([12,12])
-fig,ax     = plt.subplots(nrows=3,ncols=2,sharey='row',sharex='col',figsize=(figsize[0],figsize[1]))
-ax         = ax.ravel()
+fontsize    = 11
+clevs_score = np.arange(0,1.1,0.1)
+clevs_ltg   = np.arange(-3.5, 3.75, 0.25)
+cmap        = plt.get_cmap('PiYG', clevs_ltg.size)
+figsize     = np.array([12,12])
+fig,ax      = plt.subplots(nrows=3,ncols=2,sharey='row',sharex='col',figsize=(figsize[0],figsize[1]))
+ax          = ax.ravel()
 
 title1 = 'a) daily precipitation'
 title2 = 'b) weekly precipitation'
@@ -103,26 +100,25 @@ title4 = 'd) weekly 90$^{th}$ quantile precipitation'
 title5 = 'e) daily 10$^{th}$ quantile precipitation'
 title6 = 'f) weekly 10$^{th}$ quantile precipitation'
 
-p = setup_subplot_ltg(1, ax[0], ds1, title1, clevs1, clevs2, cmap_new, fontsize)
+setup_subplot_ltg(1, ax[0], ds1, title1, clevs_score, clevs_ltg, cmap, fontsize)
 
-#p = setup_subplot_ltg(2, ax[1], ds2, title2, clevs1, clevs2, cmap_new, fontsize)
+setup_subplot_ltg(2, ax[1], ds2, title2, clevs_score, clevs_ltg, cmap, fontsize)
 
-#setup_subplot_ltg(3, ax[2], ds3, title3, clevs1, clevs2, cmap_new, fontsize)
+setup_subplot_ltg(3, ax[2], ds3, title3, clevs_score, clevs_ltg, cmap, fontsize)
 
-#setup_subplot_ltg(4, ax[3], ds4, title4, clevs1, clevs2, cmap_new, fontsize)
+#setup_subplot_ltg(4, ax[3], ds4, title4, clevs_score, clevs_ltg, cmap, fontsize)
 
-#setup_subplot_ltg(5, ax[4], ds5, title5, clevs1, clevs2, cmap_new, fontsize)
+p = setup_subplot_ltg(5, ax[4], ds5, title5, clevs_score, clevs_ltg, cmap, fontsize)
 
-#p = setup_subplot_ltg(6, ax[5], ds6, title6, clevs1, clevs2, cmap_new, fontsize)
+#p = setup_subplot_ltg(6, ax[5], ds6, title6, clevs_score, clevs_ltg, cmap, fontsize)
 
 fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.15,wspace=0.075)
-cbar_ax = fig.add_axes([0.2, 0.5, 0.6, 0.02])
-cb      = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs2[2::2], pad=0.025)
+cbar_ax = fig.add_axes([0.2, 0.025, 0.6, 0.02])
+cb      = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs_ltg[2::2], pad=0.025)
 cb.ax.tick_params(labelsize=fontsize, size=0)
 cb.ax.set_title('[days]', fontsize=fontsize,y=1.01)
 
 # write2file
-#plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)
 plt.show()
 

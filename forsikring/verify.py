@@ -321,25 +321,18 @@ def initialize_error_xy_array(dim,forecast_dates):
 
 
 
-def initialize_misc_arrays(score_type,dim,box_sizes,number_bootstrap,dt):
+def initialize_misc_arrays(score_type,dim,box_sizes,number_bootstrap):
     """
     Initializes score arrays.
     Written here to clean up code. 
     """
-    time         = dim.time
-    time_interp  = np.linspace(time[0],time[-1],int((time[-1]-time[0])/dt+1.0))
-    
     data             = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
     data_bootstrap   = np.zeros((box_sizes.size,dim.ntime,number_bootstrap),dtype=np.float32)
     sig              = np.zeros((box_sizes.size,dim.ntime),dtype=np.float32)
-    lead_time_gained = np.zeros((box_sizes.size,time_interp.size),dtype=np.float32)
-    max_skill_mask   = np.zeros((box_sizes.size,time_interp.size),dtype=np.float32)
     dims             = ["box_size","time"]
     dims_bootstrap   = ["box_size","time","number_bootstrap"]
-    dims_interp      = ["box_size","time_interp"]
     coords           = dict(box_size=box_sizes,time=dim.time)
     coords_bootstrap = dict(box_size=box_sizes,time=dim.time,number_bootstrap=np.arange(0,number_bootstrap,1))
-    coords_interp    = dict(box_size=box_sizes,time_interp=time_interp)
     if score_type == 'fmsess':
         attrs            = dict(description='fractions mean square error skill score of forecast',units='unitless')
         attrs_bootstrap  = dict(description='bootstrapped score',units='unitless')
@@ -349,14 +342,37 @@ def initialize_misc_arrays(score_type,dim,box_sizes,number_bootstrap,dt):
     name                  = 'score'
     name_bootstrap        = 'score_bootstrap'
     name_sig              = 'significance'
-    name_lead_time_gained = 'lead_time_gained'
-    name_max_skill_mask   = 'max_skill_mask'
     score                 = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
     score_bootstrap       = xr.DataArray(data=data_bootstrap,dims=dims_bootstrap,coords=coords_bootstrap,attrs=attrs_bootstrap,name=name_bootstrap)
     sig                   = xr.DataArray(data=sig,dims=dims,coords=coords,name=name_sig)
+
+    return score,score_bootstrap,sig
+
+
+def initialize_ltg_and_max_skill_arrays(dim,box_sizes,number_bootstrap,dt,grids,time_flag):
+    """
+    Initializes lead_time_gained and max skill arrays
+    Written here to clean up code.
+    """
+    if (len(grids) == 2) and (time_flag == 'weekly'): 
+        time = np.arange(1,7,1)
+    elif (len(grids) == 2) and (time_flag == 'daily'):
+        time = np.arange(1,47,1)
+    elif len(grids) == 1:
+        time = dim.time
+        
+    time_interp           = np.linspace(time[0],time[-1],int((time[-1]-time[0])/dt+1.0))
+    lead_time_gained      = np.zeros((box_sizes.size,time_interp.size),dtype=np.float32)
+    max_skill_mask        = np.zeros((box_sizes.size,time_interp.size),dtype=np.float32)
+    dims_interp           = ["box_size","time_interp"]
+    coords_interp         = dict(box_size=box_sizes,time_interp=time_interp)
+    name_lead_time_gained = 'lead_time_gained'
+    name_max_skill_mask   = 'max_skill_mask'
     lead_time_gained      = xr.DataArray(data=lead_time_gained,dims=dims_interp,coords=coords_interp,name=name_lead_time_gained)
     max_skill_mask        = xr.DataArray(data=max_skill_mask,dims=dims_interp,coords=coords_interp,name=name_max_skill_mask)
-    return score,score_bootstrap,sig,lead_time_gained,max_skill_mask
+
+    return lead_time_gained,max_skill_mask
+
 
 
 def initialize_score_xy_array(score_type,dim,number_shuffle_bootstrap):
@@ -424,7 +440,27 @@ def combine_high_and_low_res_files(filename_hr, filename_lr, filename, path, wri
         with xr.open_dataset(hr_file_path) as ds_hr, xr.open_dataset(lr_file_path) as ds_lr:
             ds = xr.concat([ds_hr, ds_lr], 'time')
             ds.to_netcdf(path+filename)
-            
+
+        """
+        ds_hr   = xr.open_dataset(hr_file_path)
+        ds_lr   = xr.open_dataset(lr_file_path)
+        ds_hr   = ds_hr.drop_vars(['lead_time_gained','max_skill_mask'])
+        ds_lr   = ds_lr.drop_vars(['lead_time_gained','max_skill_mask'])
+        ds_time = xr.concat([ds_hr, ds_lr], 'time')
+        ds_hr.close()
+        ds_lr.close()
+
+        ds_hr          = xr.open_dataset(hr_file_path)
+        ds_lr          = xr.open_dataset(lr_file_path)
+        ds_hr          = ds_hr.drop_vars(['score','score_bootstrap','significance','forecast_error','reference_error'])
+        ds_lr          = ds_lr.drop_vars(['score','score_bootstrap','significance','forecast_error','reference_error'])
+        ds_time_interp = xr.concat([ds_hr, ds_lr], 'time_interp')
+        ds_hr.close()
+        ds_lr.close()
+
+        ds = xr.merge([ds_time,ds_time_interp])
+        ds.to_netcdf(path+filename)
+        """
         print('Deleting original high and low-resolution files...')
         os.remove(hr_file_path)
         os.remove(lr_file_path)
@@ -490,12 +526,12 @@ def calc_forecast_and_reference_error_xy(score_type, filename_verification, file
 
 
 
-def write_score_to_file(score, score_bootstrap, sig, lead_time_gained, max_skill_mask, forecast_error, reference_error, write2file, grid, box_sizes, filename_out, path_out):
+def write_score_to_file(score, score_bootstrap, sig, forecast_error, reference_error, write2file, grid, box_sizes, filename_out, path_out):
     """Kitchen sink function to write score and error to file""" 
     if write2file:
         forecast_error  = forecast_error.rename('forecast_error')
         reference_error = reference_error.rename('reference_error')
-        ds              = xr.merge([score, score_bootstrap, sig, lead_time_gained, max_skill_mask, forecast_error, reference_error])
+        ds              = xr.merge([score, score_bootstrap, sig, forecast_error, reference_error])
         if grid == '0.5x0.5': ds['box_size'] = box_sizes
         #misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
         ds.to_netcdf(path_out + filename_out)
@@ -514,10 +550,16 @@ def write_score_to_file_xy(score, sig, write2file, filename_out, path_out):
 
 
 
-def calc_lead_time_gained(score,sig,dt):
+def calc_lead_time_gained(filename, dt):
     """calculates the lead time gained (or lost) of increasing the spatial
     scale of the forecast for a given skill level at the grid scale""" 
 
+    # read in score and significance
+    ds    = xr.open_dataset(filename)
+    score = ds['score']
+    sig   = ds['significance']
+    ds.close()
+    
     # interpolate lead time dimension
     time         = score.time.values
     time_interp  = np.linspace(time[0],time[-1],int((time[-1]-time[0])/dt+1.0))
@@ -536,22 +578,30 @@ def calc_lead_time_gained(score,sig,dt):
                 lead_time_gained[bs,t] = time_interp[t] - time_interp[index]
 
     # calculate maximum skill not acheivable at the grid scale
-    # i.e. not achievable = 1.0, and achievable = np.nan
+    # i.e. convert not achievable to 1.0, and achievable to np.nan
     max_skill_mask         = np.zeros(lead_time_gained.shape)
     index1                 = np.where(np.isnan(lead_time_gained))
     index2                 = np.where(~np.isnan(lead_time_gained))
+    max_skill_mask[index2] = np.nan
     max_skill_mask[index1] = 1.0
-    max_skill_mask[index1] = np.nan
 
     # set ltg values to nan where score not-significant
-    time_interp = time_interp.astype('int')
-    for bs in range(1,box_size.size):
-        index1                              = time[np.where(sig[bs,:] == 1.0)[0]] # 'time' where score is not significant
-        index2                              = np.where(time_interp == index1[0])[0][-1]#-2 # time_interp corresponding to first index1 'time'
-        lead_time_gained[bs,index2:]        = np.nan
-    
-    #for bs in range(0,box_size.size):
-    #    index = np.where(sig[bs,:] == 1.0)[0]
-    #    lead_time_gained[bs,index] = np.nan
-        
+    # looks nicer in plot..
+    for bs in range(0,box_size.size):
+        index1 = time[np.where(sig[bs,:] == 1.0)[0]] # 'time' where score is not significant
+        if index1.size > 0: # if some times are not signficant, do ..
+            index2                       = np.where(time_interp == index1[0])[0][0] - 2
+            lead_time_gained[bs,index2:] = np.nan
+
     return lead_time_gained, max_skill_mask
+
+
+def append_score_file(lead_time_gained, max_skill_mask, filename_out, write2file):
+    """Appends main output file with lead time gained and max skill variables
+    """
+    if write2file:
+        ds     = xr.open_dataset(filename_out)
+        ds_new = xr.merge([ds,lead_time_gained,max_skill_mask])
+        ds.close()
+        ds_new.to_netcdf(filename_out, mode='a')    
+    return

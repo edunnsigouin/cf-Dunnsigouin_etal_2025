@@ -35,7 +35,7 @@ season                   = 'annual'                 # pick forecasts in specific
 grids                    = ['0.25x0.25']
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 number_bootstrap         = 10000                    # number of times to shuffle initialization dates for error bars
-pval                     = 0.1
+pval                     = 0.9
 dt                       = 0.2                      # interpolation for lead time gained & max skill calculation
 write2file               = True
 # -----------------------------------------------------
@@ -68,9 +68,9 @@ for grid in grids:
     box_sizes_temp      = verify.match_box_sizes_high_to_low_resolution(grid,box_sizes)
 
     # initialize output arrays
-    [score,score_bootstrap,sig,lead_time_gained,max_skill_mask] = verify.initialize_misc_arrays(score_flag,dim,box_sizes_temp,number_bootstrap,dt)
-    forecast_error                                              = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)
-    reference_error                                             = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)
+    [score,score_bootstrap,sig] = verify.initialize_misc_arrays(score_flag,dim,box_sizes_temp,number_bootstrap)
+    forecast_error              = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)
+    reference_error             = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)
 
     # loop over forecast dates
     for  i, date in enumerate(forecast_dates):
@@ -85,15 +85,17 @@ for grid in grids:
     # calculate significance of score (95%)            
     sig[:,:] = s2s.calc_significant_values_using_bootstrap(score_bootstrap,0.05)
 
-    # calculate lead time gained by increasing spatial scale
-    lead_time_gained[:,:], max_skill_mask[:,:] = verify.calc_lead_time_gained(score, sig, dt)
-    
     # write to fss and errors to file
-    verify.write_score_to_file(score, score_bootstrap, sig, lead_time_gained, max_skill_mask, forecast_error, reference_error, write2file, grid, box_sizes, filename_out, path_out)
+    verify.write_score_to_file(score, score_bootstrap, sig, forecast_error, reference_error, write2file, grid, box_sizes, filename_out, path_out)
 
 # combine low and high resolution files into one file if both exist
 verify.combine_high_and_low_res_files(filename_hr_out, filename_lr_out, prefix + '.nc', path_out, write2file)
 
+# calculate lead time gained by increasing spatial scale
+filename_append                            = get_filename_to_append(filename_hr_out, filename_lr_out, path_out + prefix + '.nc')
+[lead_time_gained, max_skill_mask]         = verify.initialize_ltg_and_max_skill_arrays(dim,box_sizes,number_bootstrap,dt,grids,time_flag)
+lead_time_gained[:,:], max_skill_mask[:,:] = verify.calc_lead_time_gained(filename_append, dt)
+verify.append_score_file(lead_time_gained, max_skill_mask, filename_append, write2file) 
 
 misc.toc()
 

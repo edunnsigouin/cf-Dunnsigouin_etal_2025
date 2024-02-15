@@ -38,7 +38,7 @@ grid                     = '0.25x0.25'
 box_size                 = 1                       # smoothing box size in grid points per side. Must be odd!
 lead_time                = 5
 number_shuffle_bootstrap = 10000                   # number of times to shuffle initialization dates for error bars
-write2file               = True
+write2file               = False
 # -----------------------------------------------------
 
 misc.tic()
