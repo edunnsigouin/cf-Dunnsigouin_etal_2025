@@ -375,28 +375,32 @@ def initialize_ltg_and_max_skill_arrays(dim,box_sizes,number_bootstrap,dt,grids,
 
 
 
-def initialize_score_xy_array(score_type,dim,number_shuffle_bootstrap):
+def initialize_misc_xy_array(score_type,dim,number_bootstrap):
     """
     Initializes score arrays.
     Written here to clean up code.
     """
     data             = np.zeros((dim.nlatitude,dim.nlongitude),dtype=np.float32)
-    data_bootstrap   = np.zeros((number_shuffle_bootstrap,dim.nlatitude,dim.nlongitude),dtype=np.float32)
+    data_bootstrap   = np.zeros((number_bootstrap,dim.nlatitude,dim.nlongitude),dtype=np.float32)
+    sig              = np.zeros((dim.nlatitude,dim.nlongitude),dtype=np.float32)
     dims             = ["latitude","longitude"]
-    dims_bootstrap   = ["number_shuffle_bootstrap","latitude","longitude"]
+    dims_bootstrap   = ["number_bootstrap","latitude","longitude"]
     coords           = dict(latitude=dim.latitude,longitude=dim.longitude)
-    coords_bootstrap = dict(number_shuffle_bootstrap=np.arange(0,number_shuffle_bootstrap,1),latitude=dim.latitude,longitude=dim.longitude)
-    if score_type == 'fss':
-        attrs            = dict(description='fractions skill score of forecast',units='unitless')
-        attrs_bootstrap  = dict(description='fractions skill score of forecast bootstrapped',units='unitless')
+    coords_bootstrap = dict(number_bootstrap=np.arange(0,number_bootstrap,1),latitude=dim.latitude,longitude=dim.longitude)
+    if score_type == 'fmsess':
+        attrs            = dict(description='fractions mean square error skill score of forecast',units='unitless')
+        attrs_bootstrap  = dict(description='bootstrapped score',units='unitless')
     elif score_type == 'fbss':
         attrs            = dict(description='fractions brier skill score of forecast',units='unitless')
-        attrs_bootstrap  = dict(description='fractions brier skill score of forecast bootstrapped',units='unitless')
-    name             = score_type
-    name_bootstrap   = score_type + '_bootstrap'
+        attrs_bootstrap  = dict(description='bootstrapped score',units='unitless')
+    name             = 'score'
+    name_bootstrap   = 'score_bootstrap'
+    name_sig         = 'significance'
     score            = xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
     score_bootstrap  = xr.DataArray(data=data_bootstrap,dims=dims_bootstrap,coords=coords_bootstrap,attrs=attrs_bootstrap,name=name_bootstrap)
-    return score,score_bootstrap
+    sig              = xr.DataArray(data=sig,dims=dims,coords=coords,name=name_sig)
+    
+    return score,score_bootstrap,sig
 
 
 
@@ -427,44 +431,34 @@ def combine_high_and_low_res_files(filename_hr, filename_lr, filename, path, wri
     lr_file_path  = path + filename_lr
     out_file_path = path + filename
 
-    if not os.path.exists(hr_file_path) or not os.path.exists(lr_file_path):
-        print("Either the high-resolution or low-resolution file does not exist.")
-        return
-
     if not write2file:
         print("Write to file is disabled. Exiting.")
         return
+    
+#    if not os.path.exists(hr_file_path) or not os.path.exists(lr_file_path):
+#        print("Either the high-resolution or low-resolution file does not exist.")
+#        return
+    
+    elif not os.path.exists(hr_file_path):
+        print("the high-resolution file does not exist.")
+        return lr_file_path
+    
+    elif not os.path.exists(lr_file_path):
+        print("the low-resolution file does not exist.")
+        return hr_file_path
 
     try:
         print('Combining high & low-resolution files into one file...')
         with xr.open_dataset(hr_file_path) as ds_hr, xr.open_dataset(lr_file_path) as ds_lr:
             ds = xr.concat([ds_hr, ds_lr], 'time')
-            ds.to_netcdf(path+filename)
+            ds.to_netcdf(out_file_path)
 
-        """
-        ds_hr   = xr.open_dataset(hr_file_path)
-        ds_lr   = xr.open_dataset(lr_file_path)
-        ds_hr   = ds_hr.drop_vars(['lead_time_gained','max_skill_mask'])
-        ds_lr   = ds_lr.drop_vars(['lead_time_gained','max_skill_mask'])
-        ds_time = xr.concat([ds_hr, ds_lr], 'time')
-        ds_hr.close()
-        ds_lr.close()
-
-        ds_hr          = xr.open_dataset(hr_file_path)
-        ds_lr          = xr.open_dataset(lr_file_path)
-        ds_hr          = ds_hr.drop_vars(['score','score_bootstrap','significance','forecast_error','reference_error'])
-        ds_lr          = ds_lr.drop_vars(['score','score_bootstrap','significance','forecast_error','reference_error'])
-        ds_time_interp = xr.concat([ds_hr, ds_lr], 'time_interp')
-        ds_hr.close()
-        ds_lr.close()
-
-        ds = xr.merge([ds_time,ds_time_interp])
-        ds.to_netcdf(path+filename)
-        """
         print('Deleting original high and low-resolution files...')
         os.remove(hr_file_path)
         os.remove(lr_file_path)
 
+        return out_file_path
+    
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -509,7 +503,7 @@ def calc_forecast_and_reference_error_xy(score_type, filename_verification, file
     forecast     = xr.open_dataset(filename_forecast)[variable].sel(box_size=box_size).isel(time=lead_time-1).squeeze()
     
     # calculate error terms
-    if score_type == 'fss':
+    if score_type == 'fmsess':
         forecast_error_xy  = (forecast - verification) ** 2
         reference_error_xy = (verification) ** 2
 
@@ -590,7 +584,7 @@ def calc_lead_time_gained(filename, dt):
     for bs in range(0,box_size.size):
         index1 = time[np.where(sig[bs,:] == 1.0)[0]] # 'time' where score is not significant
         if index1.size > 0: # if some times are not signficant, do ..
-            index2                       = np.where(time_interp == index1[0])[0][0] - 2
+            index2                       = np.where(time_interp == index1[0])[0][0] - int(((time[1]-time[0])/dt)/2) + 1 # hack
             lead_time_gained[bs,index2:] = np.nan
 
     return lead_time_gained, max_skill_mask
