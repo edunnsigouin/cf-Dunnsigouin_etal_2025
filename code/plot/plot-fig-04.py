@@ -1,77 +1,34 @@
 """
-Plots fig. 4 in Dunn-Sigouin et al. 
+Plots fig. 03 in Dunn-Sigouin et al. 
 """
 
-import numpy     as np
-import xarray    as xr
-from matplotlib  import pyplot as plt
-from forsikring  import misc,s2s,config
+import numpy       as np
+import xarray      as xr
+from matplotlib    import pyplot as plt
+from forsikring    import misc,s2s,config
+import cartopy.crs as ccrs
 import matplotlib as mpl
 
-def setup_subplot_fss(flag, ax, time, box_size, fss_data, sig_data, title_text, clevs, cmap, fontsize):
+def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize):
     """ 
-    Sets up specifics of subplots for fig. 4
+    Sets up specifics of subplots for fig.03
     """
-    p = ax.contourf(time, box_size, fss_data, levels=clevs, cmap=cmap, extend='min')
-    ax.pcolor(time, box_size, sig_data, hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
-
-    contour = ax.contour(time, box_size, fss_data, levels=clevs, linewidths=1,linestyles='-',colors='grey')
-    ax.clabel(contour, clevs, inline=True, fmt='%1.1f', fontsize=fontsize)
-
-    ax.set_xticks(time)
-    ax.set_xlim([time[0], time[-1]])
-
-    ax.set_yticks(np.array([1, 9, 17, 25, 33, 41, 49, 57]))
-    ax.set_yticklabels(['1/9', '9/81', '17/153', '25/225', '33/297', '41/369', '49/441', '57/513'], fontsize=fontsize)
-    if flag == 1:
-        ax.set_ylabel(r'spatial scale [gridpoints$^2$/km$^2$]', fontsize=fontsize)
-    ax.set_ylim([box_size[0], box_size[-2]])
-
-    ax.set_title(title_text, fontsize=fontsize + 3)
+    lat   = ds.latitude
+    lon   = ds.longitude
+    score = ds['score']
+    sig   = ds['significance']
     
-    cb = plt.colorbar(p, ax=ax, orientation='vertical', ticks=clevs, pad=0.025, aspect=15)
-    #cb.ax.set_title('fss', fontsize=fontsize)
-    cb.ax.tick_params(labelsize=fontsize, size=0)
+    p = ax.contourf(lon, lat, score,levels=clevs,cmap=cmap,extend='min',transform=ccrs.PlateCarree())
+    ax.pcolor(lon, lat, sig, hatch='/////', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.4,0.4,0.4], lw=0, transform=ccrs.PlateCarree())
+    ax.coastlines(color='k',linewidth=1)
     
-    return ax
-
-
-def setup_subplot_ltg(flag, ax, time, box_size, fss_data, sig_data, ltg_data, dummy, title_text, clevs1, clevs2, cmap, fontsize):
-    """
-    Sets up specifics of subplots for fig. 4
-    """
-    p = ax.contourf(ltg_data.time, box_size, ltg_data, levels=clevs2, cmap=cmap, extend='max')
-    ax.pcolor(time, box_size, sig_data, hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
-    ax.pcolor(dummy.time, box_size, dummy, hatch='xx', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
-
-    contour = ax.contour(time, box_size, fss_data, levels=clevs1, linewidths=1,linestyles='-',colors='grey')
-    ax.clabel(contour, clevs1, inline=True, fmt='%1.1f', fontsize=fontsize)
-
-    ax.set_xticks(time)
-    ax.set_xlim([time[0], time[-1]])
-    if time.size == 6:
-        ax.set_xticklabels(['1','2','3','4','5','6'],fontsize=fontsize)
-        ax.set_xlabel(r'lead time [weeks]',fontsize=fontsize)
-    else:
-        ax.set_xticklabels(['1', '', '3', '', '5', '', '7', '', '9', '', '11', '', '13', '', '15'], fontsize=fontsize)
-        ax.set_xlabel(r'lead time [days]', fontsize=fontsize)
-
-    ax.set_yticks(np.array([1, 9, 17, 25, 33, 41, 49, 57]))
-    ax.set_yticklabels(['1/9', '9/81', '17/153', '25/225', '33/297', '41/369', '49/441', '57/513'], fontsize=fontsize)
-    if flag == 3:
-        ax.set_ylabel(r'spatial scale [gridpoints$^2$/km$^2$]', fontsize=fontsize)
-    ax.set_ylim([box_size[0], box_size[-2]])
-
-    ax.set_title(title_text, fontsize=fontsize + 3)
-
-    cb = plt.colorbar(p, ax=ax, orientation='vertical', ticks=clevs2, pad=0.025, aspect=15)
-    if flag == 3:
-        cb.ax.set_title('[days]', fontsize=fontsize)
-    elif flag == 4:
-        cb.ax.set_title('[weeks]', fontsize=fontsize)
-    cb.ax.tick_params(labelsize=fontsize, size=0)
-
-    return ax
+    if (flag == 1) or (flag == 3) or (flag == 5):
+        rectangle = plt.Rectangle((-25, 34), 0.25, 0.25, fc='r',ec='r',lw=2)
+    elif (flag == 2) or (flag == 4) or (flag == 6):
+        rectangle = plt.Rectangle((-25, 34), 8.25, 8.25, fc=(0.5,0.5,0.5,0),ec='r',lw=2)    
+    ax.add_patch(rectangle)
+    
+    return p
 
 # INPUT -----------------------
 write2file = True
@@ -80,75 +37,50 @@ write2file = True
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fbss_tp24_pval0.9_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_2     = 'fbss_tp24_pval0.9_weekly_europe_annual_2021-01-04_2021-12-30.nc'
-filename_in_3     = 'ltg_fbss_tp24_pval0.9_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_4     = 'ltg_fbss_tp24_pval0.9_weekly_europe_annual_2021-01-04_2021-12-30.nc'
-figname_out       = 'fig_04.pdf'
+filename_in_1     = 'fmsess_xy_tp24_weekly_europe_annual_boxsize_1_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc' 
+filename_in_2     = 'fmsess_xy_tp24_weekly_europe_annual_boxsize_33_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc' 
+filename_in_3     = 'fbss_xy_tp24_pval0.9_weekly_europe_annual_boxsize_1_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_4     = 'fbss_xy_tp24_pval0.9_weekly_europe_annual_boxsize_33_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_5     = 'fbss_xy_tp24_pval0.1_weekly_europe_annual_boxsize_1_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_6     = 'fbss_xy_tp24_pval0.1_weekly_europe_annual_boxsize_33_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc'
+figname_out       = 'fig_04.png'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
 ds2        = xr.open_dataset(path_in + filename_in_2)    
 ds3        = xr.open_dataset(path_in + filename_in_3)
 ds4        = xr.open_dataset(path_in + filename_in_4)
+ds5        = xr.open_dataset(path_in + filename_in_5)
+ds6        = xr.open_dataset(path_in + filename_in_6)
 
-# Remove box sizes where low and high-res data don't overlap on the same grid in timescale dimension data
-index      = np.where(~np.isnan(ds2['fbss'][:,4]))[0]
-ds2        = ds2.isel(box_size=index)
-ds4        = ds4.isel(box_size=index)
-
-# calculate significance
-sig1       = s2s.mask_significant_values_from_bootstrap(ds1['fbss_bootstrap'],0.05)
-sig2       = s2s.mask_significant_values_from_bootstrap(ds2['fbss_bootstrap'],0.05)
-
-dummy3 = s2s.mask_skill_values(ds3['lead_time_gained'])
-dummy4 = s2s.mask_skill_values(ds4['lead_time_gained'])
-
-
-# set ltg values to nan where fss not-significant. makes figure nicer. Hacky
-time_interp = ds3['lead_time_gained'].time.astype('int')
-time        = sig1.time.values
-for bs in range(1,ds1['box_size'].size):
-    index1                              = time[np.where(sig1[bs,:] == 1.0)[0]]
-    index2                              = np.where(time_interp == index1[0])[0][0]-2
-    ds3['lead_time_gained'][bs,index2:] = np.nan
-
-time_interp = ds4['lead_time_gained'].time.astype('int')
-time        = sig2.time.values
-for bs in range(1,ds2['box_size'].size):
-    index1                              = time[np.where(sig2[bs,:] == 1.0)[0]]
-    index2                              = np.where(time_interp == index1[0])[0][0]-2
-    ds4['lead_time_gained'][bs,index2:] = np.nan
-
-    
-    
 # plot 
 fontsize   = 11
-clevs1     = np.arange(0,1.1,0.1)
-clevs2     = np.arange(0.0, 3.5, 0.5)
-clevs3     = np.arange(0.0, 1.1, 0.1)
-cmap1      = mpl.cm.get_cmap("GnBu").copy()
-cmap2      = mpl.cm.get_cmap("YlGn").copy()
-figsize    = np.array([12,8])
-fig,ax     = plt.subplots(nrows=2,ncols=2,sharey='row',sharex='col',figsize=(figsize[0],figsize[1]))
+clevs      = np.arange(0,1.1,0.1)
+cmap       = 'GnBu'
+figsize    = np.array([12,12])
+fig,ax     = plt.subplots(nrows=3,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax         = ax.ravel()
 
-title1 = 'a) daily 90$^{th}$ quantile precipitation\n brier skill score'
-title2 = 'b) weekly 90$^{th}$ quantile precipitation\n brier skill score'
-title3 = 'c) daily 90$^{th}$ quantile precipitation\n lead time gained'
-title4 = 'd) weekly 90$^{th}$ quantile precipitation\n lead time gained'
+setup_subplot_xy(1, ax[0], ds1, clevs, cmap, fontsize)
+setup_subplot_xy(2, ax[1], ds2, clevs, cmap, fontsize)
+setup_subplot_xy(3, ax[2], ds3, clevs, cmap, fontsize)
+setup_subplot_xy(4, ax[3], ds4, clevs, cmap, fontsize)
+setup_subplot_xy(5, ax[4], ds5, clevs, cmap, fontsize)
+p = setup_subplot_xy(6, ax[5], ds6, clevs, cmap, fontsize)
 
-setup_subplot_fss(1, ax[0], ds1['time'], ds1['box_size'], ds1['fbss'], sig1, title1, clevs1, cmap1, fontsize)
+fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.35,wspace=0.025)
+cbar_ax = fig.add_axes([0.2, 0.075, 0.6, 0.02])
+cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
+cb.ax.tick_params(labelsize=fontsize, size=0)
+cb.ax.set_title('accuracy at lead week 2 [fmsess or fbss]', fontsize=fontsize+3,y=1.01)
 
-setup_subplot_fss(2, ax[1], ds2['time'], ds2['box_size'], ds2['fbss'], sig2, title2, clevs1, cmap1, fontsize)
-
-setup_subplot_ltg(3, ax[2], ds1['time'], ds1['box_size'], ds1['fbss'], sig1, ds3['lead_time_gained'], dummy3, title3, clevs1, clevs2, cmap2, fontsize)
-
-setup_subplot_ltg(4, ax[3], ds2['time'], ds2['box_size'], ds2['fbss'], sig2, ds4['lead_time_gained'], dummy4, title4, clevs1, clevs3, cmap2, fontsize)
-
+ax[0].set_title('precision = 1 gridpoints$^{2}$ / 9km$^{2}$',fontsize=fontsize+3)
+ax[1].set_title('precision = 33 gridpoints$^{2}$ / 297km$^{2}$',fontsize=fontsize+3)
+fig.text(0.025,0.71,'weekly anomalies',rotation=90,fontsize=fontsize+3)
+fig.text(0.025,0.395,'weekly 90$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+3)
+fig.text(0.025,0.135,'weekly 10$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+3)
 
 # write2file
-plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)
 plt.show()
 

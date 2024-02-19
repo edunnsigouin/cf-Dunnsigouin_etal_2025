@@ -61,7 +61,7 @@ filename_in_3     = 'fbss_tp24_pval0.9_daily_europe_annual_2020-01-02_2022-12-29
 filename_in_4     = 'fbss_tp24_pval0.9_weekly_europe_annual_2021-01-04_2021-12-30.nc'
 filename_in_5     = 'fbss_tp24_pval0.1_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
 filename_in_6     = 'fbss_tp24_pval0.1_weekly_europe_annual_2021-01-04_2021-12-30.nc'
-figname_out       = 'fig_01.pdf'
+figname_out       = 'fig_01.png'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
@@ -79,12 +79,12 @@ figsize    = np.array([12,12])
 fig,ax     = plt.subplots(nrows=3,ncols=2,sharey='row',sharex='col',figsize=(figsize[0],figsize[1]))
 ax         = ax.ravel()
 
-title1 = 'a) daily precipitation anomalies'
-title2 = 'b) weekly precipitation anomalies'
-title3 = 'c) daily 90$^{th}$ quantile precipitation'
-title4 = 'd) weekly 90$^{th}$ quantile precipitation'
-title5 = 'e) daily 10$^{th}$ quantile precipitation'
-title6 = 'f) weekly 10$^{th}$ quantile precipitation'
+title1 = 'a) daily anomalies'
+title2 = 'b) weekly anomalies'
+title3 = 'c) daily 90$^{th}$ quantile extremes'
+title4 = 'd) weekly 90$^{th}$ quantile extremes'
+title5 = 'e) daily 10$^{th}$ quantile extremes'
+title6 = 'f) weekly 10$^{th}$ quantile extremes'
 
 setup_subplot_fss(1, ax[0], ds1, title1, clevs, cmap, fontsize)
 
