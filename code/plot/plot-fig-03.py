@@ -69,16 +69,16 @@ setup_subplot_xy(5, ax[4], ds5, clevs, cmap, fontsize)
 p = setup_subplot_xy(6, ax[5], ds6, clevs, cmap, fontsize)
 
 fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.35,wspace=0.025)
-cbar_ax = fig.add_axes([0.2, 0.075, 0.6, 0.02])
+cbar_ax = fig.add_axes([0.2, 0.065, 0.6, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize, size=0)
-cb.ax.set_title('accuracy at lead day 5 [fmsess or fbss]', fontsize=fontsize+3,y=1.01)
+cb.ax.set_title('accuracy at lead day 5 [fmsess or fbss]', fontsize=fontsize+5,y=1.01)
 
-ax[0].set_title('precision = 1 gridpoints$^{2}$ / 9km$^{2}$',fontsize=fontsize+3)
-ax[1].set_title('precision = 33 gridpoints$^{2}$ / 297km$^{2}$',fontsize=fontsize+3)
-fig.text(0.025,0.71,'daily anomalies',rotation=90,fontsize=fontsize+3)
-fig.text(0.025,0.405,'daily 90$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+3)
-fig.text(0.025,0.145,'daily 10$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+3)
+ax[0].set_title('precision = 1 gridpoints$^{2}$ / 9km$^{2}$',fontsize=fontsize+5)
+ax[1].set_title('precision = 33 gridpoints$^{2}$ / 297km$^{2}$',fontsize=fontsize+5)
+fig.text(0.025,0.73,'anomalies',rotation=90,fontsize=fontsize+5)
+fig.text(0.025,0.41,'90$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
+fig.text(0.025,0.15,'10$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
 
 # write2file
 if write2file: plt.savefig(path_out + figname_out)

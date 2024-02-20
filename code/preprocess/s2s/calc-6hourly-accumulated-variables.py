@@ -19,9 +19,9 @@ variables           = ['tp']
 dtypes              = ['cf','pf']             # control & perturbed forecasts/hindcasts
 product             = 'hindcast'              # hindcast or forecast
 first_forecast_date = '20200102' # first initialization date of forecast (either a monday or thursday) 
-number_forecasts    = 313        # number of forecast initializations 
+number_forecasts    = 105        # number of forecast initializations 
 season              = 'annual'
-grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
+grid                = '0.5x0.5'             # '0.25x0.25' or '0.5x0.5'
 comp_lev            = 5                       # level of compression with nccopy (1-10)
 write2file          = True
 # -----------------------------------------------------            

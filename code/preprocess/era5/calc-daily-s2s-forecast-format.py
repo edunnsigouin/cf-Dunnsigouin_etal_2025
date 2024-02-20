@@ -16,16 +16,17 @@ import os
 from forsikring import config,misc,s2s
 
 # INPUT -----------------------------------------------
-variables           = ['t2m24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20210104'           # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 104                    # number of forecasts   
+variables           = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+first_forecast_date = '20230806'           # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 1                    # number of forecasts   
 season              = 'annual'
 grids               = ['0.25x0.25']        # '0.25x0.25' or '0.5x0.5'
-write2file          = True
+write2file          = False
 # -----------------------------------------------------         
 
 # get all dates for monday and thursday forecast initializations 
 forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
+#forecast_dates = pd.date_range(first_forecast_date, periods=1)
 print(forecast_dates)
 
 for variable in variables:
@@ -36,7 +37,7 @@ for variable in variables:
             
             # define some paths and strings
             path_in      = config.dirs['era5_daily'] + variable + '/'
-            path_out     = config.dirs['era5_s2s_forecast_daily'] + variable + '/'
+            path_out     = config.dirs['era5_forecast_daily'] + variable + '/'
             datestring   = date.strftime('%Y-%m-%d')
             year         = date.strftime('%Y')
             filename1_in = variable + '_' + grid + '_' + year + '.nc'
@@ -49,6 +50,7 @@ for variable in variables:
 
             # calculate explicitely
             with ProgressBar(): ds = xr.open_mfdataset([path_in + filename1_in,path_in + filename2_in]).sel(time=era5_dates).compute()
+            #with ProgressBar(): ds = xr.open_mfdataset(path_in + filename1_in).sel(time=era5_dates).compute()
             
             # write to file
             if write2file:
