@@ -27,7 +27,7 @@ def initialize_hindcast_array(date,number_hdate,variable,dim):
     elif grid == '0.5x0.5': time = pd.date_range(date,periods=31,freq="D") + np.timedelta64(15,'D')
 
     # define hindcast initialization dim
-    start_date = (date - np.timedelta64(number_hdate,'Y'))
+    start_date = (date - np.timedelta64(int(number_hdate*365.25),'D')) # need to convert timedelta to days instead of years (pandas doesnt allow 'Y' anymore..)
     hdate      = [(start_date.replace(year=start_date.year + i)).strftime('%Y%m%d') for i in range(0, number_hdate)]
     hdate      = [int(x) for x in hdate]
     
@@ -51,12 +51,12 @@ def initialize_hindcast_array(date,number_hdate,variable,dim):
 
 
 # INPUT -----------------------------------------------
-variables           = ['t2m24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20210104'           # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 104                    # number of forecasts   
+variables           = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+first_forecast_date = '20200102'           # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 105                    # number of forecasts   
 number_hdate        = 20
 season              = 'annual'
-grid                = '0.25x0.25'        # '0.25x0.25' or '0.5x0.5'
+grid                = '0.5x0.5'        # '0.25x0.25' or '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------         
 
@@ -68,10 +68,10 @@ for variable in variables:
     for date in forecast_dates:
 
         print('\nvariable: ' + variable + ', date: ' + date.strftime('%Y-%m-%d'))
-        
+
         # define some paths and strings
         path_in      = config.dirs['era5_daily'] + variable + '/'
-        path_out     = config.dirs['era5_s2s_hindcast_daily'] + variable + '/'
+        path_out     = config.dirs['era5_hindcast_daily'] + variable + '/'
         datestring   = date.strftime('%Y-%m-%d')            
         filename_out = '%s_%s_%s.nc'%(variable,grid,datestring)
         dim          = misc.get_dim(grid,'time')
@@ -80,7 +80,7 @@ for variable in variables:
         # open forecast calendar dates for corresponding hindcasts
         for i in range(0,number_hdate):
 
-            temp_date = date - np.timedelta64(i+1,'Y')
+            temp_date = date - np.timedelta64(int((i+1)*365.25),'D') # need to convert timedelta to days instead of years 
 
             # pick out specific dates (46 = # of days in ecmwf forecast)
             if grid == '0.25x0.25': era5_dates = pd.date_range(temp_date,periods=15,freq="D").strftime('%Y-%m-%d')
@@ -98,3 +98,4 @@ for variable in variables:
         if write2file: misc.to_netcdf_with_packing_and_compression(hindcast, path_out + filename_out)
 
         
+

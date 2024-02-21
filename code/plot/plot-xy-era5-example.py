@@ -11,15 +11,15 @@ from scipy           import signal, ndimage
 
 # INPUT -----------------------
 variable          = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domain            = 'europe'            # europe/nordic/vestland                       
-date              = '2023-08-09'        # initialization date
+domain            = 'scandinavia'            # europe/nordic/vestland                       
+date              = '2023-08-07'        # initialization date
 grid              = '0.25x0.25'         # '0.25x0.25' or '0.5x0.5'
-write2file        = True
+write2file        = False
 # -----------------------------
 
 # define stuff
-dim         = s2s.get_dim(grid,'time')
-path_in     = config.dirs['era5_cont_daily'] + variable + '/'
+dim         = misc.get_dim(grid,'daily')
+path_in     = config.dirs['era5_daily'] + variable + '/'
 path_out    = config.dirs['fig'] + 'era5/' + variable + '/'
 filename_in = variable + '_' + grid + '_2023.nc'
 figname_out = 'xy_' + variable + '_' + grid + '_' + domain + '_' + date + '.pdf'

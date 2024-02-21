@@ -1,92 +1,101 @@
 """
-Plots fig. 5 in Dunn-Sigouin et al. 
+Plots fig 05 in Dunn-Sigouin et al. 
 """
 
-import numpy     as np
-import xarray    as xr
-from matplotlib  import pyplot as plt
-from forsikring  import misc,s2s,config
-import matplotlib as mpl
+import numpy         as np
+import xarray        as xr
+from matplotlib      import pyplot as plt
+import cartopy.crs   as ccrs
+from forsikring      import misc,s2s,config
+from scipy           import signal, ndimage
 
-def setup_subplot(ax, time, box_size, fss_data, sig_data, title_text, clevs, cmap, fontsize):
+def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize, title):
+    """ 
+    Sets up specifics of subplots for fig.05
     """
-    Sets up specifics of subplots for fig. 5
-    """
-    p = ax.contourf(time, box_size, fss_data, levels=clevs, cmap=cmap, extend='min')
-    ax.pcolor(time, box_size, sig_data, hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
+    lat   = ds.latitude
+    lon   = ds.longitude
 
-    contour = ax.contour(time, box_size, fss_data, levels=clevs, linewidths=1,linestyles='-',colors='grey')
-    ax.clabel(contour, clevs, inline=True, fmt='%1.1f', fontsize=fontsize)
+    print(lat)
+    print(lon)
+    
+    p = ax.contourf(lon, lat, ds,levels=clevs,cmap=cmap,extend='max',transform=ccrs.PlateCarree())
+    ax.contour(lon, lat, ds, levels=clevs,colors = [(0.5,0.5,0.5)],linewidths=0.5,transform=ccrs.PlateCarree())
+    ax.coastlines(color='k',linewidth=1)
 
-    ax.set_xticks(time)
-    ax.set_xlim([time[0], time[-1]])
-    ax.set_xticklabels(['1', '', '3', '', '5', '', '7', '', '9', '', '11', '', '13', '', '15'], fontsize=fontsize)
-    if (title_text == 'c) <10$^{th}$ quantile summer precipitation') or (title_text == 'd) <10$^{th}$ quantile winter precipitation'):
-        ax.set_xlabel(r'lead time [days]', fontsize=fontsize)
+    ax.set_title(title,fontsize=fontsize+2)
+    
+    if flag == 1 :
+        rectangle = plt.Rectangle((25, 66.25), 6.25, 6.25, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
+    elif flag == 2:
+        rectangle = plt.Rectangle((28, 69.25), 3.25, 3.25, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
+    elif (flag == 3) or (flag == 4):
+        rectangle = plt.Rectangle((31.25, 72.25), 0.25, 0.25, fc='r',ec='r',lw=2)
+    ax.add_patch(rectangle)
 
-    ax.set_yticks(np.array([1, 9, 17, 25, 33, 41, 49, 57]))
-    ax.set_yticklabels(['1/9', '9/81', '17/153', '25/225', '33/297', '41/369', '49/441', '57/513'], fontsize=fontsize)
-    if (title_text == 'a) >90$^{th}$ quantile summer precipitation') or (title_text == 'c) <10$^{th}$ quantile summer temperature'):
-        ax.set_ylabel(r'spatial scale [gridpoints$^2$/km$^2$]', fontsize=fontsize)
-    ax.set_ylim([box_size[0], box_size[-2]])
-
-    ax.set_title(title_text, fontsize=fontsize + 3)
-    """
-    cb = plt.colorbar(p, ax=ax, orientation='vertical', ticks=clevs, pad=0.025, aspect=15)
-    cb.ax.set_title('fss', fontsize=fontsize)
-    cb.ax.tick_params(labelsize=fontsize, size=0)
-    """
-    return ax
-
+    return p
 
 # INPUT -----------------------
-write2file = True
+time_flag            = 'daily' 
+variable             = 'tp24'   
+domain               = 'scandinavia' 
+date                 = '2023-08-07'
+grid                 = '0.25x0.25'
+box_size             = 1
+write2file           = False
 # -----------------------------
 
-# define stuff         
-path_in           = config.dirs['verify_s2s_forecast_daily']
-path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fbss_tp24_pval0.9_daily_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
-filename_in_2     = 'fbss_tp24_pval0.9_daily_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_3     = 'fbss_tp24_pval0.1_daily_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
-filename_in_4     = 'fbss_tp24_pval0.1_daily_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
-figname_out       = 'fig_05.pdf'
+# define stuff
+dim              = misc.get_dim(grid,'daily')
+filename1        = config.dirs['s2s_forecast_' + time_flag + '_smooth'] + variable + '/' + 'tp24_0.25x0.25_2023-08-05.nc'
+filename2        = config.dirs['s2s_forecast_' + time_flag + '_smooth'] + variable + '/' + 'tp24_0.25x0.25_2023-08-06.nc'
+filename3        = config.dirs['s2s_forecast_' + time_flag + '_smooth'] + variable + '/' + 'tp24_0.25x0.25_2023-08-07.nc'
+filename4        = config.dirs['era5_forecast_' + time_flag] + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07.nc'
 
 # read in data
-ds1        = xr.open_dataset(path_in + filename_in_1)
-ds2        = xr.open_dataset(path_in + filename_in_2)    
-ds3        = xr.open_dataset(path_in + filename_in_3)                                                                                           
-ds4        = xr.open_dataset(path_in + filename_in_4)
+da1 = xr.open_dataset(filename1).sel(time=date)[variable].sel(box_size=25).mean(dim='number')
+da2 = xr.open_dataset(filename2).sel(time=date)[variable].sel(box_size=13).mean(dim='number')
+da3 = xr.open_dataset(filename3).sel(time=date)[variable].sel(box_size=1).mean(dim='number')
+da4 = xr.open_dataset(filename4).sel(time=date)[variable]
 
-# calculate significance
-sig1       = s2s.mask_significant_values_from_bootstrap(ds1['fbss_bootstrap'],0.05)
-sig2       = s2s.mask_significant_values_from_bootstrap(ds2['fbss_bootstrap'],0.05)
-sig3       = s2s.mask_significant_values_from_bootstrap(ds3['fbss_bootstrap'],0.05)
-sig4       = s2s.mask_significant_values_from_bootstrap(ds4['fbss_bootstrap'],0.05)
+# modify units to mm/day
+da1   = da1*1000
+da2   = da2*1000
+da3   = da3*1000
+da4   = da4*1000
+
+# extract specified domain
+dim = misc.subselect_xy_domain_from_dim(dim,domain,grid)
+da1 = da1.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
+da2 = da2.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
+da3 = da3.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
+da4 = da4.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 
 # plot 
-fontsize   = 11
-clevs      = np.arange(0.0, 1.1, 0.1)
-cmap1      = mpl.cm.get_cmap("PuBu").copy()
-cmap2      = mpl.cm.get_cmap("YlOrBr").copy()
-figsize    = np.array([12,8])
-fig,ax     = plt.subplots(nrows=2,ncols=2,sharey='row',sharex='col',figsize=(figsize[0],figsize[1]))
-ax         = ax.ravel()
+fontsize = 11
+clevs    = np.arange(5,55,5)
+cmap     = 'GnBu'
+figsize  = np.array([12,8])
+fig,ax   = plt.subplots(nrows=2,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
+ax       = ax.ravel()
 
-# A) precipitation 90th quantile
-setup_subplot(ax[0], ds1['time'], ds1['box_size'], ds1['fbss'], sig1, 'a) >90$^{th}$ quantile summer precipitation', clevs, cmap1, fontsize)
+title1 = 'a) forecast: 3-day lead time, 25 gridpoints$^{2}$ precision'
+title2 = 'b) forecast: 2-day lead time, 13 gridpoints$^{2}$ precision'
+title3 = 'c) forecast: 1-day lead time, 1 gridpoint$^{2}$ precision'
+title4 = 'd) ERA5: 1 gridpoint$^{2}$ precision'
 
-# B) daily precipitation 
-setup_subplot(ax[1], ds2['time'], ds2['box_size'], ds2['fbss'], sig2, 'b) >90$^{th}$ quantile winter precipitation', clevs, cmap1, fontsize)
+setup_subplot_xy(1, ax[0], da1, clevs, cmap, fontsize, title1)
+setup_subplot_xy(2, ax[1], da2, clevs, cmap, fontsize, title2)
+setup_subplot_xy(3, ax[2], da3, clevs, cmap, fontsize, title3)
+p = setup_subplot_xy(4, ax[3], da4, clevs, cmap, fontsize, title4)
 
-# C) temperature 90th quantile
-setup_subplot(ax[2], ds3['time'], ds3['box_size'], ds3['fbss'], sig3, 'c) <10$^{th}$ quantile summer precipitation', clevs, cmap2, fontsize)
+fig.subplots_adjust(left=0.05,right=0.95, top=0.95, hspace=0.125,wspace=-0.1)
+cbar_ax = fig.add_axes([0.2, 0.035, 0.6, 0.03])
+cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
+cb.ax.tick_params(labelsize=fontsize, size=0)
+cb.ax.set_title('daily accumulated precipitation anomalies [mm/day]', fontsize=fontsize+2,y=1.01)
 
-# D) daily temperature
-setup_subplot(ax[3], ds4['time'], ds4['box_size'], ds4['fbss'], sig4, 'd) <10$^{th}$ quantile winter precipitation', clevs, cmap2, fontsize)
-
-# write2file
-plt.tight_layout()
-if write2file: plt.savefig(path_out + figname_out)
+#if write2file: plt.savefig(path_out + figname_out)
 plt.show()
+
 

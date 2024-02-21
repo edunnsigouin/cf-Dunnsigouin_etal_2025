@@ -1,6 +1,5 @@
 """
-Converts smoothed s2s forecast format data into anomaly relative
-to smoothed climatological mean from hindcast data.
+Converts daily s2s forecast format data weekly.
 """
 
 import numpy    as np
@@ -10,10 +9,10 @@ from forsikring import misc,s2s,config,verify
 # INPUT -----------------------------------------------
 product             = 'hindcast'          # forecast or hindcast
 variable            = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20200102'             # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 313                      # number of forecasts 
+first_forecast_date = '20200102'         # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 105                 # number of forecasts 
 season              = 'annual'
-grid                = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
+grid                = '0.5x0.5'          # '0.25x0.25' & '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------
 

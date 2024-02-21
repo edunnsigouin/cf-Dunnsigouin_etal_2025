@@ -11,10 +11,10 @@ from forsikring import misc,s2s,config,verify
 time_flag           = 'weekly'                 # daily or weekly
 variable            = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 first_forecast_date = '20200102'             # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 313                      # number of forecasts 
+number_forecasts    = 105                      # number of forecasts 
 season              = 'annual'
-grid                = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
-domain              = 'southern_norway'
+grid                = '0.5x0.5'          # '0.25x0.25' & '0.5x0.5'
+domain              = 'europe'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!  
 write2file          = True
 # -----------------------------------------------------
@@ -46,8 +46,8 @@ for date in forecast_dates:
     hindcast = hindcast.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
     
     # resample to weekly if applicable
-    forecast = verify.resample_daily_to_weekly(forecast, time_flag, grid)
-    hindcast = verify.resample_daily_to_weekly(hindcast, time_flag, grid)
+    forecast = verify.resample_daily_to_weekly(forecast, time_flag, grid, variable)
+    hindcast = verify.resample_daily_to_weekly(hindcast, time_flag, grid, variable)
 
     # calculate climatological mean from hindcast 
     hindcast = hindcast.mean(dim='hdate')

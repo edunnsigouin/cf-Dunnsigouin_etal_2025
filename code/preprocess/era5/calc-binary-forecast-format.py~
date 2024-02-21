@@ -70,8 +70,8 @@ for date in forecast_dates:
     hindcast = xr.open_dataset(path_in_hindcast + filename_in_hindcast).sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')[variable]
 
     # convert time to weekly if applicable     
-    forecast = verify.resample_daily_to_weekly(forecast, time_flag, grid)
-    hindcast = verify.resample_daily_to_weekly(hindcast, time_flag, grid)
+    forecast = verify.resample_daily_to_weekly(forecast, time_flag, grid, variable)
+    hindcast = verify.resample_daily_to_weekly(hindcast, time_flag, grid, variable)
     
     # spatial smoothing 
     forecast_smooth = verify.boxcar_smoother_xy_optimized(box_sizes, forecast, 'xarray')
