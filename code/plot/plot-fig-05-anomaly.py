@@ -38,7 +38,8 @@ variable             = 'tp24'
 domain               = 'scandinavia' 
 date                 = '2023-08-07'
 grid                 = '0.25x0.25'
-write2file           = True
+box_size             = 1
+write2file           = False
 # -----------------------------
 
 # define stuff
@@ -47,32 +48,33 @@ filename1        = config.dirs['s2s_forecast_' + time_flag + '_smooth'] + variab
 filename2        = config.dirs['s2s_forecast_' + time_flag + '_smooth'] + variable + '/' + 'tp24_0.25x0.25_2023-08-06.nc'
 filename3        = config.dirs['s2s_forecast_' + time_flag + '_smooth'] + variable + '/' + 'tp24_0.25x0.25_2023-08-07.nc'
 filename4        = config.dirs['era5_forecast_' + time_flag] + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07.nc'
-path_out         = config.dirs['fig'] + 'paper/'
-figname_out      = 'fig_05.png'
+filename4        = '/nird/projects/NS9873K/etdu/processed/cf-forsikring/era5/s2s-model-format/forecast/daily/anomaly_smooth/scandinavia/tp24/tp24_0.25x0.25_2023-08-07.nc'
 
 # read in data
 da1 = xr.open_dataset(filename1).sel(time=date)[variable].sel(box_size=25).mean(dim='number')
 da2 = xr.open_dataset(filename2).sel(time=date)[variable].sel(box_size=13).mean(dim='number')
 da3 = xr.open_dataset(filename3).sel(time=date)[variable].sel(box_size=1).mean(dim='number')
-da4 = xr.open_dataset(filename4).sel(time=date)[variable]
+da4 = xr.open_dataset(filename4).sel(time=date)[variable].sel(box_size=1)
 
 # modify units to mm/day
 da1   = da1*1000
 da2   = da2*1000
 da3   = da3*1000
-da4   = da4*1000
+#da4   = da4*1000
 
 # extract specified domain
 dim = misc.subselect_xy_domain_from_dim(dim,domain,grid)
 da1 = da1.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 da2 = da2.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 da3 = da3.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
-da4 = da4.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
+#da4 = da4.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 
 # plot 
 fontsize = 11
-clevs    = np.arange(5,55,5)
-cmap     = 'GnBu'
+#clevs    = np.arange(5,55,5)
+clevs    = np.arange(-20,22,2)
+#cmap     = 'GnBu'
+cmap     = 'PRGn'
 figsize  = np.array([12,8])
 fig,ax   = plt.subplots(nrows=2,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
@@ -82,10 +84,10 @@ title2 = 'b) forecast: 2-day lead time, 13 gridpoints$^{2}$ precision'
 title3 = 'c) forecast: 1-day lead time, 1 gridpoint$^{2}$ precision'
 title4 = 'd) ERA5: 1 gridpoint$^{2}$ precision'
 
-setup_subplot_xy(1, ax[0], da1, clevs, cmap, fontsize, title1)
-setup_subplot_xy(2, ax[1], da2, clevs, cmap, fontsize, title2)
-setup_subplot_xy(3, ax[2], da3, clevs, cmap, fontsize, title3)
-p = setup_subplot_xy(4, ax[3], da4, clevs, cmap, fontsize, title4)
+#setup_subplot_xy(1, ax[0], da1, clevs, cmap, fontsize, title1)
+#setup_subplot_xy(2, ax[1], da2, clevs, cmap, fontsize, title2)
+#setup_subplot_xy(3, ax[2], da3, clevs, cmap, fontsize, title3)
+p = setup_subplot_xy(4, ax[0], da4, clevs, cmap, fontsize, title4)
 
 fig.subplots_adjust(left=0.05,right=0.95, top=0.95, hspace=0.125,wspace=-0.1)
 cbar_ax = fig.add_axes([0.2, 0.035, 0.6, 0.03])
@@ -93,7 +95,7 @@ cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.02
 cb.ax.tick_params(labelsize=fontsize, size=0)
 cb.ax.set_title('daily accumulated precipitation anomalies [mm/day]', fontsize=fontsize+2,y=1.01)
 
-if write2file: plt.savefig(path_out + figname_out)
+#if write2file: plt.savefig(path_out + figname_out)
 plt.show()
 
 

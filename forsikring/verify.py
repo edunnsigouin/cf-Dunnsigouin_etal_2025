@@ -37,7 +37,7 @@ def boxcar_smoother_xy_optimized(box_sizes, da, output_type):
     for i, size in enumerate(box_sizes):
         if size % 2 != 0:  # Ensure the box size is odd
             filter_size           = [1] * (da.ndim - 2) + [size, size]
-            smooth_values[i, ...] =  ndimage.uniform_filter(da, size=filter_size, mode='constant',cval=0.0)
+            smooth_values[i, ...] = ndimage.uniform_filter(da, size=filter_size, mode='constant',cval=0.0)
 
     # Create the DataArray if desired. Else, remains numpy array
     if output_type == 'xarray':

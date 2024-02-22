@@ -1,26 +1,28 @@
 """
-Converts smoothed era5 s2s forecast format data into anomaly relative
-to smoothed climatological mean from hindcast format data.
+Converts s2s forecast format data into anomaly relative
+to smoothed climatological mean from hindcast data.
 """
 
 import numpy    as np
 import xarray   as xr
+import pandas   as pd
 from forsikring import misc,s2s,config,verify
 
 # INPUT -----------------------------------------------
-time_flag           = 'weekly'                 # daily or weekly
+time_flag           = 'daily'                 # daily or weekly
 variable            = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20200102'             # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 313                      # number of forecasts 
+first_forecast_date = '20230807'             # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 1                      # number of forecasts 
 season              = 'annual'
 grid                = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
-domain              = 'southern_norway'
+domain              = 'scandinavia'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!  
-write2file          = True
+write2file          = False
 # -----------------------------------------------------
 
 # get forecast dates 
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
+#forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
+forecast_dates = pd.date_range(first_forecast_date, periods=1).strftime('%Y-%m-%d')
 print(forecast_dates)
 
 for date in forecast_dates:
@@ -29,28 +31,40 @@ for date in forecast_dates:
     print('\n ' + variable + ', ' + grid + ', ' + date)
         
     # define stuff
-    path_in_forecast  = config.dirs['era5_forecast_daily'] + variable + '/'
-    path_in_hindcast  = config.dirs['era5_hindcast_daily'] + variable + '/'
-    path_out          = config.dirs['era5_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
+    path_in_forecast  = config.dirs['s2s_forecast_daily'] + variable + '/'
+    path_in_hindcast  = config.dirs['s2s_hindcast_daily'] + variable + '/'
+    path_out          = config.dirs['s2s_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
     filename_forecast = variable + '_' + grid + '_' + date + '.nc'
     filename_hindcast = variable + '_' + grid + '_' + date + '.nc'
     filename_out      = variable + '_' + grid + '_' + date + '.nc'
 
-    # read forecast and hindcast format data
-    forecast = xr.open_dataset(path_in_forecast + filename_forecast)[variable]
-    hindcast = xr.open_dataset(path_in_hindcast + filename_hindcast)[variable]
-
-    # extract domain
+    # read forecast and hindcast format data from specific domain
     dim      = verify.get_data_dimensions(grid, time_flag, domain)
-    forecast = forecast.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
-    hindcast = hindcast.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
+    forecast = xr.open_dataset(path_in_forecast + filename_forecast).sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')[variable]
+    hindcast = xr.open_dataset(path_in_hindcast + filename_hindcast).sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')[variable]
+
+    # calculate hindcast climatology and forecast ensemble mean
+    hindcast = hindcast.mean(dim='number').mean(dim='hdate')
+    forecast = forecast.mean(dim='number')
     
     # resample to weekly if applicable
     forecast = verify.resample_daily_to_weekly(forecast, time_flag, grid, variable)
     hindcast = verify.resample_daily_to_weekly(hindcast, time_flag, grid, variable)
 
-    # calculate climatological mean from hindcast 
-    hindcast = hindcast.mean(dim='hdate')
+    # apply spatial smoothing. Note here that in order to standardize correctly,
+    # you need to smooth the forecast & hindcast before standardizing since                                                                              
+    # its not a linear operation.  
+    forecast = verify.boxcar_smoother_xy_optimized(box_sizes, forecast, 'xarray')
+    hindcast = verify.boxcar_smoother_xy_optimized(box_sizes, hindcast, 'xarray')
+
+    # calc smoothed & standardized anomaly.
+    # sample to calculate climatology and standard deviation is hindcast initialization dates.
+    dim_sizes  = hindcast.shape
+
+    print(dim_sizes)
+    """
+    hindcast   = np.reshape(hindcast,[dim_sizes[0],dim_sizes[1]*dim_sizes[2],dim_sizes[3],dim_sizes[4]]) # concatenate hdate and number dims for sample
+    anomaly    = (forecast - hindcast.mean(dim='hdate')) / hindcast.std(dim='hdate')
 
     # calc anomaly
     anomaly = forecast - hindcast
@@ -86,7 +100,7 @@ for date in forecast_dates:
     hindcast.close()
     anomaly.close()
     anomaly_smooth.close()
-
+    """
     misc.toc()
 
 

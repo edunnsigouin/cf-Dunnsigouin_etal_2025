@@ -1,5 +1,5 @@
 """
-Plots fig. 1 in Dunn-Sigouin et al. 
+Plots fig. S1 in Dunn-Sigouin et al. 
 """
 
 import numpy     as np
@@ -11,7 +11,7 @@ import matplotlib as mpl
 
 def setup_subplot_fss(flag, ax, ds, title_text, clevs, cmap, fontsize):
     """ 
-    Sets up specifics of subplots for fig. 1
+    Sets up specifics of subplots 
     """
     time     = ds['time']
     box_size = ds['box_size']
@@ -49,19 +49,19 @@ def setup_subplot_fss(flag, ax, ds, title_text, clevs, cmap, fontsize):
     return p
 
 # INPUT -----------------------
-write2file = False
+write2file = True
 # -----------------------------
 
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fmsess_tp24_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_2     = 'fmsess_tp24_weekly_europe_annual_2020-01-02_2021-12-30.nc'
-filename_in_3     = 'fbss_tp24_pval0.9_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_4     = 'fbss_tp24_pval0.9_weekly_europe_annual_2020-01-02_2021-12-30.nc'
-filename_in_5     = 'fbss_tp24_pval0.1_daily_europe_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_6     = 'fbss_tp24_pval0.1_weekly_europe_annual_2020-01-02_2021-12-30.nc'
-figname_out       = 'fig_01.png'
+filename_in_1     = 'fmsess_t2m24_daily_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_2     = 'fmsess_t2m24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_3     = 'fbss_t2m24_pval0.9_daily_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_4     = 'fbss_t2m24_pval0.9_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_5     = 'fbss_t2m24_pval0.1_daily_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_6     = 'fbss_t2m24_pval0.1_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+figname_out       = 'fig_S1.png'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
@@ -87,15 +87,10 @@ title5 = 'e) daily 10$^{th}$ quantile extremes'
 title6 = 'f) weekly 10$^{th}$ quantile extremes'
 
 setup_subplot_fss(1, ax[0], ds1, title1, clevs, cmap, fontsize)
-
 setup_subplot_fss(2, ax[1], ds2, title2, clevs, cmap, fontsize)
-
 setup_subplot_fss(3, ax[2], ds3, title3, clevs, cmap, fontsize)
-
 setup_subplot_fss(4, ax[3], ds4, title4, clevs, cmap, fontsize)
-
 setup_subplot_fss(5, ax[4], ds5 , title5, clevs, cmap, fontsize)
-
 p = setup_subplot_fss(6, ax[5], ds6, title6, clevs, cmap, fontsize)
 
 fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.15,wspace=0.075)

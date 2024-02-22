@@ -36,15 +36,15 @@ def initialize_quantile_array(variable,box_sizes,time_flag,dim):
 
 
 # input ----------------------------------------------
-time_flag           = 'weekly'                   # daily or weekly
+time_flag           = 'daily'                   # daily or weekly
 variable            = 'tp24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 first_forecast_date = '20200102'               # first initialization date of forecast (either a monday or thursday)   
-number_forecasts    = 105                        # number of forecast initializations 
+number_forecasts    = 313                        # number of forecast initializations 
 season              = 'annual'
-grid                = '0.5x0.5'              # '0.25x0.25' or '0.5x0.5'
+grid                = '0.25x0.25'              # '0.25x0.25' or '0.5x0.5'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 pval                = 0.9                     # percentile value  
-domain              = 'europe'
+domain              = 'scandinavia'
 write2file          = True
 # ----------------------------------------------------
 
