@@ -20,13 +20,15 @@ def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize, title):
     ax.contour(lon, lat, ds, levels=clevs,colors = [(0.5,0.5,0.5)],linewidths=0.5,transform=ccrs.PlateCarree())
     ax.coastlines(color='k',linewidth=1)
 
-    ax.set_title(title,fontsize=fontsize+2)
+    ax.set_title(title,fontsize=fontsize+5, loc='left',y=0.9,x=0.02)
     
     if flag == 1 :
         rectangle = plt.Rectangle((25, 66.25), 6.25, 6.25, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
     elif flag == 2:
         rectangle = plt.Rectangle((28, 69.25), 3.25, 3.25, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
-    elif (flag == 3) or (flag == 4):
+    elif flag == 3:
+        rectangle = plt.Rectangle((30.25, 71.25), 1.25, 1.25, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
+    elif flag == 4:
         rectangle = plt.Rectangle((31.25, 72.25), 0.25, 0.25, fc='r',ec='r',lw=2)
     ax.add_patch(rectangle)
 
@@ -53,7 +55,7 @@ figname_out      = 'fig_05.png'
 # read in data
 da1 = xr.open_dataset(filename1).sel(time=date)[variable].sel(box_size=25).mean(dim='number')
 da2 = xr.open_dataset(filename2).sel(time=date)[variable].sel(box_size=13).mean(dim='number')
-da3 = xr.open_dataset(filename3).sel(time=date)[variable].sel(box_size=1).mean(dim='number')
+da3 = xr.open_dataset(filename3).sel(time=date)[variable].sel(box_size=3).mean(dim='number')
 da4 = xr.open_dataset(filename4).sel(time=date)[variable]
 
 # modify units to mm/day
@@ -77,21 +79,21 @@ figsize  = np.array([12,8])
 fig,ax   = plt.subplots(nrows=2,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
-title1 = 'a) forecast: 3-day lead time, 25 gridpoints$^{2}$ precision'
-title2 = 'b) forecast: 2-day lead time, 13 gridpoints$^{2}$ precision'
-title3 = 'c) forecast: 1-day lead time, 1 gridpoint$^{2}$ precision'
-title4 = 'd) ERA5: 1 gridpoint$^{2}$ precision'
+title1 = '3-day lead time'
+title2 = '2-day lead time'
+title3 = '1-day lead time'
+title4 = 'August 7$^{th}$, 2023'
 
 setup_subplot_xy(1, ax[0], da1, clevs, cmap, fontsize, title1)
 setup_subplot_xy(2, ax[1], da2, clevs, cmap, fontsize, title2)
 setup_subplot_xy(3, ax[2], da3, clevs, cmap, fontsize, title3)
 p = setup_subplot_xy(4, ax[3], da4, clevs, cmap, fontsize, title4)
 
-fig.subplots_adjust(left=0.05,right=0.95, top=0.95, hspace=0.125,wspace=-0.1)
+fig.subplots_adjust(left=0.05,right=0.95, top=0.95, hspace=0.025,wspace=-0.11)
 cbar_ax = fig.add_axes([0.2, 0.035, 0.6, 0.03])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize, size=0)
-cb.ax.set_title('daily accumulated precipitation anomalies [mm/day]', fontsize=fontsize+2,y=1.01)
+cb.ax.set_title('daily accumulated precipitation anomalies [mm/day]', fontsize=fontsize+3,y=1.01)
 
 if write2file: plt.savefig(path_out + figname_out)
 plt.show()

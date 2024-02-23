@@ -19,6 +19,7 @@ def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize):
     sig   = ds['significance']
     
     p = ax.contourf(lon, lat, score,levels=clevs,cmap=cmap,extend='min',transform=ccrs.PlateCarree())
+    #ax.contour(lon, lat, score, levels=clevs,colors = [(0.5,0.5,0.5)],linewidths=0.5,transform=ccrs.PlateCarree())
     ax.pcolor(lon, lat, sig, hatch='/////', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.4,0.4,0.4], lw=0, transform=ccrs.PlateCarree())
     ax.coastlines(color='k',linewidth=1)
     
@@ -31,7 +32,7 @@ def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize):
     return p
 
 # INPUT -----------------------
-write2file = True
+write2file = False
 # -----------------------------
 
 # define stuff         
