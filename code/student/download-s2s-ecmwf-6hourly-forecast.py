@@ -23,13 +23,13 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product             = 'forecast' # forecast/vr_forecast
-first_forecast_date = '20190701' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 53        # number of forecast initializations   
+first_forecast_date = '20180920' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 1        # number of forecast initializations   
 grid                = '0.25/0.25' # degree lat/lon resolution
 domain              = 'southern_norway'
 variables           = ['tp','t2m','sd']
 comp_lev            = 5 # file compression level
-write2file          = False
+write2file          = True
 # -----------------------------------------
 
 # initialize mars server
