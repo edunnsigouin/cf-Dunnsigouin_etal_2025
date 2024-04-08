@@ -1,0 +1,4 @@
+"""
+Plots era5 vs forecast at a given lead time. Sanity check to make sure data
+is correct. expect high correlation at short lead times
+"""

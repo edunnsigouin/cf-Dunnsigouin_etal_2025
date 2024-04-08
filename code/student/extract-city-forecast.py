@@ -2,7 +2,7 @@
 Preprocesses forecast data for use by NHH masters students.
 Extracts data by city.
 
-NOTE: here the data was downloaded on two different grids.
+NOTE: here the data was downloaded on two different domains with the same grid.
 One format for pre-2020 and another for post-2020. This code
 combines them for a given city.
 """
@@ -24,12 +24,12 @@ def preprocess(ds):
 product               = 'forecast'          # forecast or hindcast
 variable              = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 first_forecast_date_1 = '20170102'          # first initialization date of forecast (either a monday or thursday) 
-number_forecasts_1    = 312                   # number of forecasts
+number_forecasts_1    = 313                   # number of forecasts
 first_forecast_date_2 = '20200102'          # first initialization date of forecast (either a monday or thursday)
 number_forecasts_2    = 313                   # number of forecasts 
 season                = 'annual'
 grid                  = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
-domain                = 'oslo'
+domain                = 'bergen'
 write2file            = True
 # -----------------------------------------------------
 

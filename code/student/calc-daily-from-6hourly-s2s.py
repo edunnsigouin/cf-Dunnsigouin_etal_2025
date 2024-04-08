@@ -9,21 +9,23 @@ import numpy    as np
 import xarray   as xr
 import pandas   as pd
 import os
-from forsikring import config,misc,s2s
+from forsikring import config,misc,s2s,verify
 from matplotlib  import pyplot as plt
+from datetime import datetime, timedelta
 
 # INPUT ----------------------------------------------- 
 variables           = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 product             = 'forecast'              # hindcast or forecast ?
-first_forecast_date = '20190902' # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 35        # number of forecast initializations  
+first_forecast_date = '20200102' # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 1        # number of forecast initializations  
 season              = 'annual'
 grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
-write2file          = True
+domain              = 'southern_norway'
+write2file          = False
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
 print(forecast_dates)
 
 for variable in variables:
@@ -31,18 +33,28 @@ for variable in variables:
         for dtype in ['cf','pf']:
 
             misc.tic()
-            print('variable: ' + variable + ', date: ' + date + ', dtype: ' + dtype)
+            datestring = date.strftime('%Y-%m-%d')
+            print('variable: ' + variable + ', date: ' + datestring + ', dtype: ' + dtype)
             
-            forecastcycle = s2s.which_mv_for_init(date,model='ECMWF',fmt='%Y-%m-%d')
-            basename      = '%s_%s_%s_%s'%(forecastcycle,grid,date,dtype)
+            forecastcycle = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
+            basename      = '%s_%s_%s_%s'%(forecastcycle,grid,datestring,dtype)
                 
             if variable == 'tp24': # daily accumulated precip (m)
 
-                path_in                          = config.dirs['s2s_' + product + '_6hourly_student'] + 'tp6/'
+                # files downloaded into different paths if before our after 2020
+                if date >= datetime(2020,1,2):
+                    path_in = config.dirs['s2s_' + product + '_6hourly'] + 'tp6/'
+                else:
+                    path_in = config.dirs['s2s_' + product + '_6hourly_student'] + 'tp6/'
+
                 path_out                         = config.dirs['s2s_' + product + '_daily_student'] + variable + '/'
                 filename_in                      = 'tp6_' + basename + '.nc'
                 filename_out                     = variable + '_' + basename + '.nc'
                 ds                               = xr.open_dataset(path_in + filename_in)
+
+                # extract domain
+                dim = verify.get_data_dimensions(grid, 'daily', domain)
+                ds  = ds.sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')
 
                 # shift time back by 6 hours. This means that for data on day 0 with hours 0,6,12,18,24,
                 # hour 24 (accumulated from hour 18-24) is counted in day 0 not day 1. Basically,
@@ -60,15 +72,15 @@ for variable in variables:
                 ds[variable].attrs['forecastcycle'] = forecastcycle
 
                 if write2file: misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
-                    
+
                 ds.close()
 
         if write2file:
             
             print('combine cf and pf files into one file..')
-            basename_cf     = '%s_%s_%s_%s'%(forecastcycle,grid,date,'cf')
-            basename_pf     = '%s_%s_%s_%s'%(forecastcycle,grid,date,'pf')
-            basename        = '%s_%s'%(grid,date) 
+            basename_cf     = '%s_%s_%s_%s'%(forecastcycle,grid,datestring,'cf')
+            basename_pf     = '%s_%s_%s_%s'%(forecastcycle,grid,datestring,'pf')
+            basename        = '%s_%s'%(grid,datestring) 
             filename_out_cf = variable + '_' + basename_cf + '.nc'
             filename_out_pf = variable + '_' + basename_pf + '.nc'
             filename_out    = variable + '_' + basename + '.nc'

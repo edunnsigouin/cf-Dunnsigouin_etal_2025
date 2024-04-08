@@ -28,22 +28,23 @@ s2s_hindcast_daily_climatology      = processed + "s2s/ecmwf/hindcast/daily/clim
 s2s_hindcast_daily_quantile         = processed + "s2s/ecmwf/hindcast/daily/quantile/values_smooth/"
 s2s_hindcast_weekly                 = processed + "s2s/ecmwf/hindcast/weekly/values/"
 
-era5_6hourly                     = raw + "era5/6hourly/"
-era5_daily                       = processed + "era5/continuous-format/daily/"
-era5_daily_student               = processed + "era5/continuous-format/daily/student/"
-era5_forecast_daily              = processed + "era5/s2s-model-format/forecast/daily/values/"
-era5_forecast_daily_student      = processed + "era5/s2s-model-format/forecast/daily/student/"
-era5_forecast_daily_smooth       = processed + "era5/s2s-model-format/forecast/daily/values_smooth/"
-era5_forecast_daily_anomaly      = processed + "era5/s2s-model-format/forecast/daily/anomaly_smooth/"
-era5_forecast_daily_binary       = processed + "era5/s2s-model-format/forecast/daily/binary_smooth/"
-era5_forecast_weekly             = processed + "era5/s2s-model-format/forecast/weekly/values/"
-era5_forecast_weekly_anomaly     = processed + "era5/s2s-model-format/forecast/weekly/anomaly_smooth/"
-era5_forecast_weekly_binary      = processed + "era5/s2s-model-format/forecast/weekly/binary_smooth/"
-era5_hindcast_daily              = processed + "era5/s2s-model-format/hindcast/daily/values/"
-era5_hindcast_daily_quantile     = processed + "era5/s2s-model-format/hindcast/daily/quantile/values_smooth/"
-era5_hindcast_daily_climatology  = processed + "era5/s2s-model-format/hindcast/daily/climatology/values_smooth/"
-era5_hindcast_weekly_quantile    = processed + "era5/s2s-model-format/hindcast/weekly/quantile/values_smooth/"
-era5_hindcast_weekly_climatology = processed + "era5/s2s-model-format/hindcast/weekly/climatology/values_smooth/"
+era5_6hourly                         = raw + "era5/6hourly/"
+era5_daily                           = processed + "era5/continuous-format/daily/"
+era5_daily_student                   = processed + "era5/continuous-format/daily/student/"
+era5_forecast_daily                  = processed + "era5/s2s-model-format/forecast/daily/values/"
+era5_forecast_daily_student          = processed + "era5/s2s-model-format/forecast/daily/student/values/"
+era5_forecast_daily_student_combined = processed + "era5/s2s-model-format/forecast/daily/student/combined/"
+era5_forecast_daily_smooth           = processed + "era5/s2s-model-format/forecast/daily/values_smooth/"
+era5_forecast_daily_anomaly          = processed + "era5/s2s-model-format/forecast/daily/anomaly_smooth/"
+era5_forecast_daily_binary           = processed + "era5/s2s-model-format/forecast/daily/binary_smooth/"
+era5_forecast_weekly                 = processed + "era5/s2s-model-format/forecast/weekly/values/"
+era5_forecast_weekly_anomaly         = processed + "era5/s2s-model-format/forecast/weekly/anomaly_smooth/"
+era5_forecast_weekly_binary          = processed + "era5/s2s-model-format/forecast/weekly/binary_smooth/"
+era5_hindcast_daily                  = processed + "era5/s2s-model-format/hindcast/daily/values/"
+era5_hindcast_daily_quantile         = processed + "era5/s2s-model-format/hindcast/daily/quantile/values_smooth/"
+era5_hindcast_daily_climatology      = processed + "era5/s2s-model-format/hindcast/daily/climatology/values_smooth/"
+era5_hindcast_weekly_quantile        = processed + "era5/s2s-model-format/hindcast/weekly/quantile/values_smooth/"
+era5_hindcast_weekly_climatology     = processed + "era5/s2s-model-format/hindcast/weekly/climatology/values_smooth/"
 
 seasonal_hindcast                 = raw + "seasonal/ecmwf/monthly/hindcast/"
 seasonal_forecast                 = raw + "seasonal/ecmwf/monthly/forecast/"
@@ -89,6 +90,7 @@ dirs = {"proj":proj,
         "era5_monthly":era5_monthly,
         "era5_forecast_daily":era5_forecast_daily,
         "era5_forecast_daily_student":era5_forecast_daily_student,
+        "era5_forecast_daily_student_combined":era5_forecast_daily_student_combined,
         "era5_forecast_daily_smooth":era5_forecast_daily_smooth,
         "era5_forecast_daily_anomaly":era5_forecast_daily_anomaly,
         "era5_forecast_daily_binary":era5_forecast_daily_binary,
