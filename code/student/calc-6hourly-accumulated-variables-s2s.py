@@ -20,8 +20,8 @@ from matplotlib  import pyplot as plt
 variables           = ['tp']                  
 dtypes              = ['cf','pf']             # control & perturbed forecasts/hindcasts
 product             = 'forecast'              # hindcast or forecast
-first_forecast_date = '20170102' # first initialization date of forecast (either a monday or thursday) 
-number_forecasts    = 313        # number of forecast initializations 
+first_forecast_date = '20150611' # first initialization date of forecast (either a monday or thursday) 
+number_forecasts    = 59        # number of forecast initializations 
 season              = 'annual'
 grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
 comp_lev            = 5                       # level of compression with nccopy (1-10)
@@ -31,7 +31,6 @@ write2file          = True
 # get all dates for monday and thursday forecast initializations
 forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
 print(forecast_dates)
-
 
 for variable in variables:
     for date in forecast_dates:
@@ -72,6 +71,7 @@ for variable in variables:
             da.close()
             
             misc.toc()
+
 
 
 

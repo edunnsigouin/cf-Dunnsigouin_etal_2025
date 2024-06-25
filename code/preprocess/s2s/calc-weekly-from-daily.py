@@ -7,10 +7,10 @@ import xarray   as xr
 from forsikring import misc,s2s,config,verify
 
 # INPUT -----------------------------------------------
-product             = 'hindcast'          # forecast or hindcast
+product             = 'forecast'          # forecast or hindcast
 variable            = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20200102'         # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 105                 # number of forecasts 
+first_forecast_date = '20230103'         # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 104                 # number of forecasts 
 season              = 'annual'
 grid                = '0.5x0.5'          # '0.25x0.25' & '0.5x0.5'
 write2file          = True

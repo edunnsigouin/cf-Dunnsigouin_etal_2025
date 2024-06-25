@@ -23,11 +23,11 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product             = 'forecast' # forecast/vr_forecast
-first_forecast_date = '20180920' # first initialization date of forecast (either a monday or thursday)
+first_forecast_date = '20120102' # first initialization date of forecast (either a monday or thursday)
 number_forecast     = 1        # number of forecast initializations   
 grid                = '0.25/0.25' # degree lat/lon resolution
 domain              = 'southern_norway'
-variables           = ['tp','t2m','sd']
+variables           = ['mwg6']
 comp_lev            = 5 # file compression level
 write2file          = True
 # -----------------------------------------
@@ -57,7 +57,17 @@ for variable in variables:
     elif variable == 't2m':
         param =	param + '167.128/'
     elif variable == 'sd':
-        param = param + '141.128/'        
+        param = param + '141.128/'
+    elif variable == 'mwg6':
+        param = param + '123.128/'
+    elif variable == 'mwg':
+        param = param + '49.128/'
+    elif variable == 'u10':
+        param = param + '165.128/'
+    elif variable == 'v10':
+        param = param + '166.128/'
+    elif variable == 'sf':
+        param = param + '144.128/'
     if variable == variables[-1]: param = param[:-1]
 
 # populate API dictionary
@@ -111,7 +121,7 @@ if write2file:
 
             print('compress files to reduce space..')
             misc.compress_file(comp_lev,4,filename_nc,path)
-    
+
             misc.toc()
 
 

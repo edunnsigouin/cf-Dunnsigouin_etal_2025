@@ -52,11 +52,11 @@ def initialize_hindcast_array(date,number_hdate,variable,dim):
 
 # INPUT -----------------------------------------------
 variables           = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20230807'           # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 1                    # number of forecasts   
+first_forecast_date = '20220103'           # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 104                    # number of forecasts   
 number_hdate        = 20
 season              = 'annual'
-grid                = '0.25x0.25'        # '0.25x0.25' or '0.5x0.5'
+grid                = '0.5x0.5'        # '0.25x0.25' or '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------         
 
