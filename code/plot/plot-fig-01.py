@@ -49,7 +49,7 @@ def setup_subplot_fss(flag, ax, ds, title_text, clevs, cmap, fontsize):
     return p
 
 # INPUT -----------------------
-write2file = True
+write2file = False
 # -----------------------------
 
 # define stuff         
