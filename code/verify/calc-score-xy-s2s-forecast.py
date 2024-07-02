@@ -29,13 +29,13 @@ from forsikring  import misc,s2s,verify,config
 # INPUT -----------------------------------------------
 score_flag               = 'fmsess'
 time_flag                = 'weekly'                   # daily or weekly
-variable                 = 't2m24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
-first_forecast_date      = '20210104'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 104                      # number of forecasts 
+first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
+number_forecasts         = 313                      # number of forecasts 
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
 grid                     = '0.25x0.25'
-box_size                 = 33                       # smoothing box size in grid points per side. Must be odd!
+box_size                 = 1                       # smoothing box size in grid points per side. Must be odd!
 lead_time                = 2
 number_bootstrap         = 10000                   # number of times to shuffle initialization dates for error bars
 pval                     = 0.9

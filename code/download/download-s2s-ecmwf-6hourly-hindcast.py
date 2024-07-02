@@ -25,11 +25,11 @@ from datetime                    import datetime
 from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
-product             = 'vr_hindcast' # hindcast/vr_hindcast
-first_forecast_date = '20220704' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 52          # number of forecast initializations      
+product             = 'hindcast' # hindcast/vr_hindcast
+first_forecast_date = '20230803' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 1          # number of forecast initializations      
 nhdates             = 20 # number of hindcast years  
-grid                = '0.5/0.5' # degree lat/lon resolution
+grid                = '0.25/0.25' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var                 = 'tp'
 comp_lev            = 5 # file compression level
