@@ -73,9 +73,9 @@ ds2        = xr.open_dataset(path_in + filename_in_2)
 ds3        = xr.open_dataset(path_in + filename_in_3)
 
 # convert weekly lead_time_gained to units of days    
-ds1['lead_time_gained'] = ds1['lead_time_gained']*7
-ds2['lead_time_gained'] = ds2['lead_time_gained']*7
-ds3['lead_time_gained'] = ds3['lead_time_gained']*7
+#ds1['lead_time_gained'] = ds1['lead_time_gained']*7
+#ds2['lead_time_gained'] = ds2['lead_time_gained']*7
+#ds3['lead_time_gained'] = ds3['lead_time_gained']*7
 
 # plot 
 fontsize    = 11
@@ -113,7 +113,7 @@ cb1.ax.set_title('accuracy [FMSESS or FBSS]', fontsize=fontsize+3,y=-2)
 cb2_ax = fig.add_axes([0.515, 0.05, 0.41, 0.02])
 cb2    = fig.colorbar(p2, cax=cb2_ax, orientation='horizontal',ticks=clevs_ltg[2::4], pad=0.025)
 cb2.ax.tick_params(labelsize=fontsize, size=0)
-cb2.ax.set_title('lead time gained or lost [days]', fontsize=fontsize+3,y=-2)
+cb2.ax.set_title('lead time gained or lost [weeks]', fontsize=fontsize+3,y=-2)
 
 # write2file
 if write2file: plt.savefig(path_out + figname_out)
