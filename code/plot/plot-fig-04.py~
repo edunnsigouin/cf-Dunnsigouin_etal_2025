@@ -19,7 +19,7 @@ def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize):
     sig   = ds['significance']
     
     p = ax.contourf(lon, lat, score,levels=clevs,cmap=cmap,transform=ccrs.PlateCarree())
-    ax.pcolor(lon, lat, sig, hatch='/////', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.4,0.4,0.4], lw=0, transform=ccrs.PlateCarree())
+    #ax.pcolor(lon, lat, sig, hatch='/////', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.4,0.4,0.4], lw=0, transform=ccrs.PlateCarree())
     ax.coastlines(color='k',linewidth=1)
     
     if (flag == 1) or (flag == 3) or (flag == 5):
@@ -31,7 +31,7 @@ def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize):
     return p
 
 # INPUT -----------------------
-write2file = True
+write2file = False
 # -----------------------------
 
 # define stuff         
@@ -61,6 +61,8 @@ figsize    = np.array([12,12])
 fig,ax     = plt.subplots(nrows=3,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax         = ax.ravel()
 
+fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.25,wspace=0.025)
+
 setup_subplot_xy(1, ax[0], ds1, clevs, cmap, fontsize)
 setup_subplot_xy(2, ax[1], ds2, clevs, cmap, fontsize)
 setup_subplot_xy(3, ax[2], ds3, clevs, cmap, fontsize)
@@ -68,17 +70,29 @@ setup_subplot_xy(4, ax[3], ds4, clevs, cmap, fontsize)
 setup_subplot_xy(5, ax[4], ds5, clevs, cmap, fontsize)
 p = setup_subplot_xy(6, ax[5], ds6, clevs, cmap, fontsize)
 
-fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.35,wspace=0.025)
 cbar_ax = fig.add_axes([0.2, 0.065, 0.6, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize, size=0)
 cb.ax.set_title('accuracy at lead week 2 [fmsess or fbss]', fontsize=fontsize+5,y=1.01)
 
-ax[0].set_title('precision = 1 gridpoint$^{2}$ / 9km$^{2}$',fontsize=fontsize+5)
-ax[1].set_title('precision = 33 gridpoints$^{2}$ / 297km$^{2}$',fontsize=fontsize+5)
-fig.text(0.025,0.73,'anomalies',rotation=90,fontsize=fontsize+5)
+ax[0].set_title('a)',fontsize=fontsize+3)
+ax[1].set_title('b)',fontsize=fontsize+3)
+ax[2].set_title('c)',fontsize=fontsize+3)
+ax[3].set_title('d)',fontsize=fontsize+3)
+ax[4].set_title('e)',fontsize=fontsize+3)
+ax[5].set_title('f)',fontsize=fontsize+3)
+
+fig.text(0.275,0.945,'precision = 1 gridpoint$^{2}$ / 9km$^{2}$',horizontalalignment='center',fontsize=fontsize+5)
+fig.text(0.74,0.945,'precision = 33 gridpoints$^{2}$ / 297km$^{2}$',horizontalalignment='center',fontsize=fontsize+5)
+fig.text(0.025,0.75,'anomalies',rotation=90,fontsize=fontsize+5)
 fig.text(0.025,0.41,'90$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
-fig.text(0.025,0.15,'10$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
+fig.text(0.025,0.135,'10$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
+
+#ax[0].set_title('precision = 1 gridpoint$^{2}$ / 9km$^{2}$',fontsize=fontsize+5)
+#ax[1].set_title('precision = 33 gridpoints$^{2}$ / 297km$^{2}$',fontsize=fontsize+5)
+#fig.text(0.025,0.73,'anomalies',rotation=90,fontsize=fontsize+5)
+#fig.text(0.025,0.41,'90$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
+#fig.text(0.025,0.15,'10$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
 
 # write2file
 if write2file: plt.savefig(path_out + figname_out)
