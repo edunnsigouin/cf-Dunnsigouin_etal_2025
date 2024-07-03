@@ -18,7 +18,7 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
     box_size    = ds['box_size']
 
     if (flag == 0) or (flag == 2) or (flag == 4):
-        p = ax.contourf(time, box_size, ds['score'], levels=clevs_score, cmap=cmap_score, extend='min')
+        p = ax.contourf(time, box_size, ds['score'], levels=clevs_score, cmap=cmap_score)
         ax.pcolor(time, box_size, ds['significance'], hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
 
         contour = ax.contour(time, box_size, ds['score'], levels=clevs_score, linewidths=2,linestyles='-',colors = [(0.5,0.5,0.5)])
@@ -56,7 +56,7 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
 
 
 # INPUT -----------------------
-write2file = False
+write2file = True
 # -----------------------------
 
 # define stuff         
@@ -82,36 +82,33 @@ figsize     = np.array([12,12])
 fig,ax      = plt.subplots(nrows=3,ncols=2,sharey='row',sharex='col',figsize=(figsize[0],figsize[1]))
 ax          = ax.ravel()
 
-title1 = 'a) daily anomalies'
-title2 = 'b) daily anomalies'
-title3 = 'c) daily 90$^{th}$ quantile extremes'
-title4 = 'd) daily 90$^{th}$ quantile extremes'
-title5 = 'e) daily 10$^{th}$ quantile extremes'
-title6 = 'f) daily 10$^{th}$ quantile extremes'
+fig.text(0.5, 0.965, 'anomalies',horizontalalignment='center',color='k',fontsize=fontsize+4)
+fig.text(0.5, 0.67, '90$^{th}$ quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
+fig.text(0.5, 0.375, '10$^{th}$ quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
 
-setup_subplot(0, ax[0], ds1, title1, clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
+setup_subplot(0, ax[0], ds1, 'a)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-setup_subplot(2, ax[2], ds2, title3, clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
+setup_subplot(2, ax[2], ds2, 'c)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-p1 = setup_subplot(4, ax[4], ds3 , title5, clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
+p1 = setup_subplot(4, ax[4], ds3, 'e)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-setup_subplot(1, ax[1], ds1, title4, clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
+setup_subplot(1, ax[1], ds1, 'b)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-setup_subplot(3, ax[3], ds2, title5, clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
+setup_subplot(3, ax[3], ds2, 'd)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-p2 = setup_subplot(5, ax[5], ds3, title6, clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
+p2 = setup_subplot(5, ax[5], ds3, 'f)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
 fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.15,wspace=0.075)
 
 cb1_ax = fig.add_axes([0.075, 0.05, 0.41, 0.02])
 cb1    = fig.colorbar(p1, cax=cb1_ax, orientation='horizontal',ticks=clevs_score, pad=0.025)
 cb1.ax.tick_params(labelsize=fontsize, size=0) 
-cb1.ax.set_title('accuracy [FMSESS or FBSS]', fontsize=fontsize,y=-1.75)
+cb1.ax.set_title('accuracy [FMSESS or FBSS]', fontsize=fontsize+3,y=-2)
 
 cb2_ax = fig.add_axes([0.515, 0.05, 0.41, 0.02])
 cb2    = fig.colorbar(p2, cax=cb2_ax, orientation='horizontal',ticks=clevs_ltg[2::4], pad=0.025)
 cb2.ax.tick_params(labelsize=fontsize, size=0)
-cb2.ax.set_title('lead time gained or lost [days]', fontsize=fontsize,y=-1.75)
+cb2.ax.set_title('lead time gained or lost [days]', fontsize=fontsize+3,y=-2)
 
 # write2file
 if write2file: plt.savefig(path_out + figname_out)
