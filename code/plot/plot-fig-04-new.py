@@ -1,5 +1,5 @@
 """
-Plots fig. 02 in Dunn-Sigouin et al. 
+Plots fig. 03 in Dunn-Sigouin et al. 
 """
 
 import numpy       as np
@@ -19,7 +19,6 @@ def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize):
     sig   = ds['significance']
     
     p = ax.contourf(lon, lat, score,levels=clevs,cmap=cmap,transform=ccrs.PlateCarree())
-    #ax.contour(lon, lat, score, levels=clevs,colors = [(0.5,0.5,0.5)],linewidths=0.5,transform=ccrs.PlateCarree())
     ax.pcolor(lon, lat, sig, hatch='/////', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.4,0.4,0.4], lw=0, transform=ccrs.PlateCarree())
     ax.coastlines(color='k',linewidth=1)
     
@@ -38,13 +37,13 @@ write2file = True
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fmsess_xy_tp24_daily_europe_annual_boxsize_1_leadtime_5_2020-01-02_2022-12-29_0.25x0.25.nc' 
-filename_in_2     = 'fmsess_xy_tp24_daily_europe_annual_boxsize_33_leadtime_5_2020-01-02_2022-12-29_0.25x0.25.nc' 
-filename_in_3     = 'fbss_xy_tp24_pval0.9_daily_europe_annual_boxsize_1_leadtime_5_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_4     = 'fbss_xy_tp24_pval0.9_daily_europe_annual_boxsize_33_leadtime_5_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_5     = 'fbss_xy_tp24_pval0.1_daily_europe_annual_boxsize_1_leadtime_5_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_6     = 'fbss_xy_tp24_pval0.1_daily_europe_annual_boxsize_33_leadtime_5_2020-01-02_2022-12-29_0.25x0.25.nc'
-figname_out       = 'fig_02.png'
+filename_in_1     = 'fmsess_xy_tp24_weekly_europe_annual_boxsize_1_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc' 
+filename_in_2     = 'fmsess_xy_tp24_weekly_europe_annual_boxsize_33_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc' 
+filename_in_3     = 'fbss_xy_tp24_pval0.9_weekly_europe_annual_boxsize_1_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_4     = 'fbss_xy_tp24_pval0.9_weekly_europe_annual_boxsize_33_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_5     = 'fbss_xy_tp24_pval0.1_weekly_europe_annual_boxsize_1_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_6     = 'fbss_xy_tp24_pval0.1_weekly_europe_annual_boxsize_33_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc'
+figname_out       = 'fig_04.png'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
@@ -73,7 +72,7 @@ fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.35,wsp
 cbar_ax = fig.add_axes([0.2, 0.065, 0.6, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize, size=0)
-cb.ax.set_title('accuracy at lead day 5 [FMSESS or FBSS]', fontsize=fontsize+5,y=1.01)
+cb.ax.set_title('accuracy at lead week 2 [fmsess or fbss]', fontsize=fontsize+5,y=1.01)
 
 ax[0].set_title('precision = 1 gridpoint$^{2}$ / 9km$^{2}$',fontsize=fontsize+5)
 ax[1].set_title('precision = 33 gridpoints$^{2}$ / 297km$^{2}$',fontsize=fontsize+5)
