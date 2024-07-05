@@ -49,7 +49,6 @@ def initialize_hindcast_array(date,number_hdate,variable,dim):
     return xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
 
 
-
 # INPUT -----------------------------------------------
 variables           = ['t2m24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 first_forecast_date = '20200102'           # first initialization date of forecast (either a monday or thursday)

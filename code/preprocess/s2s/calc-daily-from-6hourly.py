@@ -11,12 +11,12 @@ from forsikring import config,misc,s2s
 from matplotlib  import pyplot as plt
 
 # INPUT ----------------------------------------------- 
-variables           = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+variables           = ['t2m24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 product             = 'hindcast'              # hindcast or forecast ?
-first_forecast_date = '20220103' # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 104        # number of forecast initializations  
+first_forecast_date = '20200102' # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 105        # number of forecast initializations  
 season              = 'annual'
-grid                = '0.5x0.5'             # '0.25x0.25' or '0.5x0.5'
+grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------            
 

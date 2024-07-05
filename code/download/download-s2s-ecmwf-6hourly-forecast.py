@@ -21,10 +21,10 @@ from datetime                    import datetime
 from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
-product             = 'vr_forecast' # forecast/vr_forecast
-first_forecast_date = '20220103' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 104        # number of forecast initializations   
-grid                = '0.5/0.5' # degree lat/lon resolution
+product             = 'forecast' # forecast/vr_forecast
+first_forecast_date = '20230803' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 6        # number of forecast initializations   
+grid                = '0.25/0.25' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var                 = 'tp'
 comp_lev            = 5 # file compression level
@@ -88,7 +88,8 @@ dic = {
 }    
 
 # get all dates for monday and thursday forecast initializations
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast,'annual')
+#forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast,'annual')
+forecast_dates = pd.date_range(first_forecast_date, periods=number_forecast, freq="D")
 print(forecast_dates)
 
 # populate dictionary some more and download eachforcast one-by-one
