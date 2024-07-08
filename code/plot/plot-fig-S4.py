@@ -1,5 +1,5 @@
 """
-Plots fig. 1 in Dunn-Sigouin et al. 
+Plots fig. S4 in Dunn-Sigouin et al. 
 """
 
 import numpy     as np
@@ -11,7 +11,7 @@ import matplotlib as mpl
 
 def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize):
     """ 
-    Sets up specifics of subplots for fig. 1
+    Sets up specifics of subplots for fig. S4
     """
     time        = ds['time']
     time_interp = ds['time_interp']
@@ -43,11 +43,11 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
         ax2.set_ylabel(r'precision [km$^2$]', fontsize=fontsize)
 
     if (flag == 4) or (flag == 5):
-        ax.set_xlabel(r'lead time [days]', fontsize=fontsize,labelpad=0)
+        ax.set_xlabel(r'lead time [weeks]',fontsize=fontsize,labelpad=0)
 
     ax.set_xticks(time)
     ax.set_xlim([time[0], time[-1]])
-    ax.set_xticklabels(['1', '', '', '', '5', '', '', '', '', '10', '', '', '', '', '15'], fontsize=fontsize)
+    ax.set_xticklabels(['1','2','3','4','5','6'],fontsize=fontsize)
     
     ax.set_ylim([box_size[0], box_size[-2]])
     ax.set_title(title_text, fontsize=fontsize + 3)
@@ -56,21 +56,26 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
 
 
 # INPUT -----------------------
-write2file = False
+write2file = True
 # -----------------------------
 
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fmsess_tp24_daily_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
-filename_in_2     = 'fbss_tp24_pval0.9_daily_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
-filename_in_3     = 'fbss_tp24_pval0.1_daily_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
+filename_in_1     = 'fmsess_t2m24_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_2     = 'fbss_t2m24_pval0.9_weekly_europe_annual_2021-01-04_2021-12-30.nc'
+filename_in_3     = 'fbss_t2m24_pval0.1_weekly_europe_annual_2021-01-04_2021-12-30.nc'
 figname_out       = 'fig_S4.png'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
 ds2        = xr.open_dataset(path_in + filename_in_2)    
 ds3        = xr.open_dataset(path_in + filename_in_3)
+
+# convert weekly lead_time_gained to units of days    
+#ds1['lead_time_gained'] = ds1['lead_time_gained']*7
+#ds2['lead_time_gained'] = ds2['lead_time_gained']*7
+#ds3['lead_time_gained'] = ds3['lead_time_gained']*7
 
 # plot 
 fontsize    = 11
@@ -108,7 +113,7 @@ cb1.ax.set_title('accuracy [FMSESS or FBSS]', fontsize=fontsize+3,y=-2)
 cb2_ax = fig.add_axes([0.515, 0.05, 0.41, 0.02])
 cb2    = fig.colorbar(p2, cax=cb2_ax, orientation='horizontal',ticks=clevs_ltg[2::4], pad=0.025)
 cb2.ax.tick_params(labelsize=fontsize, size=0)
-cb2.ax.set_title('lead time gained or lost [days]', fontsize=fontsize+3,y=-2)
+cb2.ax.set_title('lead time gained or lost [weeks]', fontsize=fontsize+3,y=-2)
 
 # write2file
 if write2file: plt.savefig(path_out + figname_out)

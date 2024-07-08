@@ -1,5 +1,5 @@
 """
-Plots fig. 1 in Dunn-Sigouin et al. 
+Plots fig. S3 in Dunn-Sigouin et al. 
 """
 
 import numpy     as np
@@ -11,7 +11,7 @@ import matplotlib as mpl
 
 def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize):
     """ 
-    Sets up specifics of subplots for fig. 1
+    Sets up specifics of subplots for fig. S3
     """
     time        = ds['time']
     time_interp = ds['time_interp']
@@ -62,9 +62,9 @@ write2file = True
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fmsess_tp24_daily_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_2     = 'fbss_tp24_pval0.9_daily_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_3     = 'fbss_tp24_pval0.1_daily_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
+filename_in_1     = 'fmsess_t2m24_daily_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_2     = 'fbss_t2m24_pval0.9_daily_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_3     = 'fbss_t2m24_pval0.1_daily_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
 figname_out       = 'fig_S3.png'
 
 # read in data
