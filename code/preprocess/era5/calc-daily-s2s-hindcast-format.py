@@ -56,7 +56,7 @@ first_forecast_date = '20200102'           # first initialization date of foreca
 number_forecasts    = 105                    # number of forecasts   
 number_hdate        = 20
 season              = 'annual'
-grid                = '0.25x0.25'        # '0.25x0.25' or '0.5x0.5'
+grid                = '0.5x0.5'        # '0.25x0.25' or '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------         
 
