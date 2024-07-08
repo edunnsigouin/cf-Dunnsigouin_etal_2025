@@ -22,7 +22,7 @@ write2file          = False
 
 # get forecast dates 
 #forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
-forecast_dates = pd.date_range(first_forecast_date, periods=1).strftime('%Y-%m-%d')
+forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts).strftime('%Y-%m-%d')
 print(forecast_dates)
 
 for date in forecast_dates:
@@ -35,6 +35,9 @@ for date in forecast_dates:
     path_in_hindcast  = config.dirs['s2s_hindcast_daily'] + variable + '/'
     path_out          = config.dirs['s2s_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
     filename_forecast = variable + '_' + grid + '_' + date + '.nc'
+
+
+    # NEED TO CODE GET MOST RECENT HINDCAST. CHANGING DATES NECESSARY? IM USING NUMPY ARRAY BELOW NOT XARRAY----------------------------------------------------
     filename_hindcast = variable + '_' + grid + '_' + date + '.nc'
     filename_out      = variable + '_' + grid + '_' + date + '.nc'
 
@@ -44,8 +47,8 @@ for date in forecast_dates:
     hindcast = xr.open_dataset(path_in_hindcast + filename_hindcast).sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')[variable]
 
     # calculate hindcast climatology and forecast ensemble mean
-    hindcast = hindcast.mean(dim='number').mean(dim='hdate')
-    forecast = forecast.mean(dim='number')
+    #hindcast = hindcast.mean(dim='number').mean(dim='hdate')
+    #forecast = forecast.mean(dim='number')
     
     # resample to weekly if applicable
     forecast = verify.resample_daily_to_weekly(forecast, time_flag, grid, variable)
@@ -61,16 +64,10 @@ for date in forecast_dates:
     # sample to calculate climatology and standard deviation is hindcast initialization dates.
     dim_sizes  = hindcast.shape
 
-    print(dim_sizes)
-    """
-    hindcast   = np.reshape(hindcast,[dim_sizes[0],dim_sizes[1]*dim_sizes[2],dim_sizes[3],dim_sizes[4]]) # concatenate hdate and number dims for sample
-    anomaly    = (forecast - hindcast.mean(dim='hdate')) / hindcast.std(dim='hdate')
+    hindcast   = hindcast.values
+    hindcast   = np.reshape(hindcast,[dim_sizes[0],dim_sizes[1],dim_sizes[2]*dim_sizes[3],dim_sizes[4],dim_sizes[5]]) # concatenate hdate and number dims for sample
+    anomaly    = (forecast.mean(dim='number') - hindcast.mean(axis=2)) / hindcast.std(axis=2)
 
-    # calc anomaly
-    anomaly = forecast - hindcast
-
-    # apply spatial smoothing
-    anomaly_smooth = verify.boxcar_smoother_xy_optimized(box_sizes, anomaly, 'xarray')
     
     # modify metadata
     anomaly_smooth = anomaly_smooth.rename(variable)
@@ -99,8 +96,7 @@ for date in forecast_dates:
     forecast.close()
     hindcast.close()
     anomaly.close()
-    anomaly_smooth.close()
-    """
+
     misc.toc()
 
 

@@ -12,18 +12,18 @@ from forsikring import misc,s2s,config,verify
 # INPUT -----------------------------------------------
 time_flag           = 'daily'                 # daily or weekly
 variable            = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20230807'             # first initialization date of forecast (either a monday or thursday)
+first_forecast_date = '20230809'             # first initialization date of forecast (either a monday or thursday)
 number_forecasts    = 1                      # number of forecasts 
 season              = 'annual'
 grid                = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
 domain              = 'scandinavia'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!  
-write2file          = True
+write2file          = False
 # -----------------------------------------------------
 
 # get forecast dates 
 #forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
-forecast_dates = pd.date_range(first_forecast_date, periods=1).strftime('%Y-%m-%d')
+forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts).strftime('%Y-%m-%d')
 print(forecast_dates)
 
 for date in forecast_dates:
@@ -37,7 +37,7 @@ for date in forecast_dates:
     path_out          = config.dirs['era5_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
     filename_forecast = variable + '_' + grid + '_' + date + '.nc'
     filename_hindcast = variable + '_' + grid + '_' + date + '.nc'
-    filename_out      = variable + '_' + grid + '_' + date + '.nc'
+    filename_out      = variable + '_' + grid + '_' + date + '_standardized.nc'
 
     # read forecast and hindcast format data
     forecast = xr.open_dataset(path_in_forecast + filename_forecast)[variable]
