@@ -45,24 +45,19 @@ write2file           = False
 
 # define stuff
 dim              = misc.get_dim(grid,'daily')
-filename1        = config.dirs['s2s_forecast_' + time_flag + '_smooth'] + variable + '/' + 'tp24_0.25x0.25_2023-08-05.nc'
-filename2        = config.dirs['s2s_forecast_' + time_flag + '_smooth'] + variable + '/' + 'tp24_0.25x0.25_2023-08-06.nc'
-filename3        = config.dirs['s2s_forecast_' + time_flag + '_smooth'] + variable + '/' + 'tp24_0.25x0.25_2023-08-07.nc'
+filename1        = config.dirs['s2s_forecast_' + time_flag + '_anomaly'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-05_standardized.nc'
+filename2        = config.dirs['s2s_forecast_' + time_flag + '_anomaly'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-06_standardized.nc'
+filename3        = config.dirs['s2s_forecast_' + time_flag + '_anomaly'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_standardized.nc'
+#filename4        = config.dirs['era5_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_standardized.nc'
 filename4        = config.dirs['era5_forecast_' + time_flag] + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07.nc'
 path_out         = config.dirs['fig'] + 'paper/'
-figname_out      = 'fig_05.png'
+figname_out      = 'fig_05_new.png'
 
 # read in data
-da1 = xr.open_dataset(filename1).sel(time=date)[variable].sel(box_size=25).mean(dim='number')
-da2 = xr.open_dataset(filename2).sel(time=date)[variable].sel(box_size=13).mean(dim='number')
-da3 = xr.open_dataset(filename3).sel(time=date)[variable].sel(box_size=3).mean(dim='number')
-da4 = xr.open_dataset(filename4).sel(time=date)[variable]
-
-# modify units to mm/day
-da1   = da1*1000
-da2   = da2*1000
-da3   = da3*1000
-da4   = da4*1000
+da1 = xr.open_dataset(filename1).sel(time=date).sel(box_size=25)
+da2 = xr.open_dataset(filename2).sel(time=date).sel(box_size=13)
+da3 = xr.open_dataset(filename3).sel(time=date).sel(box_size=3)
+da4 = xr.open_dataset(filename4).sel(time=date)#.sel(box_size=1)
 
 # extract specified domain
 dim = misc.subselect_xy_domain_from_dim(dim,domain,grid)
@@ -71,9 +66,13 @@ da2 = da2.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 da3 = da3.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 da4 = da4.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 
+# convert to mm/day
+da4[variable] = da4[variable]*1000
+
 # plot 
 fontsize = 11
 clevs    = np.arange(5,55,5)
+#clevs    = np.arange(0,11,1)
 cmap     = 'GnBu'
 figsize  = np.array([12,8])
 fig,ax   = plt.subplots(nrows=2,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
@@ -84,10 +83,10 @@ title2 = '2-day lead time'
 title3 = '1-day lead time'
 title4 = 'August 7$^{th}$, 2023'
 
-setup_subplot_xy(1, ax[0], da1, clevs, cmap, fontsize, title1)
-setup_subplot_xy(2, ax[1], da2, clevs, cmap, fontsize, title2)
-setup_subplot_xy(3, ax[2], da3, clevs, cmap, fontsize, title3)
-p = setup_subplot_xy(4, ax[3], da4, clevs, cmap, fontsize, title4)
+setup_subplot_xy(1, ax[0], da1[variable], clevs, cmap, fontsize, title1)
+setup_subplot_xy(2, ax[1], da2[variable], clevs, cmap, fontsize, title2)
+setup_subplot_xy(3, ax[2], da3[variable], clevs, cmap, fontsize, title3)
+p = setup_subplot_xy(4, ax[3], da4[variable], clevs, cmap, fontsize, title4)
 
 fig.subplots_adjust(left=0.05,right=0.95, top=0.95, hspace=0.025,wspace=-0.11)
 cbar_ax = fig.add_axes([0.2, 0.035, 0.6, 0.03])
