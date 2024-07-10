@@ -107,7 +107,7 @@ def calculate_EFI(forecast,hindcast,dq):
 time_flag           = 'daily'                 # daily or weekly
 variable            = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 first_forecast_date = '20230803'             # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 1                      # number of forecasts 
+number_forecasts    = 6                      # number of forecasts 
 season              = 'annual'
 grid                = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
 domain              = 'scandinavia'
@@ -143,9 +143,6 @@ for date in forecast_dates:
     forecast = verify.boxcar_smoother_xy_optimized(box_sizes, forecast, 'xarray')
     hindcast = verify.boxcar_smoother_xy_optimized(box_sizes, hindcast, 'xarray')
 
-    forecast = forecast.isel(box_size=slice(1,3))
-    hindcast = hindcast.isel(box_size=slice(1,3))
-    
     # calculate extreme forecast index
     EFI = calculate_EFI(forecast,hindcast,dq=0.01)
 
