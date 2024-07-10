@@ -97,10 +97,10 @@ ax       = ax.ravel()
 fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.1,hspace=0.1,wspace=-0.1)
 
 title1 = r'a) forecast: lead day = 5, precision = 33 gridpoints$^2$'
-title2 = r'b) forecast: 4-day lead day 4, precision = 17 gridpoints$^2$'
-title3 = r'c) forecast: 3-day lead day 3, precision = 11 gridpoints$^2$'
-title4 = r'd) forecast: 2-day lead day 2, precision = 5 gridpoints$^2$'
-title5 = r'e) forecast: 1-day lead day 1, precision = 1 gridpoint$^2$'
+title2 = r'b) forecast: lead day = 4, precision = 17 gridpoints$^2$'
+title3 = r'c) forecast: lead day = 3, precision = 11 gridpoints$^2$'
+title4 = r'd) forecast: lead day = 2, precision = 5 gridpoints$^2$'
+title5 = r'e) forecast: lead day = 1, precision = 1 gridpoint$^2$'
 title6 = r'f) verification: August 7$^{th}$ 2023, precision = 1 gridpoint$^2$'
 
 setup_subplot_xy(1, ax[0], da1['EFI'], da1[variable], clevs, cmap, fontsize, title1)
