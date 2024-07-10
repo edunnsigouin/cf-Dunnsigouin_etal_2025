@@ -39,27 +39,65 @@ def find_most_recent_hindcast(forecast_file, hindcast_dir):
     return os.path.join(hindcast_dir, most_recent_hindcast) if most_recent_hindcast else None
 
 
+def init_EFI(forecast):
+
+    box_size  = forecast['box_size']
+    time      = forecast['time']
+    latitude  = forecast['latitude']
+    longitude = forecast['longitude']
+
+    data       = np.zeros((box_sizes.size,time.size,dim.nlatitude,dim.nlongitude),dtype=np.float32)
+    dims       = ["box_size","time","latitude","longitude"]
+    coords     = dict(box_size=box_sizes,time=time,latitude=latitude,longitude=longitude)
+
+    units       = 'none: 0-1'
+    description = 'ecmwf extreme forecast index'
+
+    attrs      = dict(description=description,units=units)
+    name       = 'EFI'
+    
+    return xr.DataArray(data=data,dims=dims,coords=coords,attrs=attrs,name=name)
+
 
 def calculate_EFI(forecast,hindcast,dq):
 
-    dim_sizes      = hindcast.shape
-    hindcast_numpy = hindcast.values # convert to numpy 
-    hindcast_numpy = np.reshape(hindcast_numpy,[dim_sizes[0]*dim_sizes[1]])
-    number         = forecast['number'].size
-    forecast_numpy = forecast.values
-    
-    print(hindcast_numpy.shape)
-    
-    q   = np.arange(dq,1.0,dq)
-    qx  = np.quantile(hindcast_numpy,q,axis=0)
+    # re-order forecast and hindcast dimensions for convenience
+    hindcast = hindcast.transpose('box_size','hdate','number','time','latitude','longitude')
+    forecast = forecast.transpose('box_size','number','time','latitude','longitude')
 
-    fq = np.array([qx.shape])
-    for i in range(0,q.size):
-        fq[i] = (forecast[:] < qx[i]).sum()/number
+    # define stuff
+    box_size = forecast['box_size'].size
+    number   = forecast['number'].size
+    EFI      = init_EFI(forecast)
+
+    # calculate EFI for each smoothing box_size
+    for bs in range(box_size):
+
+        print(bs)
         
-    EFI = (2/np.pi)*np.sum((q-fq)/np.sqrt(q*(1-q))*dq)
+        # work with number arrays for speed
+        hindcast_temp = hindcast[bs,:].values
+        forecast_temp = forecast[bs,:].values
+        
+        # Reshape the hindcast array to combine the 'hdate' and 'number' dimensions
+        dim_sizes      = hindcast_temp.shape
+        hindcast_temp  = hindcast_temp.reshape(dim_sizes[0] * dim_sizes[1], *dim_sizes[2:])
+
+        # Calculate quantiles for the hindcast along the combined dimension
+        q   = np.arange(dq,1.0,dq)
+        qx  = np.quantile(hindcast_temp,q,axis=0)
+
+        # Calculate the fraction of forecast members below each hindcast quantile
+        fq = np.zeros((qx.shape))
+        for i in range(q.size):
+            fq[i,:] = (forecast_temp < qx[i,:]).sum(axis=0)/number
+
+        # Vectorized calculation of EFI
+        EFI[bs,:] = (2 / np.pi) * np.sum((q[:, np.newaxis, np.newaxis, np.newaxis] - fq) / \
+                        np.sqrt(q[:, np.newaxis, np.newaxis, np.newaxis] * (1 - q[:, np.newaxis, np.newaxis, np.newaxis]))*dq, axis=0)
     
     return EFI
+
 
 
 
@@ -74,7 +112,7 @@ season              = 'annual'
 grid                = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
 domain              = 'scandinavia'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!  
-write2file          = False
+write2file          = True
 # -----------------------------------------------------
 
 # get forecast dates
@@ -92,7 +130,7 @@ for date in forecast_dates:
     path_out          = config.dirs['s2s_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
     filename_forecast = path_in_forecast + variable + '_' + grid + '_' + date + '.nc'
     filename_hindcast = find_most_recent_hindcast(filename_forecast, path_in_hindcast) # find most recent bi-weekly hindcast! 
-    filename_out      = path_out + variable + '_' + grid + '_' + date + '_standardized.nc'
+    filename_out      = path_out + variable + '_' + grid + '_' + date + '_EFI.nc'
     
     # read forecast and hindcast format data from specific domain
     dim      = verify.get_data_dimensions(grid, time_flag, domain)
@@ -105,15 +143,12 @@ for date in forecast_dates:
     forecast = verify.boxcar_smoother_xy_optimized(box_sizes, forecast, 'xarray')
     hindcast = verify.boxcar_smoother_xy_optimized(box_sizes, hindcast, 'xarray')
 
-
-    forecast = forecast.isel(box_size=1,time=1,latitude=30)
-    hindcast = hindcast.isel(box_size=1,time=1,latitude=30)
+    forecast = forecast.isel(box_size=slice(1,3))
+    hindcast = hindcast.isel(box_size=slice(1,3))
     
+    # calculate extreme forecast index
     EFI = calculate_EFI(forecast,hindcast,dq=0.01)
 
-    print(EFI)
-
-    
     """
     # calc smoothed & standardized anomaly.
     # sample to calculate mean and standard deviation is hindcast initialization dates + ensemble members
@@ -134,14 +169,23 @@ for date in forecast_dates:
         output[variable]                     = output[variable]*1000 # convert from m to mm/day
         output[variable].attrs['units']      = 'mm/day'
         output[variable].attrs['long_name']  = 'daily accumulated precipitation'
+    """
+
+    # modify metadata 
+    forecast                             = forecast.rename(variable)
+    forecast                             = forecast.mean(dim='number') # ensemble mean
+    output                               = xr.merge([forecast,EFI])    
+    output[variable]                     = output[variable]*1000 # convert from m to mm/day                                                                                      
+    output[variable].attrs['units']      = 'mm/day'                                                                                                                              
+    output[variable].attrs['long_name']  = 'daily accumulated precipitation'  
 
     # write output
     if write2file: misc.to_netcdf_with_packing_and_compression(output, filename_out)
 
     forecast.close()
     hindcast.close()
-    anomaly.close()
-    """
+    #anomaly.close()
+
     misc.toc()
 
 
