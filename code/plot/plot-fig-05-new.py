@@ -98,7 +98,7 @@ ax[6].set_axis_off()
 #fig.subplots_adjust(right=1.0, left=0.0,top=0.975,bottom=0.0275,hspace=0.15,wspace=-0.3)
 #fig.subplots_adjust(hspace=0.75,wspace=-0.75)
 
-title1 = r'a) forecast: lead day 5, precision 33 gridpoints$^2$'
+title1 = r'a) 33 gridpoints$^2$ precision'
 title2 = r'b) forecast: lead day 5, precision 1 gridpoint$^2$'
 title3 = r'c) forecast: lead day 3, precision 17 gridpoints$^2$'
 title4 = r'd) forecast: lead day 3, precision 1 gridpoint$^2$'
@@ -127,7 +127,7 @@ cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.02
 cb.ax.tick_params(labelsize=fontsize, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+2,y=1.01)
 
-fig.text(0.025,0.85,'forecast lead day 5',rotation=90,fontsize=fontsize+2)
+fig.text(0.015,0.8,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
 
 plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)
