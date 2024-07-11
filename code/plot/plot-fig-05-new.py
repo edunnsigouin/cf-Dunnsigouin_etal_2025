@@ -33,7 +33,7 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
     #    ax.pcolor(lon, lat, ds1, hatch='..', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[1.0,0.0,0.0], lw=0)
         
     ax.coastlines(color='k',linewidth=1)
-    ax.set_title(title,fontsize=fontsize+2)
+    ax.set_title(title,fontsize=fontsize+5)
     ax.text(0.02,0.88,stats,fontsize=fontsize,transform=ax.transAxes)
     ax.add_patch(rectangle)
     
@@ -99,12 +99,13 @@ ax[6].set_axis_off()
 #fig.subplots_adjust(hspace=0.75,wspace=-0.75)
 
 title1 = r'a) 33 gridpoints$^2$ precision'
-title2 = r'b) forecast: lead day 5, precision 1 gridpoint$^2$'
-title3 = r'c) forecast: lead day 3, precision 17 gridpoints$^2$'
-title4 = r'd) forecast: lead day 3, precision 1 gridpoint$^2$'
-title5 = r'e) forecast: lead day 1, precision 9 gridpoint$^2$'
-title6 = r'f) forecast: lead day 1, precision 1 gridpoint$^2$'
-title7 = r'g) verification: August 7$^{th}$ 2023, precision 1 gridpoint$^2$'
+title2 = r'b) 1 gridpoint$^2$ precision'
+title3 = r'c) 17 gridpoints$^2$ precision'
+title4 = r'd) 1 gridpoint$^2$ precision'
+title5 = r'e) 9 gridpoint$^2$ precision'
+title6 = r'f) 1 gridpoint$^2$ precision'
+title7 = r'g) 1 gridpoint$^2$ precision'  
+#title7 = r'g) verification: August 7$^{th}$ 2023, precision 1 gridpoint$^2$'
 
 stats1 = r'fmsess = ' + str(da1['fmsess'].values.round(2)) + '\nfbss = ' + str(da1['fbss'].values.round(2))
 stats2 = r'fmsess = ' + str(da2['fmsess'].values.round(2)) + '\nfbss = ' + str(da2['fbss'].values.round(2))
@@ -127,8 +128,9 @@ cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.02
 cb.ax.tick_params(labelsize=fontsize, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+2,y=1.01)
 
-#fig.text(0.0,0.79,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
-ax[0].set_ylabel('forecast lead day 5',fontsize=fontsize+5)
+fig.text(0.0,0.78,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
+fig.text(0.0,0.48,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
+fig.text(0.0,0.18,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
 
 plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)
