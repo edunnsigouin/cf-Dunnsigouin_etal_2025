@@ -89,7 +89,7 @@ da7[variable] = da7[variable]*1000
 fontsize = 11
 clevs    = np.arange(5,55,5)
 cmap     = 'GnBu'
-figsize  = np.array([10,14])
+figsize  = np.array([10,15])
 fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
@@ -128,9 +128,10 @@ cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.02
 cb.ax.tick_params(labelsize=fontsize, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+2,y=1.01)
 
-fig.text(0.0,0.78,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
-fig.text(0.0,0.48,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
-fig.text(0.0,0.18,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
+fig.text(0.0,0.785,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
+fig.text(0.0,0.54,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
+fig.text(0.0,0.29,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
+fig.text(0.55,0.15,r'verification 2023/08/07',rotation=90,fontsize=fontsize+5)
 
 plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)
