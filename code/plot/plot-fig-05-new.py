@@ -127,7 +127,8 @@ cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.02
 cb.ax.tick_params(labelsize=fontsize, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+2,y=1.01)
 
-fig.text(0.015,0.8,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
+#fig.text(0.0,0.79,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
+ax[0].set_ylabel('forecast lead day 5',fontsize=fontsize+5)
 
 plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)
