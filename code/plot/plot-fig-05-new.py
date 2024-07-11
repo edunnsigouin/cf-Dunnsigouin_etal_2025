@@ -25,29 +25,18 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
         ds1 = ds1.where(ds1, np.nan)
         ax.pcolor(lon, lat, ds1, hatch='..', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[1.0,0.0,0.0], lw=0)
         rectangle_length = 0.25*ds2['box_size']
-    #else:
+        rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
+    else:
+        rectangle = plt.Rectangle((31.75, 72.75), 0.25, 0.25, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
     #    ds1 = ds1  > 0.5
     #    ds1 = ds1.where(ds1, np.nan)
     #    ax.pcolor(lon, lat, ds1, hatch='..', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[1.0,0.0,0.0], lw=0)
         
     ax.coastlines(color='k',linewidth=1)
     ax.set_title(title,fontsize=fontsize+2)
-    ax.text(0.02,0.87,stats,fontsize=fontsize,transform=ax.transAxes)
-    """
-    if flag == 1 :
-        rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
-    elif flag == 2:
-        rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
-    elif flag == 3:
-        rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
-    elif flag == 4:
-        rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
-    elif flag == 5:
-        rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
-    elif flag == 6:
-        rectangle = plt.Rectangle((31.75, 72.75), 0.25, 0.25, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
+    ax.text(0.02,0.88,stats,fontsize=fontsize,transform=ax.transAxes)
     ax.add_patch(rectangle)
-    """
+    
     return p
 
 
@@ -100,7 +89,7 @@ da7[variable] = da7[variable]*1000
 fontsize = 11
 clevs    = np.arange(5,55,5)
 cmap     = 'GnBu'
-figsize  = np.array([10,15])
+figsize  = np.array([10,12])
 fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
