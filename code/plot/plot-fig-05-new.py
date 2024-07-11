@@ -93,7 +93,7 @@ figsize  = np.array([10,14])
 fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
-ax[7].set_axis_off()
+ax[6].set_axis_off()
 
 #fig.subplots_adjust(right=1.0, left=0.0,top=0.975,bottom=0.0275,hspace=0.15,wspace=-0.3)
 #fig.subplots_adjust(hspace=0.75,wspace=-0.75)
@@ -120,9 +120,9 @@ setup_subplot_xy(3, ax[2], da3['EFI'], da3[variable], clevs, cmap, fontsize, tit
 setup_subplot_xy(4, ax[3], da4['EFI'], da4[variable], clevs, cmap, fontsize, title4, stats4)
 setup_subplot_xy(5, ax[4], da5['EFI'], da5[variable], clevs, cmap, fontsize, title5, stats5)
 setup_subplot_xy(6, ax[5], da6['EFI'], da6[variable], clevs, cmap, fontsize, title6, stats6)
-p = setup_subplot_xy(7, ax[6], da7[variable], da7[variable], clevs, cmap, fontsize, title7, stats7)
+p = setup_subplot_xy(7, ax[7], da7[variable], da7[variable], clevs, cmap, fontsize, title7, stats7)
 
-cbar_ax = fig.add_axes([0.55, 0.1, 0.4, 0.02])
+cbar_ax = fig.add_axes([0.05, 0.2, 0.4, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+2,y=1.01)
