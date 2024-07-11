@@ -474,8 +474,8 @@ def calc_forecast_and_reference_error(score_type, filename_verification, filenam
     calculates forecast and reference error for skill scores
     """
     # read data
-    verification          = xr.open_dataset(filename_verification)[variable]
-    forecast              = xr.open_dataset(filename_forecast)[variable]
+    verification          = xr.open_dataset(filename_verification)[variable].sel(box_size=box_sizes_temp)
+    forecast              = xr.open_dataset(filename_forecast)[variable].sel(box_size=box_sizes_temp)
 
     # calculate error terms
     if score_type == 'fmsess':

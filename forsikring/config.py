@@ -19,6 +19,7 @@ s2s_forecast_daily_student_combined = processed + "s2s/ecmwf/forecast/daily/stud
 s2s_forecast_daily_smooth           = processed + "s2s/ecmwf/forecast/daily/values_smooth/"
 s2s_forecast_daily_anomaly          = processed + "s2s/ecmwf/forecast/daily/anomaly_smooth/"
 s2s_forecast_daily_probability      = processed + "s2s/ecmwf/forecast/daily/probability_smooth/"
+s2s_forecast_daily_EFI              = processed + "s2s/ecmwf/forecast/daily/EFI_smooth/"
 s2s_forecast_weekly                 = processed + "s2s/ecmwf/forecast/weekly/values/"
 s2s_forecast_weekly_anomaly         = processed + "s2s/ecmwf/forecast/weekly/anomaly_smooth/"
 s2s_forecast_weekly_probability     = processed + "s2s/ecmwf/forecast/weekly/probability_smooth/"
@@ -74,6 +75,7 @@ dirs = {"proj":proj,
         "s2s_forecast_daily_smooth":s2s_forecast_daily_smooth,
         "s2s_forecast_daily_anomaly":s2s_forecast_daily_anomaly,
 	"s2s_forecast_daily_probability":s2s_forecast_daily_probability,
+        "s2s_forecast_daily_EFI":s2s_forecast_daily_EFI,
         "s2s_forecast_daily_student":s2s_forecast_daily_student,
         "s2s_forecast_daily_student_combined":s2s_forecast_daily_student_combined,
         "s2s_forecast_weekly":s2s_forecast_weekly,
