@@ -31,8 +31,8 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
     #    ax.pcolor(lon, lat, ds1, hatch='..', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[1.0,0.0,0.0], lw=0)
         
     ax.coastlines(color='k',linewidth=1)
-    ax.set_title(title,fontsize=fontsize)
-    ax.text(0.02,0.89,stats,fontsize=fontsize,transform=ax.transAxes)
+    ax.set_title(title,fontsize=fontsize+2)
+    ax.text(0.02,0.87,stats,fontsize=fontsize,transform=ax.transAxes)
     """
     if flag == 1 :
         rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
@@ -100,7 +100,7 @@ da7[variable] = da7[variable]*1000
 fontsize = 11
 clevs    = np.arange(5,55,5)
 cmap     = 'GnBu'
-figsize  = np.array([10,16])
+figsize  = np.array([10,15])
 fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
