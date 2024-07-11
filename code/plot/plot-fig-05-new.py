@@ -106,12 +106,12 @@ title5 = r'e) forecast: lead day 1, precision 9 gridpoint$^2$'
 title6 = r'f) forecast: lead day 1, precision 1 gridpoint$^2$'
 title7 = r'g) verification: August 7$^{th}$ 2023, precision 1 gridpoint$^2$'
 
-stats1 = r'fmsess = ' + str(da1['fmsess'].values.round(2)) + ',\nfbss = ' + str(da1['fbss'].values.round(2))
-stats2 = r'fmsess = ' + str(da2['fmsess'].values.round(2)) + ',\nfbss = ' + str(da2['fbss'].values.round(2))
-stats3 = r'fmsess = ' + str(da3['fmsess'].values.round(2)) + ',\nfbss = ' + str(da3['fbss'].values.round(2))
-stats4 = r'fmsess = ' + str(da4['fmsess'].values.round(2)) + ',\nfbss = ' + str(da4['fbss'].values.round(2))
-stats5 = r'fmsess = ' + str(da5['fmsess'].values.round(2)) + ',\nfbss = ' + str(da5['fbss'].values.round(2))
-stats6 = r'fmsess = ' + str(da6['fmsess'].values.round(2)) + ',\nfbss = ' + str(da6['fbss'].values.round(2))
+stats1 = r'fmsess = ' + str(da1['fmsess'].values.round(2)) + '\nfbss = ' + str(da1['fbss'].values.round(2))
+stats2 = r'fmsess = ' + str(da2['fmsess'].values.round(2)) + '\nfbss = ' + str(da2['fbss'].values.round(2))
+stats3 = r'fmsess = ' + str(da3['fmsess'].values.round(2)) + '\nfbss = ' + str(da3['fbss'].values.round(2))
+stats4 = r'fmsess = ' + str(da4['fmsess'].values.round(2)) + '\nfbss = ' + str(da4['fbss'].values.round(2))
+stats5 = r'fmsess = ' + str(da5['fmsess'].values.round(2)) + '\nfbss = ' + str(da5['fbss'].values.round(2))
+stats6 = r'fmsess = ' + str(da6['fmsess'].values.round(2)) + '\nfbss = ' + str(da6['fbss'].values.round(2))
 stats7 = ''
 
 setup_subplot_xy(1, ax[0], da1['EFI'], da1[variable], clevs, cmap, fontsize, title1, stats1)
@@ -122,10 +122,12 @@ setup_subplot_xy(5, ax[4], da5['EFI'], da5[variable], clevs, cmap, fontsize, tit
 setup_subplot_xy(6, ax[5], da6['EFI'], da6[variable], clevs, cmap, fontsize, title6, stats6)
 p = setup_subplot_xy(7, ax[7], da7[variable], da7[variable], clevs, cmap, fontsize, title7, stats7)
 
-cbar_ax = fig.add_axes([0.05, 0.2, 0.4, 0.02])
+cbar_ax = fig.add_axes([0.05, 0.12, 0.4, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+2,y=1.01)
+
+fig.text(0.025,0.85,'forecast lead day 5',rotation=90,fontsize=fontsize+2)
 
 plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)
