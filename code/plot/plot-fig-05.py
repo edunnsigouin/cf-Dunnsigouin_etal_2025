@@ -52,7 +52,7 @@ variable             = 'tp24'
 domain               = 'scandinavia' 
 date                 = '2023-08-07'
 grid                 = '0.25x0.25'
-write2file           = True
+write2file           = False
 # -----------------------------
 
 # define stuff
@@ -67,10 +67,10 @@ path_out         = config.dirs['fig'] + 'paper/'
 figname_out      = 'fig_05.png'
 
 # read in data
-da1 = xr.open_dataset(filename1).sel(time=date).sel(box_size=33)
-da2 = xr.open_dataset(filename2).sel(time=date).sel(box_size=17)
-da3 = xr.open_dataset(filename3).sel(time=date).sel(box_size=11)
-da4 = xr.open_dataset(filename4).sel(time=date).sel(box_size=5)
+da1 = xr.open_dataset(filename1).sel(time=date).sel(box_size=1)
+da2 = xr.open_dataset(filename2).sel(time=date).sel(box_size=1)
+da3 = xr.open_dataset(filename3).sel(time=date).sel(box_size=1)
+da4 = xr.open_dataset(filename4).sel(time=date).sel(box_size=1)
 da5 = xr.open_dataset(filename5).sel(time=date).sel(box_size=1)
 da6 = xr.open_dataset(filename6).sel(time=date)
 

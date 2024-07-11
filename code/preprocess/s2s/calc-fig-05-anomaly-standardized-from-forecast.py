@@ -107,12 +107,12 @@ def calculate_EFI(forecast,hindcast,dq):
 time_flag           = 'daily'                 # daily or weekly
 variable            = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 first_forecast_date = '20230803'             # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 6                      # number of forecasts 
+number_forecasts    = 1                      # number of forecasts 
 season              = 'annual'
 grid                = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
 domain              = 'scandinavia'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!  
-write2file          = True
+write2file          = False
 # -----------------------------------------------------
 
 # get forecast dates
@@ -123,55 +123,51 @@ for date in forecast_dates:
 
     misc.tic()
     print('\n ' + variable + ', ' + grid + ', ' + date)
-        
+
+    # 1) calculate EFI 
     # define stuff
-    path_in_forecast  = config.dirs['s2s_forecast_daily'] + variable + '/'
-    path_in_hindcast  = config.dirs['s2s_hindcast_daily'] + variable + '/'
+    path_in_forecast1  = config.dirs['s2s_forecast_daily'] + variable + '/'
+    path_in_hindcast1  = config.dirs['s2s_hindcast_daily'] + variable + '/'
     path_out          = config.dirs['s2s_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
-    filename_forecast = path_in_forecast + variable + '_' + grid + '_' + date + '.nc'
-    filename_hindcast = find_most_recent_hindcast(filename_forecast, path_in_hindcast) # find most recent bi-weekly hindcast! 
-    filename_out      = path_out + variable + '_' + grid + '_' + date + '_EFI.nc'
+    filename_forecast1 = path_in_forecast1 + variable + '_' + grid + '_' + date + '.nc'
+    filename_hindcast1 = find_most_recent_hindcast(filename_forecast1, path_in_hindcast1) # find most recent bi-weekly hindcast! 
+    filename_out       = path_out + variable + '_' + grid + '_' + date + '_EFI.nc'
     
     # read forecast and hindcast format data from specific domain
-    dim      = verify.get_data_dimensions(grid, time_flag, domain)
-    forecast = xr.open_dataset(filename_forecast).sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')[variable]
-    hindcast = xr.open_dataset(filename_hindcast).sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')[variable]
+    dim       = verify.get_data_dimensions(grid, time_flag, domain)
+    forecast1 = xr.open_dataset(filename_forecast1).sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')[variable]
+    hindcast1 = xr.open_dataset(filename_hindcast1).sel(latitude=dim.latitude, longitude=dim.longitude, method='nearest')[variable]
 
     # apply spatial smoothing. Note here that in order to standardize correctly,
     # you need to smooth the forecast & hindcast before standardizing since                                                                              
     # its not a linear operation.  
-    forecast = verify.boxcar_smoother_xy_optimized(box_sizes, forecast, 'xarray')
-    hindcast = verify.boxcar_smoother_xy_optimized(box_sizes, hindcast, 'xarray')
+    forecast1 = verify.boxcar_smoother_xy_optimized(box_sizes, forecast1, 'xarray')
+    hindcast1 = verify.boxcar_smoother_xy_optimized(box_sizes, hindcast1, 'xarray')
 
     # calculate extreme forecast index
-    EFI = calculate_EFI(forecast,hindcast,dq=0.01)
+    #EFI = calculate_EFI(forecast1,hindcast1,dq=0.01)
 
-    """
-    # calc smoothed & standardized anomaly.
-    # sample to calculate mean and standard deviation is hindcast initialization dates + ensemble members
-    dim_sizes      = hindcast.shape
-    hindcast_numpy = hindcast.values # convert to numpy
-    hindcast_numpy = np.reshape(hindcast_numpy,[dim_sizes[0],dim_sizes[1],dim_sizes[2]*dim_sizes[3],dim_sizes[4],dim_sizes[5]]) # concatenate hdate and number dims for sample
-    forecast       = forecast.mean(dim='number') # ensemble-mean
-    anomaly        = (forecast - hindcast_numpy.mean(axis=2)) / hindcast_numpy.std(axis=2)
     
-    # modify metadata
-    anomaly  = anomaly.rename('anomaly')
-    forecast = forecast.rename(variable)
-    output   = xr.merge([forecast,anomaly])
+    # 2) Calculate FMSESS 
+    path_in_forecast2        = config.dirs['s2s_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
+    path_in_verification2    = config.dirs['era5_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
+    filename_verification2   = path_in_verification2 + variable + '_' + grid + '_' + date + '.nc'
+    filename_forecast2       = path_in_forecast2 + variable + '_' + grid + '_' + date + '.nc'
 
-    if variable == 'tp24':
-        output['anomaly'].attrs['units']     = 'standard deviation'
-        output['anomaly'].attrs['long_name'] = 'standardized anomalies of daily accumulated precipitation'
-        output[variable]                     = output[variable]*1000 # convert from m to mm/day
-        output[variable].attrs['units']      = 'mm/day'
-        output[variable].attrs['long_name']  = 'daily accumulated precipitation'
+    forecast_mse, reference_mse = verify.calc_forecast_and_reference_error('fmsess', filename_verification2, filename_forecast2, variable, box_sizes)
+    fmsess                      = 1.0 - forecast_mse / reference_mse
+
+    # Calculate FBSS
+    pval                    = 0.9
+    path_in_forecast        = config.dirs['s2s_forecast_' + time_flag + '_probability'] + str(pval) + '/' + domain + '/' + variable + '/'
+    path_in_verification    = config.dirs['era5_forecast_' + time_flag + '_binary'] + str(pval) + '/' + domain + '/' + variable + '/'
+    
+    
     """
-
     # modify metadata 
-    forecast                             = forecast.rename(variable)
-    forecast                             = forecast.mean(dim='number') # ensemble mean
-    output                               = xr.merge([forecast,EFI])    
+    forecast1                            = forecast1.rename(variable)
+    forecast1                            = forecast1.mean(dim='number') # ensemble mean
+    output                               = xr.merge([forecast1,EFI])    
     output[variable]                     = output[variable]*1000 # convert from m to mm/day                                                                                      
     output[variable].attrs['units']      = 'mm/day'                                                                                                                              
     output[variable].attrs['long_name']  = 'daily accumulated precipitation'  
@@ -182,7 +178,7 @@ for date in forecast_dates:
     forecast.close()
     hindcast.close()
     #anomaly.close()
-
+    """
     misc.toc()
 
 
