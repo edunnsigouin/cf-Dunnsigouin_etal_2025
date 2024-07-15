@@ -64,7 +64,7 @@ da1[variable] = da1[variable]*1000
 fontsize = 11
 clevs    = np.arange(5,55,5)
 cmap     = 'GnBu'
-figsize  = np.array([1.61*5,5])
+figsize  = np.array([1.61*7,7])
 fig,ax   = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 
 fig.subplots_adjust(right=1.0, left=0.0,top=0.9,bottom=0.15)
