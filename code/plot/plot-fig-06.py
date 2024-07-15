@@ -40,7 +40,7 @@ variable             = 'tp24'
 domain               = 'scandinavia' 
 date                 = '2023-08-07'
 grid                 = '0.25x0.25'
-write2file           = False
+write2file           = True
 # -----------------------------
 
 # define stuff
@@ -52,14 +52,14 @@ filename4        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + 
 filename5        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
 filename6        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
 path_out         = config.dirs['fig'] + 'paper/'
-figname_out      = 'fig_05-new.png'
+figname_out      = 'fig_06.png'
 
 # read in data
 da1 = xr.open_dataset(filename1).sel(time=date).sel(box_size=33)
 da2 = xr.open_dataset(filename2).sel(time=date).sel(box_size=1)
 da3 = xr.open_dataset(filename3).sel(time=date).sel(box_size=19)
 da4 = xr.open_dataset(filename4).sel(time=date).sel(box_size=1)
-da5 = xr.open_dataset(filename5).sel(time=date).sel(box_size=5)
+da5 = xr.open_dataset(filename5).sel(time=date).sel(box_size=9)
 da6 = xr.open_dataset(filename6).sel(time=date).sel(box_size=1)
 
 # extract specified domain
