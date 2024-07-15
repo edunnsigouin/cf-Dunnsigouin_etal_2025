@@ -75,7 +75,7 @@ p = setup_subplot_xy(ax, da2[variable], da1[variable], clevs, cmap, fontsize, ti
 cbar_ax = fig.add_axes([0.152, 0.05, 0.697, 0.04])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize, size=0)
-cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+2,y=1.01)
+cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+4,y=1.01)
 
 #plt.tight_layout()
 if write2file: plt.savefig(path_out + figname_out)
