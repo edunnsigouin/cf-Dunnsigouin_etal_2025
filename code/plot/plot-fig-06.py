@@ -88,12 +88,12 @@ title4 = r'd) 1 gridpoint$^2$ precision'
 title5 = r'e) 9 gridpoint$^2$ precision'
 title6 = r'f) 1 gridpoint$^2$ precision'
 
-stats1 = r'fmsess = ' + str(da1['fmsess'].values.round(2)) + '\nfbss$_{0.9}$ = ' + str(da1['fbss'].values.round(2))
-stats2 = r'fmsess = ' + str(da2['fmsess'].values.round(2)) + '\nfbss$_{0.9}$ = ' + str(da2['fbss'].values.round(2))
-stats3 = r'fmsess = ' + str(da3['fmsess'].values.round(2)) + '\nfbss$_{0.9}$ = ' + str(da3['fbss'].values.round(2))
-stats4 = r'fmsess = ' + str(da4['fmsess'].values.round(2)) + '\nfbss$_{0.9}$ = ' + str(da4['fbss'].values.round(2))
-stats5 = r'fmsess = ' + str(da5['fmsess'].values.round(2)) + '\nfbss$_{0.9}$ = ' + str(da5['fbss'].values.round(2))
-stats6 = r'fmsess = ' + str(da6['fmsess'].values.round(2)) + '\nfbss$_{0.9}$ = ' + str(da6['fbss'].values.round(2))
+stats1 = r'FMSESS = ' + str(da1['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = ' + str(da1['fbss'].values.round(2))
+stats2 = r'FMSESS = ' + str(da2['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = ' + str(da2['fbss'].values.round(2))
+stats3 = r'FMSESS = ' + str(da3['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = ' + str(da3['fbss'].values.round(2))
+stats4 = r'FMSESS = ' + str(da4['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = ' + str(da4['fbss'].values.round(2))
+stats5 = r'FMSESS = ' + str(da5['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = ' + str(da5['fbss'].values.round(2))
+stats6 = r'FMSESS = ' + str(da6['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = ' + str(da6['fbss'].values.round(2))
 
 setup_subplot_xy(1, ax[0], da1['EFI'], da1[variable], clevs, cmap, fontsize, title1, stats1)
 setup_subplot_xy(2, ax[1], da2['EFI'], da2[variable], clevs, cmap, fontsize, title2, stats2)
