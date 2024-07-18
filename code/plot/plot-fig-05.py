@@ -21,9 +21,9 @@ def setup_subplot_xy(ax, ds1, ds2, clevs, cmap, fontsize, title):
     ax.contour(lon, lat, ds2, levels=clevs,colors = [(1.0,1.0,1.0)],linewidths=0.5,transform=ccrs.PlateCarree())
 
     #rectangle = plt.Rectangle((31.75, 72.75), 0.25, 0.25, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
-    ds1 = ds1  > 0.5
-    ds1 = ds1.where(ds1, np.nan)
-    ax.pcolor(lon, lat, ds1, hatch='..', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[1.0,0.0,0.0], lw=0)
+    #ds1 = ds1  > 0.5
+    #ds1 = ds1.where(ds1, np.nan)
+    #ax.pcolor(lon, lat, ds1, hatch='..', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[1.0,0.0,0.0], lw=0)
         
     ax.coastlines(color='k',linewidth=1)
     ax.set_title(title,fontsize=fontsize+5)
