@@ -81,9 +81,9 @@ ax       = ax.ravel()
 
 fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.1,hspace=0.1,wspace=-0.1)
 
-title1 = r'a) 1 gridpoints$^2$ precision'
+title1 = r'a) 1 gridpoint$^2$ precision'
 title2 = r'b) 33 gridpoint$^2$ precision'
-title3 = r'c) 1 gridpoints$^2$ precision'
+title3 = r'c) 1 gridpoint$^2$ precision'
 title4 = r'd) 19 gridpoint$^2$ precision'
 title5 = r'e) 1 gridpoint$^2$ precision'
 title6 = r'f) 9 gridpoint$^2$ precision'
