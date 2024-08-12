@@ -55,12 +55,12 @@ path_out         = config.dirs['fig'] + 'paper/'
 figname_out      = 'fig_06.png'
 
 # read in data
-da1 = xr.open_dataset(filename1).sel(time=date).sel(box_size=33)
-da2 = xr.open_dataset(filename2).sel(time=date).sel(box_size=1)
-da3 = xr.open_dataset(filename3).sel(time=date).sel(box_size=19)
-da4 = xr.open_dataset(filename4).sel(time=date).sel(box_size=1)
-da5 = xr.open_dataset(filename5).sel(time=date).sel(box_size=9)
-da6 = xr.open_dataset(filename6).sel(time=date).sel(box_size=1)
+da1 = xr.open_dataset(filename1).sel(time=date).sel(box_size=1)
+da2 = xr.open_dataset(filename2).sel(time=date).sel(box_size=33)
+da3 = xr.open_dataset(filename3).sel(time=date).sel(box_size=1)
+da4 = xr.open_dataset(filename4).sel(time=date).sel(box_size=19)
+da5 = xr.open_dataset(filename5).sel(time=date).sel(box_size=1)
+da6 = xr.open_dataset(filename6).sel(time=date).sel(box_size=9)
 
 # extract specified domain
 dim = misc.subselect_xy_domain_from_dim(dim,domain,grid)
@@ -81,12 +81,12 @@ ax       = ax.ravel()
 
 fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.1,hspace=0.1,wspace=-0.1)
 
-title1 = r'a) 33 gridpoints$^2$ precision'
-title2 = r'b) 1 gridpoint$^2$ precision'
-title3 = r'c) 19 gridpoints$^2$ precision'
-title4 = r'd) 1 gridpoint$^2$ precision'
-title5 = r'e) 9 gridpoint$^2$ precision'
-title6 = r'f) 1 gridpoint$^2$ precision'
+title1 = r'a) 1 gridpoints$^2$ precision'
+title2 = r'b) 33 gridpoint$^2$ precision'
+title3 = r'c) 1 gridpoints$^2$ precision'
+title4 = r'd) 19 gridpoint$^2$ precision'
+title5 = r'e) 1 gridpoint$^2$ precision'
+title6 = r'f) 9 gridpoint$^2$ precision'
 
 stats1 = r'FMSESS = ' + str(da1['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = ' + str(da1['fbss'].values.round(2))
 stats2 = r'FMSESS = ' + str(da2['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = ' + str(da2['fbss'].values.round(2))

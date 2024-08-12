@@ -11,19 +11,20 @@ from forsikring import config,misc,s2s
 from matplotlib  import pyplot as plt
 
 # INPUT ----------------------------------------------- 
-variables           = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-product             = 'forecast'              # hindcast or forecast ?
-first_forecast_date = '20230803' # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 6        # number of forecast initializations  
+variables           = ['t2m24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+product             = 'hindcast'              # hindcast or forecast ?
+first_forecast_date = '20200102' # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 105        # number of forecast initializations  
 season              = 'annual'
-grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
+grid                = '0.5x0.5'             # '0.25x0.25' or '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
-#forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
-forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts).strftime('%Y-%m-%d')
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
+#forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts).strftime('%Y-%m-%d')
 print(forecast_dates)
+
 
 for variable in variables:
     for date in forecast_dates:
