@@ -21,11 +21,16 @@ def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize):
     p = ax.contourf(lon, lat, score,levels=clevs,cmap=cmap,transform=ccrs.PlateCarree())
     ax.pcolor(lon, lat, sig, hatch='/////', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.4,0.4,0.4], lw=0, transform=ccrs.PlateCarree())
     ax.coastlines(color='k',linewidth=1)
-    
+
     if (flag == 1) or (flag == 3) or (flag == 5):
-        rectangle = plt.Rectangle((-25, 34), 0.25, 0.25, fc='r',ec='r',lw=2)
-    elif (flag == 2) or (flag == 4) or (flag == 6):
-        rectangle = plt.Rectangle((-25, 34), 8.25, 8.25, fc=(0.5,0.5,0.5,0),ec='r',lw=2)    
+        rectangle_length = 0.25
+    else:
+        rectangle_length = 0.25*33
+    rectangle        = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
+    #if (flag == 1) or (flag == 3) or (flag == 5):
+    #    rectangle = plt.Rectangle((-25, 34), 0.25, 0.25, fc='r',ec='r',lw=2)
+    #elif (flag == 2) or (flag == 4) or (flag == 6):
+    #    rectangle = plt.Rectangle((-25, 34), 8.25, 8.25, fc=(0.5,0.5,0.5,0),ec='r',lw=2)    
     ax.add_patch(rectangle)
     
     return p
