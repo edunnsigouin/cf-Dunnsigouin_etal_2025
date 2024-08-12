@@ -26,11 +26,7 @@ def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize):
         rectangle_length = 0.25
     else:
         rectangle_length = 0.25*33
-    rectangle        = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
-    #if (flag == 1) or (flag == 3) or (flag == 5):
-    #    rectangle = plt.Rectangle((-25, 34), 0.25, 0.25, fc='r',ec='r',lw=2)
-    #elif (flag == 2) or (flag == 4) or (flag == 6):
-    #    rectangle = plt.Rectangle((-25, 34), 8.25, 8.25, fc=(0.5,0.5,0.5,0),ec='r',lw=2)    
+    rectangle = plt.Rectangle((44, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
     ax.add_patch(rectangle)
     
     return p
@@ -87,8 +83,8 @@ ax[3].set_title('d)',fontsize=fontsize+3)
 ax[4].set_title('e)',fontsize=fontsize+3)
 ax[5].set_title('f)',fontsize=fontsize+3)
 
-fig.text(0.275,0.945,'precision = 1 gridpoint$^{2}$ / 9km$^{2}$',horizontalalignment='center',fontsize=fontsize+5)
-fig.text(0.74,0.945,'precision = 33 gridpoints$^{2}$ / 297km$^{2}$',horizontalalignment='center',fontsize=fontsize+5)
+fig.text(0.275,0.945,'1 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
+fig.text(0.74,0.945,'33 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
 fig.text(0.025,0.75,'anomalies',rotation=90,fontsize=fontsize+5)
 fig.text(0.025,0.41,'90$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
 fig.text(0.025,0.135,'10$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
