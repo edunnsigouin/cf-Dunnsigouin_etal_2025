@@ -28,8 +28,7 @@ def boxcar_smoother_xy_optimized(box_sizes, da, output_type):
     if (da.dims[-2], da.dims[-1]) != ('latitude', 'longitude'):
         raise ValueError("The last two dimensions of 'da' must be 'latitude' and 'longitude'")
 
-    # Initialize output array
-    smooth_values = np.full((len(box_sizes),) + da.shape, np.nan, dtype='float32')
+    # Initialize output array smooth_values = np.full((len(box_sizes),) + da.shape, np.nan, dtype='float32')
     coords        = {'box_size': box_sizes, **da.coords}
     dims          = ['box_size'] + list(da.dims)
     
@@ -469,14 +468,25 @@ def get_data_dimensions(grid, time_flag, domain):
     return misc.subselect_xy_domain_from_dim(dim, domain, grid)
         
 
-def calc_forecast_and_reference_error(score_type, filename_verification, filename_forecast, variable, box_sizes_temp, pval=0.9):
+def calc_forecast_and_reference_error(score_type, filename_verification, filename_forecast, variable, box_sizes_temp, grid,pval=0.9):
     """
     calculates forecast and reference error for skill scores
     """
     # read data
-    verification          = xr.open_dataset(filename_verification)[variable].sel(box_size=box_sizes_temp)
-    forecast              = xr.open_dataset(filename_forecast)[variable].sel(box_size=box_sizes_temp)
-
+    if grid == '0.25x0.25':
+        forecast              = xr.open_dataset(filename_forecast)[variable].sel(box_size=box_sizes_temp)
+        verification          = xr.open_dataset(filename_verification)[variable].sel(box_size=box_sizes_temp)
+    elif grid == '0.5x0.5':
+        # IMPORANT NOTE: its a bit complicated but here I produce arrays with the same box_size.size as high res data
+        # except its only populated with every other box_size from teh high res data. This means that every other
+        # box_size dim is a repeat of the next. NEED TO FIGURE OUT HOW TO BETTER COMBINE HIGH AND LOW RES FORECAST SKILL
+        # RESULTS!!!!
+        forecast                  = xr.open_dataset(filename_forecast)[variable].sel(box_size=box_sizes_temp,method='nearest')
+        verification              = xr.open_dataset(filename_verification)[variable].sel(box_size=box_sizes_temp,method='nearest')
+        forecast['box_size']      = box_sizes_temp
+        verification['box_size']  = box_sizes_temp
+        
+        
     # calculate error terms
     if score_type == 'fmsess':
         forecast_error_xy  = (forecast - verification) ** 2
