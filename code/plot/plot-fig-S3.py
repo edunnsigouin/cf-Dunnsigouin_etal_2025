@@ -62,9 +62,9 @@ write2file = True
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fmsess_t2m24_daily_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
-filename_in_2     = 'fbss_t2m24_pval0.9_daily_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
-filename_in_3     = 'fbss_t2m24_pval0.1_daily_europe_annual_2021-01-04_2021-12-30_0.25x0.25.nc'
+filename_in_1     = 'fmsess_t2m24_daily_europe_annual_2020-01-02_2021-12-30_0.25x0.25.nc'
+filename_in_2     = 'fbss_t2m24_pval0.9_daily_europe_annual_2020-01-02_2021-12-30_0.25x0.25.nc'
+filename_in_3     = 'fbss_t2m24_pval0.1_daily_europe_annual_2020-01-02_2021-12-30_0.25x0.25.nc'
 figname_out       = 'fig_S3.png'
 
 # read in data

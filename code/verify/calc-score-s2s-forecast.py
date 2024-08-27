@@ -26,16 +26,16 @@ from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
 score_flag               = 'fbss'
-time_flag                = 'weekly'                 # daily or weekly
-variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+time_flag                = 'daily'                 # daily or weekly
+variable                 = 't2m24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
 first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 313                      # number of forecasts 
-season                   = 'mjjas'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
-grids                    = ['0.25x0.25','0.5x0.5']
+number_forecasts         = 209                      # number of forecasts 
+season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
+grids                    = ['0.25x0.25']
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 number_bootstrap         = 10000                    # number of times to shuffle initialization dates for error bars
-pval                     = 0.1
+pval                     = 0.9
 dt                       = 0.05                     # interpolation for lead time gained & max skill calculation
 write2file               = True
 # -----------------------------------------------------
@@ -68,7 +68,7 @@ for grid in grids:
     filename_out        = filename_hr_out if grid == '0.25x0.25' else filename_lr_out
     dim                 = verify.get_data_dimensions(grid, time_flag, domain)
     box_sizes_temp      = verify.match_box_sizes_high_to_low_resolution(grid,box_sizes)
-    
+
     # initialize output arrays
     [score,score_bootstrap,sig] = verify.initialize_misc_arrays(score_flag,dim,box_sizes_temp,number_bootstrap)
     forecast_error              = verify.initialize_error_array(dim,box_sizes_temp,forecast_dates)

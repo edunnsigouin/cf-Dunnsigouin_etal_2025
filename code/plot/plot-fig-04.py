@@ -84,7 +84,7 @@ ax[4].set_title('e)',fontsize=fontsize+3)
 ax[5].set_title('f)',fontsize=fontsize+3)
 
 fig.text(0.275,0.945,'1 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
-fig.text(0.74,0.945,'33 gridpoints$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
+fig.text(0.74,0.945,'33 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
 fig.text(0.025,0.75,'anomalies',rotation=90,fontsize=fontsize+5)
 fig.text(0.025,0.41,'90$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
 fig.text(0.025,0.135,'10$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)

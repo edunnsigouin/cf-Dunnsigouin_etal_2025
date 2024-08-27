@@ -37,20 +37,20 @@ def initialize_quantile_array(variable,box_sizes,time_flag,dim):
 
 
 # input ----------------------------------------------
-time_flag           = 'daily'                   # daily or weekly
-variable            = 'tp24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-first_forecast_date = '20230803'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 6                        # number of forecast initializations
+time_flag           = 'weekly'                   # daily or weekly
+variable            = 't2m24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+first_forecast_date = '20200102'               # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 105                        # number of forecast initializations
 season              = 'annual'
-grid                = '0.25x0.25'              # '0.25x0.25' or '0.5x0.5'
-pval                = 0.99                      # percentile values
-domain              = 'scandinavia'
+grid                = '0.5x0.5'              # '0.25x0.25' or '0.5x0.5'
+pval                = 0.9                      # percentile values
+domain              = 'europe'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 write2file          = True
 # ----------------------------------------------------
 
-#forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d').values
-forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts).strftime('%Y-%m-%d')
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d').values
+#forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts).strftime('%Y-%m-%d')
 print(forecast_dates)
 
 for date in forecast_dates:
