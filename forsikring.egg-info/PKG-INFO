@@ -3,3 +3,6 @@ Name: forsikring
 Version: 0.0.1
 Author: Etienne Dunn-Sigouin
 License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: xarray
+Requires-Dist: scipy

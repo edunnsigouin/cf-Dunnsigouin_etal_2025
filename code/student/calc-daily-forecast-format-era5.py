@@ -17,8 +17,8 @@ from forsikring import config,misc,s2s,verify
 
 # INPUT -----------------------------------------------
 variables           = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20150101'           # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 105                    # number of forecasts   
+first_forecast_date = '20120102'           # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 209                    # number of forecasts   
 season              = 'annual'
 grids               = ['0.25x0.25']        # '0.25x0.25' or '0.5x0.5'
 domain              = 'southern_norway'
@@ -28,7 +28,6 @@ write2file          = True
 # get all dates for monday and thursday forecast initializations 
 forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
 print(forecast_dates)
-
 
 for variable in variables:
     for date in forecast_dates:
@@ -59,4 +58,5 @@ for variable in variables:
             if write2file: misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
                 
             ds.close()
+
 

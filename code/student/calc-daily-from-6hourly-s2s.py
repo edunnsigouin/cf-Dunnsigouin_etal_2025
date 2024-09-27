@@ -16,8 +16,8 @@ from datetime import datetime, timedelta
 # INPUT ----------------------------------------------- 
 variables           = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 product             = 'forecast'              # hindcast or forecast ?
-first_forecast_date = '20150611' # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 59        # number of forecast initializations  
+first_forecast_date = '20120322' # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 186        # number of forecast initializations  
 season              = 'annual'
 grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
 domain              = 'southern_norway'
@@ -27,6 +27,7 @@ write2file          = True
 # get all dates for monday and thursday forecast initializations
 forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
 print(forecast_dates)
+
 
 for variable in variables:
     for date in forecast_dates:
