@@ -74,16 +74,16 @@ setup_subplot_xy(4, ax[3], 'd)', ds4, clevs, cmap, fontsize)
 setup_subplot_xy(5, ax[4], 'e)',ds5, clevs, cmap, fontsize)
 p = setup_subplot_xy(6, ax[5], 'f)', ds6, clevs, cmap, fontsize)
 
-cbar_ax = fig.add_axes([0.25, 0.05, 0.5, 0.02])
+cbar_ax = fig.add_axes([0.25, 0.07, 0.5, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.3)
-cb.ax.tick_params(labelsize=fontsize, size=0)
+cb.ax.tick_params(labelsize=fontsize+2, size=0)
 cb.ax.set_title('accuracy at lead day 5 [FMSESS or FBSS]', fontsize=fontsize+5,y=1.01)
 
 fig.text(0.275,0.9,'1 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
 fig.text(0.74,0.9,'33 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
-fig.text(0.025,0.72,'anomalies',rotation=90,fontsize=fontsize+5)
+fig.text(0.025,0.725,'anomalies',rotation=90,fontsize=fontsize+5)
 fig.text(0.025,0.41,'0.9 quantile extremes',rotation=90,fontsize=fontsize+5)
-fig.text(0.025,0.15,'0.1 quantile extremes',rotation=90,fontsize=fontsize+5)
+fig.text(0.025,0.17,'0.1 quantile extremes',rotation=90,fontsize=fontsize+5)
 
 # write2file
 if write2file: plt.savefig(path_out + figname_out)
