@@ -31,7 +31,7 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
         
     ax.coastlines(color='k',linewidth=1)
     #ax.set_title(title,fontsize=fontsize+5)
-    ax.set_title(title, fontsize=fontsize + 4,loc='left', ha='left', y=0.89, x=0.015, bbox={'facecolor': 'white', 'edgecolor': 'black', 'pad': 3})    
+    ax.set_title(title, fontsize=fontsize + 4,loc='left', ha='left', y=0.89, x=0.02, bbox={'facecolor': 'white', 'edgecolor': 'black', 'pad': 3})    
     
     return p
 
@@ -119,9 +119,10 @@ ax[7].set_frame_on(False)
 #cb.ax.tick_params(labelsize=fontsize, size=0)
 #cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+4,y=1.01)
 
-fig.text(0.06,0.76,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
-fig.text(0.06,0.46,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
-fig.text(0.06,0.155,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
+
+fig.text(0.06,0.8,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
+fig.text(0.06,0.55,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
+fig.text(0.06,0.3,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
 
 if write2file: plt.savefig(path_out + figname_out)
 plt.show()
