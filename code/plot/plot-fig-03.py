@@ -50,7 +50,7 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
     ax.set_xticklabels(['1','2','3','4','5','6'],fontsize=fontsize)
     
     ax.set_ylim([box_size[0], box_size[-2]])
-    ax.set_title(title_text, fontsize=fontsize + 3)
+    ax.set_title(title_text, fontsize=fontsize + 4,loc='left', ha='left', y=0.89, x=0.015, bbox={'facecolor': 'white', 'edgecolor': 'black', 'pad': 3})
     
     return p
 
@@ -88,8 +88,8 @@ fig,ax      = plt.subplots(nrows=3,ncols=2,sharey='row',sharex='col',figsize=(fi
 ax          = ax.ravel()
 
 fig.text(0.5, 0.965, 'anomalies',horizontalalignment='center',color='k',fontsize=fontsize+4)
-fig.text(0.5, 0.67, '90$^{th}$ quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
-fig.text(0.5, 0.375, '10$^{th}$ quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
+fig.text(0.5, 0.67, '0.9 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
+fig.text(0.5, 0.375, '0.1 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
 
 setup_subplot(0, ax[0], ds1, 'a)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
@@ -105,12 +105,12 @@ p2 = setup_subplot(5, ax[5], ds3, 'f)', clevs_score,clevs_ltg, cmap_score, cmap_
 
 fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.15,wspace=0.075)
 
-cb1_ax = fig.add_axes([0.075, 0.05, 0.41, 0.02])
+cb1_ax = fig.add_axes([0.075, 0.045, 0.41, 0.02])
 cb1    = fig.colorbar(p1, cax=cb1_ax, orientation='horizontal',ticks=clevs_score, pad=0.025)
 cb1.ax.tick_params(labelsize=fontsize, size=0) 
 cb1.ax.set_title('accuracy [FMSESS or FBSS]', fontsize=fontsize+3,y=-2)
 
-cb2_ax = fig.add_axes([0.515, 0.05, 0.41, 0.02])
+cb2_ax = fig.add_axes([0.515, 0.045, 0.41, 0.02])
 cb2    = fig.colorbar(p2, cax=cb2_ax, orientation='horizontal',ticks=clevs_ltg[2::4], pad=0.025)
 cb2.ax.tick_params(labelsize=fontsize, size=0)
 cb2.ax.set_title('lead time gained or lost [weeks]', fontsize=fontsize+3,y=-2)
