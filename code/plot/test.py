@@ -27,10 +27,10 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
         rectangle_length = 0.25*ds2['box_size']
         rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
         ax.add_patch(rectangle)        
-        ax.text(0.02,0.88,stats,fontsize=fontsize,transform=ax.transAxes)
+        #ax.text(0.02,0.88,stats,fontsize=fontsize,transform=ax.transAxes)
         
     ax.coastlines(color='k',linewidth=1)
-    ax.set_title(title,fontsize=fontsize+5)
+    #ax.set_title(title,fontsize=fontsize+5)
     
     
     return p
@@ -87,7 +87,7 @@ figsize  = np.array([12,16])
 fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
-fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.1,hspace=0.1,wspace=-0.1)
+fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.1,hspace=0,wspace=-0.15)
 
 title1 = r'a) 1 gridpoint$^2$ precision'
 title2 = r'b) 33 gridpoint$^2$ precision'
