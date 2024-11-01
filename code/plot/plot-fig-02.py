@@ -81,9 +81,9 @@ cb.ax.set_title('accuracy at lead day 5 [FMSESS or FBSS]', fontsize=fontsize+5,y
 
 fig.text(0.275,0.9,'1 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
 fig.text(0.74,0.9,'33 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
-fig.text(0.025,0.75,'anomalies',rotation=90,fontsize=fontsize+5)
+fig.text(0.025,0.72,'anomalies',rotation=90,fontsize=fontsize+5)
 fig.text(0.025,0.41,'0.9 quantile extremes',rotation=90,fontsize=fontsize+5)
-fig.text(0.025,0.135,'0.1 quantile extremes',rotation=90,fontsize=fontsize+5)
+fig.text(0.025,0.15,'0.1 quantile extremes',rotation=90,fontsize=fontsize+5)
 
 # write2file
 if write2file: plt.savefig(path_out + figname_out)
