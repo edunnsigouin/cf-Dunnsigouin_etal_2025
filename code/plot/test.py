@@ -117,12 +117,12 @@ setup_subplot_xy(7, ax[6], da5['EFI'], da7[variable], clevs, cmap, fontsize, 'g)
 
 ax[7].set_frame_on(False)
 
-#cbar_ax = fig.add_axes([0.25, 0.05, 0.5, 0.02])
-#cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
-#cb.ax.tick_params(labelsize=fontsize, size=0)
-#cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+4,y=1.01)
+cbar_ax = fig.add_axes([0.65, 0.15, 0.3, 0.02])
+cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
+cb.ax.tick_params(labelsize=fontsize, size=0)
+cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+4,y=1.01)
 
-fig.text(0.22,0.965,'grid scale precision',fontsize=fontsize+5)
+fig.text(0.215,0.965,'grid scale precision',fontsize=fontsize+5)
 fig.text(0.63,0.965,'optimized precision',fontsize=fontsize+5)
 fig.text(0.055,0.8,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
 fig.text(0.055,0.58,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
