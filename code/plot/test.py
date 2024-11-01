@@ -28,6 +28,9 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
         rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
         ax.add_patch(rectangle)        
         #ax.text(0.02,0.88,stats,fontsize=fontsize,transform=ax.transAxes)
+    else:
+        rectangle = plt.Rectangle((31.75, 72.75), 0.25, 0.25, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
+        ax.add_patch(rectangle)
         
     ax.coastlines(color='k',linewidth=1)
     #ax.set_title(title,fontsize=fontsize+5)
@@ -119,12 +122,12 @@ ax[7].set_frame_on(False)
 #cb.ax.tick_params(labelsize=fontsize, size=0)
 #cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+4,y=1.01)
 
-fig.text(0.25,0.9,'grid scale precision',fontsize=fontsize+5)
-fig.text(0.75,0.9,'optimized precision',fontsize=fontsize+5)
+fig.text(0.2,0.97,'grid scale precision',fontsize=fontsize+5)
+fig.text(0.6,0.97,'optimized precision',fontsize=fontsize+5)
 fig.text(0.055,0.8,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
 fig.text(0.055,0.58,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
 fig.text(0.055,0.37,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
-fig.text(0.055,0.11,r'Storm Hans August 7$^{th}$ 2023',rotation=90,fontsize=fontsize+5)
+fig.text(0.055,0.12,r'Storm Hans August 7$^{th}$ 2023',rotation=90,fontsize=fontsize+5)
 
 if write2file: plt.savefig(path_out + figname_out)
 plt.show()
