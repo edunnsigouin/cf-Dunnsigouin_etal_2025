@@ -19,7 +19,7 @@ def setup_subplot_xy(flag, ax, title_text, ds, clevs, cmap, fontsize):
     sig   = ds['significance']
     
     p = ax.contourf(lon, lat, score,levels=clevs,cmap=cmap,transform=ccrs.PlateCarree())
-    #ax.pcolor(lon, lat, sig, hatch='/////', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.4,0.4,0.4], lw=0, transform=ccrs.PlateCarree())
+    ax.pcolor(lon, lat, sig, hatch='/////', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.4,0.4,0.4], lw=0, transform=ccrs.PlateCarree())
     ax.coastlines(color='k',linewidth=1)
     
     if (flag == 1) or (flag == 3) or (flag == 5):
@@ -64,7 +64,6 @@ figsize    = np.array([12,12])
 fig,ax     = plt.subplots(nrows=3,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax         = ax.ravel()
 
-#fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.25,wspace=0.025)
 fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.38,wspace=0.01)
 
 setup_subplot_xy(1, ax[0], 'a)', ds1, clevs, cmap, fontsize)
@@ -84,12 +83,6 @@ fig.text(0.74,0.9,'33 gridpoint$^{2}$ precision',horizontalalignment='center',fo
 fig.text(0.025,0.725,'anomalies',rotation=90,fontsize=fontsize+5)
 fig.text(0.025,0.42,'0.9 quantile extremes',rotation=90,fontsize=fontsize+5)
 fig.text(0.025,0.16,'0.1 quantile extremes',rotation=90,fontsize=fontsize+5)
-
-#fig.text(0.275,0.945,'1 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
-#fig.text(0.74,0.945,'33 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
-#fig.text(0.025,0.75,'anomalies',rotation=90,fontsize=fontsize+5)
-#fig.text(0.025,0.41,'90$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
-#fig.text(0.025,0.135,'10$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
 
 # write2file
 if write2file: plt.savefig(path_out + figname_out)
