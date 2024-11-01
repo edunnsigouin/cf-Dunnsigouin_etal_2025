@@ -27,7 +27,7 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
         rectangle_length = 0.25*ds2['box_size']
         rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
         ax.add_patch(rectangle)        
-        ax.text(0.05,0.88,stats,fontsize=fontsize,transform=ax.transAxes)
+        ax.text(0.1,0.88,stats,fontsize=fontsize+2,transform=ax.transAxes)
     else:
         rectangle = plt.Rectangle((31.75, 72.75), 0.25, 0.25, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
         ax.add_patch(rectangle)
@@ -122,7 +122,7 @@ cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.02
 cb.ax.tick_params(labelsize=fontsize+2, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,y=1.01)
 
-fig.text(0.215,0.965,'grid scale precision',fontsize=fontsize+5)
+fig.text(0.21,0.965,'grid scale precision',fontsize=fontsize+5)
 fig.text(0.63,0.965,'optimized precision',fontsize=fontsize+5)
 fig.text(0.055,0.8,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
 fig.text(0.055,0.58,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
