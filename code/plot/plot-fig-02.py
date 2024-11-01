@@ -64,7 +64,6 @@ figsize    = np.array([12,12])
 fig,ax     = plt.subplots(nrows=3,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax         = ax.ravel()
 
-#fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.25,wspace=0.025)
 fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.38,wspace=0.01)
 
 setup_subplot_xy(1, ax[0], 'a)', ds1, clevs, cmap, fontsize)
@@ -74,7 +73,7 @@ setup_subplot_xy(4, ax[3], 'd)', ds4, clevs, cmap, fontsize)
 setup_subplot_xy(5, ax[4], 'e)',ds5, clevs, cmap, fontsize)
 p = setup_subplot_xy(6, ax[5], 'f)', ds6, clevs, cmap, fontsize)
 
-cbar_ax = fig.add_axes([0.25, 0.07, 0.5, 0.02])
+cbar_ax = fig.add_axes([0.25, 0.08, 0.5, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.3)
 cb.ax.tick_params(labelsize=fontsize+2, size=0)
 cb.ax.set_title('accuracy at lead day 5 [FMSESS or FBSS]', fontsize=fontsize+5,y=1.01)
@@ -83,7 +82,7 @@ fig.text(0.275,0.9,'1 gridpoint$^{2}$ precision',horizontalalignment='center',fo
 fig.text(0.74,0.9,'33 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
 fig.text(0.025,0.725,'anomalies',rotation=90,fontsize=fontsize+5)
 fig.text(0.025,0.41,'0.9 quantile extremes',rotation=90,fontsize=fontsize+5)
-fig.text(0.025,0.17,'0.1 quantile extremes',rotation=90,fontsize=fontsize+5)
+fig.text(0.025,0.16,'0.1 quantile extremes',rotation=90,fontsize=fontsize+5)
 
 # write2file
 if write2file: plt.savefig(path_out + figname_out)
