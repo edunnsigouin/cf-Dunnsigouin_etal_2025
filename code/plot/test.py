@@ -119,10 +119,12 @@ ax[7].set_frame_on(False)
 #cb.ax.tick_params(labelsize=fontsize, size=0)
 #cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+4,y=1.01)
 
-
+fig.text(0.25,0.9,'grid scale precision',fontsize=fontsize+5)
+fig.text(0.75,0.9,'optimized precision',fontsize=fontsize+5)
 fig.text(0.055,0.8,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
 fig.text(0.055,0.58,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
-fig.text(0.055,0.35,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
+fig.text(0.055,0.37,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
+fig.text(0.055,0.15,r'Storm Hans August 7$^{th}$ 2023',rotation=90,fontsize=fontsize+5)
 
 if write2file: plt.savefig(path_out + figname_out)
 plt.show()
