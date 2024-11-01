@@ -64,7 +64,8 @@ figsize    = np.array([12,12])
 fig,ax     = plt.subplots(nrows=3,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax         = ax.ravel()
 
-fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.25,wspace=0.025)
+#fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.25,wspace=0.025)
+fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=0,wspace=0)
 
 setup_subplot_xy(1, ax[0], 'a)', ds1, clevs, cmap, fontsize)
 setup_subplot_xy(2, ax[1], 'b)', ds2, clevs, cmap, fontsize)
