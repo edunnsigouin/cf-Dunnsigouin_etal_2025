@@ -74,9 +74,9 @@ setup_subplot_xy(4, ax[3], 'd)', ds4, clevs, cmap, fontsize)
 setup_subplot_xy(5, ax[4], 'e)', ds5, clevs, cmap, fontsize)
 p = setup_subplot_xy(6, ax[5], 'f)', ds6, clevs, cmap, fontsize)
 
-cbar_ax = fig.add_axes([0.25, 0.05, 0.5, 0.02])
+cbar_ax = fig.add_axes([0.25, 0.08, 0.5, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
-cb.ax.tick_params(labelsize=fontsize, size=0)
+cb.ax.tick_params(labelsize=fontsize+2, size=0)
 cb.ax.set_title('accuracy at lead week 2 [FMSESS or FBSS]', fontsize=fontsize+5,y=1.01)
 
 fig.text(0.275,0.9,'1 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
