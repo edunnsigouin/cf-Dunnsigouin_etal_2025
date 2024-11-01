@@ -19,7 +19,7 @@ def setup_subplot_xy(flag, ax, title_text, ds, clevs, cmap, fontsize):
     sig   = ds['significance']
     
     p = ax.contourf(lon, lat, score,levels=clevs,cmap=cmap,transform=ccrs.PlateCarree())
-    #ax.pcolor(lon, lat, sig, hatch='/////', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.4,0.4,0.4], lw=0, transform=ccrs.PlateCarree())
+    ax.pcolor(lon, lat, sig, hatch='/////', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.4,0.4,0.4], lw=0, transform=ccrs.PlateCarree())
     ax.coastlines(color='k',linewidth=1)
 
     if (flag == 1) or (flag == 3) or (flag == 5):
@@ -81,7 +81,7 @@ cb.ax.set_title('accuracy at lead day 5 [FMSESS or FBSS]', fontsize=fontsize+5,y
 fig.text(0.275,0.9,'1 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
 fig.text(0.74,0.9,'33 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
 fig.text(0.025,0.725,'anomalies',rotation=90,fontsize=fontsize+5)
-fig.text(0.025,0.41,'0.9 quantile extremes',rotation=90,fontsize=fontsize+5)
+fig.text(0.025,0.42,'0.9 quantile extremes',rotation=90,fontsize=fontsize+5)
 fig.text(0.025,0.16,'0.1 quantile extremes',rotation=90,fontsize=fontsize+5)
 
 # write2file
