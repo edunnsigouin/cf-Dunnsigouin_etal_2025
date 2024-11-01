@@ -101,12 +101,12 @@ p2 = setup_subplot(5, ax[5], ds3, 'f)', clevs_score,clevs_ltg, cmap_score, cmap_
 
 fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.15,wspace=0.075)
 
-cb1_ax = fig.add_axes([0.075, 0.05, 0.41, 0.02])
+cb1_ax = fig.add_axes([0.075, 0.04, 0.41, 0.02])
 cb1    = fig.colorbar(p1, cax=cb1_ax, orientation='horizontal',ticks=clevs_score, pad=0.025)
 cb1.ax.tick_params(labelsize=fontsize, size=0) 
 cb1.ax.set_title('accuracy [FMSESS or FBSS]', fontsize=fontsize+2,y=-2)
 
-cb2_ax = fig.add_axes([0.515, 0.05, 0.41, 0.02])
+cb2_ax = fig.add_axes([0.515, 0.04, 0.41, 0.02])
 cb2    = fig.colorbar(p2, cax=cb2_ax, orientation='horizontal',ticks=clevs_ltg[2::4], pad=0.025)
 cb2.ax.tick_params(labelsize=fontsize, size=0)
 cb2.ax.set_title('lead time gained or lost [days]', fontsize=fontsize+2,y=-2)
