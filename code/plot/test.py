@@ -31,7 +31,7 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
         
     ax.coastlines(color='k',linewidth=1)
     #ax.set_title(title,fontsize=fontsize+5)
-    
+    ax.set_title(title, fontsize=fontsize + 4,loc='left', ha='left', y=0.89, x=0.015, bbox={'facecolor': 'white', 'edgecolor': 'black', 'pad': 3})    
     
     return p
 
@@ -104,13 +104,13 @@ stats4 = r'FMSESS = ' + str(da4['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = '
 stats5 = r'FMSESS = ' + str(da5['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = ' + str(da5['fbss'].values.round(2))
 stats6 = r'FMSESS = ' + str(da6['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = ' + str(da6['fbss'].values.round(2))
 
-setup_subplot_xy(1, ax[0], da1['EFI'], da1[variable], clevs, cmap, fontsize, title1, stats1)
-setup_subplot_xy(2, ax[1], da2['EFI'], da2[variable], clevs, cmap, fontsize, title2, stats2)
-setup_subplot_xy(3, ax[2], da3['EFI'], da3[variable], clevs, cmap, fontsize, title3, stats3)
-setup_subplot_xy(4, ax[3], da4['EFI'], da4[variable], clevs, cmap, fontsize, title4, stats4)
-setup_subplot_xy(5, ax[4], da5['EFI'], da5[variable], clevs, cmap, fontsize, title5, stats5)
-p = setup_subplot_xy(6, ax[5], da6['EFI'], da6[variable], clevs, cmap, fontsize, title6, stats6)
-setup_subplot_xy(7, ax[6], da5['EFI'], da7[variable], clevs, cmap, fontsize, title7, stats5)
+setup_subplot_xy(1, ax[0], da1['EFI'], da1[variable], clevs, cmap, fontsize, 'a)', stats1)
+setup_subplot_xy(2, ax[1], da2['EFI'], da2[variable], clevs, cmap, fontsize, 'b)', stats2)
+setup_subplot_xy(3, ax[2], da3['EFI'], da3[variable], clevs, cmap, fontsize, 'c)', stats3)
+setup_subplot_xy(4, ax[3], da4['EFI'], da4[variable], clevs, cmap, fontsize, 'd)', stats4)
+setup_subplot_xy(5, ax[4], da5['EFI'], da5[variable], clevs, cmap, fontsize, 'e)', stats5)
+p = setup_subplot_xy(6, ax[5], da6['EFI'], da6[variable], clevs, cmap, fontsize, 'f)', stats6)
+setup_subplot_xy(7, ax[6], da5['EFI'], da7[variable], clevs, cmap, fontsize, 'g)', stats5)
 
 ax[7].set_frame_on(False)
 
