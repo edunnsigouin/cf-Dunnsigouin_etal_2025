@@ -9,7 +9,7 @@ from forsikring    import misc,s2s,config
 import cartopy.crs as ccrs
 import matplotlib as mpl
 
-def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize):
+def setup_subplot_xy(flag, ax, title_text, ds, clevs, cmap, fontsize):
     """ 
     Sets up specifics of subplots for fig.03
     """
@@ -19,7 +19,7 @@ def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize):
     sig   = ds['significance']
     
     p = ax.contourf(lon, lat, score,levels=clevs,cmap=cmap,transform=ccrs.PlateCarree())
-    ax.pcolor(lon, lat, sig, hatch='/////', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.4,0.4,0.4], lw=0, transform=ccrs.PlateCarree())
+    #ax.pcolor(lon, lat, sig, hatch='/////', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.4,0.4,0.4], lw=0, transform=ccrs.PlateCarree())
     ax.coastlines(color='k',linewidth=1)
     
     if (flag == 1) or (flag == 3) or (flag == 5):
@@ -28,6 +28,8 @@ def setup_subplot_xy(flag, ax, ds, clevs, cmap, fontsize):
         rectangle_length = 0.25*33
     rectangle = plt.Rectangle((44, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
     ax.add_patch(rectangle)
+
+    ax.set_title(title_text, fontsize=fontsize + 4,loc='left', ha='left', y=0.89, x=0.015, bbox={'facecolor': 'white', 'edgecolor': 'black', 'pad': 3})
     
     return p
 
@@ -62,32 +64,32 @@ figsize    = np.array([12,12])
 fig,ax     = plt.subplots(nrows=3,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax         = ax.ravel()
 
-fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.25,wspace=0.025)
+#fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.25,wspace=0.025)
+fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.38,wspace=0.01)
 
-setup_subplot_xy(1, ax[0], ds1, clevs, cmap, fontsize)
-setup_subplot_xy(2, ax[1], ds2, clevs, cmap, fontsize)
-setup_subplot_xy(3, ax[2], ds3, clevs, cmap, fontsize)
-setup_subplot_xy(4, ax[3], ds4, clevs, cmap, fontsize)
-setup_subplot_xy(5, ax[4], ds5, clevs, cmap, fontsize)
-p = setup_subplot_xy(6, ax[5], ds6, clevs, cmap, fontsize)
+setup_subplot_xy(1, ax[0], 'a)', ds1, clevs, cmap, fontsize)
+setup_subplot_xy(2, ax[1], 'b)', ds2, clevs, cmap, fontsize)
+setup_subplot_xy(3, ax[2], 'c)', ds3, clevs, cmap, fontsize)
+setup_subplot_xy(4, ax[3], 'd)', ds4, clevs, cmap, fontsize)
+setup_subplot_xy(5, ax[4], 'e)', ds5, clevs, cmap, fontsize)
+p = setup_subplot_xy(6, ax[5], 'f)', ds6, clevs, cmap, fontsize)
 
 cbar_ax = fig.add_axes([0.25, 0.05, 0.5, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize, size=0)
-cb.ax.set_title('accuracy at lead week 2 [fmsess or fbss]', fontsize=fontsize+5,y=1.01)
+cb.ax.set_title('accuracy at lead week 2 [FMSESS or FBSS]', fontsize=fontsize+5,y=1.01)
 
-ax[0].set_title('a)',fontsize=fontsize+3)
-ax[1].set_title('b)',fontsize=fontsize+3)
-ax[2].set_title('c)',fontsize=fontsize+3)
-ax[3].set_title('d)',fontsize=fontsize+3)
-ax[4].set_title('e)',fontsize=fontsize+3)
-ax[5].set_title('f)',fontsize=fontsize+3)
+fig.text(0.275,0.9,'1 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
+fig.text(0.74,0.9,'33 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
+fig.text(0.025,0.725,'anomalies',rotation=90,fontsize=fontsize+5)
+fig.text(0.025,0.42,'0.9 quantile extremes',rotation=90,fontsize=fontsize+5)
+fig.text(0.025,0.16,'0.1 quantile extremes',rotation=90,fontsize=fontsize+5)
 
-fig.text(0.275,0.945,'1 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
-fig.text(0.74,0.945,'33 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
-fig.text(0.025,0.75,'anomalies',rotation=90,fontsize=fontsize+5)
-fig.text(0.025,0.41,'90$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
-fig.text(0.025,0.135,'10$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
+#fig.text(0.275,0.945,'1 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
+#fig.text(0.74,0.945,'33 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
+#fig.text(0.025,0.75,'anomalies',rotation=90,fontsize=fontsize+5)
+#fig.text(0.025,0.41,'90$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
+#fig.text(0.025,0.135,'10$^{th}$ quantile extremes',rotation=90,fontsize=fontsize+5)
 
 # write2file
 if write2file: plt.savefig(path_out + figname_out)
