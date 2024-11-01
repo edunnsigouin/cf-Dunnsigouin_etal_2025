@@ -50,8 +50,7 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
     ax.set_xticklabels(['1', '', '', '', '5', '', '', '', '', '10', '', '', '', '', '15'], fontsize=fontsize)
     
     ax.set_ylim([box_size[0], box_size[-2]])
-    #ax.set_title(title_text, fontsize=fontsize + 3,y=1.0, pad=-1, bbox={'facecolor': 'white', 'edgecolor': 'none', 'pad': 2})
-    ax.set_title(title_text, fontsize=fontsize + 3,loc='left', ha='left', y=0.85, x=0.02, bbox={'facecolor': 'white', 'edgecolor': 'none', 'pad': 2})
+    ax.set_title(title_text, fontsize=fontsize + 4,loc='left', ha='left', y=0.875, x=0.02, bbox={'facecolor': 'white', 'edgecolor': 'none', 'pad': 2})
     return p
 
 
