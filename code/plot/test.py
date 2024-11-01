@@ -87,9 +87,7 @@ figsize  = np.array([12,16])
 fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
-#fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.1,hspace=0.03,wspace=-0.05)
-fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.03,wspace=-0.05)
-
+fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.03,wspace=0.01)
 
 title1 = r'a) 1 gridpoint$^2$ precision'
 title2 = r'b) 33 gridpoint$^2$ precision'
