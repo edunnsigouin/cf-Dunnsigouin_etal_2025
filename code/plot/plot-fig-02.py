@@ -65,7 +65,7 @@ fig,ax     = plt.subplots(nrows=3,ncols=2,figsize=(figsize[0],figsize[1]),subplo
 ax         = ax.ravel()
 
 #fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.25,wspace=0.025)
-fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.35,wspace=0.01)
+fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.37,wspace=0.01)
 
 setup_subplot_xy(1, ax[0], 'a)', ds1, clevs, cmap, fontsize)
 setup_subplot_xy(2, ax[1], 'b)', ds2, clevs, cmap, fontsize)
@@ -78,13 +78,6 @@ cbar_ax = fig.add_axes([0.25, 0.05, 0.5, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.3)
 cb.ax.tick_params(labelsize=fontsize, size=0)
 cb.ax.set_title('accuracy at lead day 5 [FMSESS or FBSS]', fontsize=fontsize+5,y=1.01)
-
-#ax[0].set_title('a)',fontsize=fontsize+3)
-#ax[1].set_title('b)',fontsize=fontsize+3)
-#ax[2].set_title('c)',fontsize=fontsize+3)
-#ax[3].set_title('d)',fontsize=fontsize+3)
-#ax[4].set_title('e)',fontsize=fontsize+3)
-#ax[5].set_title('f)',fontsize=fontsize+3)
 
 fig.text(0.275,0.945,'1 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
 fig.text(0.74,0.945,'33 gridpoint$^{2}$ precision',horizontalalignment='center',fontsize=fontsize+5)
