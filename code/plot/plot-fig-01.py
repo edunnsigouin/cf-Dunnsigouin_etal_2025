@@ -28,7 +28,7 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
         ax.set_yticklabels(['1', '9', '17', '25', '33', '41', '49', '57'], fontsize=fontsize)
         ax.set_ylabel(r'precision [gridpoints$^2$]', fontsize=fontsize)
 
-    if (flag == 1) or (flag == 3) or (flag == 5):
+    if (flag == 1) or (flag == 3) or (flag == 5) :
 
         p = ax.pcolormesh(time_interp, box_size, ds['lead_time_gained'], vmin=clevs_ltg[0], vmax=clevs_ltg[-1], cmap=cmap_ltg,edgecolor='none',shading='auto')
         ax.pcolor(time, box_size, ds['significance'], hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
@@ -50,8 +50,8 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
     ax.set_xticklabels(['1', '', '', '', '5', '', '', '', '', '10', '', '', '', '', '15'], fontsize=fontsize)
     
     ax.set_ylim([box_size[0], box_size[-2]])
-    ax.set_title(title_text, fontsize=fontsize + 3)
-    
+    #ax.set_title(title_text, fontsize=fontsize + 3,y=1.0, pad=-1, bbox={'facecolor': 'white', 'edgecolor': 'none', 'pad': 2})
+    ax.set_title(title_text, fontsize=fontsize + 3,loc='left', ha='left', y=0.85, x=0.02, bbox={'facecolor': 'white', 'edgecolor': 'none', 'pad': 2})
     return p
 
 
@@ -83,8 +83,8 @@ fig,ax      = plt.subplots(nrows=3,ncols=2,sharey='row',sharex='col',figsize=(fi
 ax          = ax.ravel()
 
 fig.text(0.5, 0.965, 'anomalies',horizontalalignment='center',color='k',fontsize=fontsize+4)
-fig.text(0.5, 0.67, '90$^{th}$ quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
-fig.text(0.5, 0.375, '10$^{th}$ quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
+fig.text(0.5, 0.67, '0.9 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
+fig.text(0.5, 0.375, '0.1 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
 
 setup_subplot(0, ax[0], ds1, 'a)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
@@ -93,6 +93,8 @@ setup_subplot(2, ax[2], ds2, 'c)', clevs_score, clevs_ltg, cmap_score, cmap_ltg,
 p1 = setup_subplot(4, ax[4], ds3, 'e)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
 setup_subplot(1, ax[1], ds1, 'b)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
+
+ax[1].plot([4.6,6.7], [1,33], 'bo-')
 
 setup_subplot(3, ax[3], ds2, 'd)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 

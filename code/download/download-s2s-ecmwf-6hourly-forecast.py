@@ -88,8 +88,8 @@ dic = {
 }    
 
 # get all dates for monday and thursday forecast initializations
-#forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast,'annual')
-forecast_dates = pd.date_range(first_forecast_date, periods=number_forecast, freq="D")
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast,'annual')
+#forecast_dates = pd.date_range(first_forecast_date, periods=number_forecast, freq="D")
 print(forecast_dates)
 
 # populate dictionary some more and download eachforcast one-by-one
