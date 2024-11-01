@@ -83,7 +83,7 @@ da7[variable] = da7[variable]*1000
 fontsize = 11
 clevs    = np.arange(5,55,5)
 cmap     = 'GnBu'
-figsize  = np.array([12,12])
+figsize  = np.array([16,12])
 fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
