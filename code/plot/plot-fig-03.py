@@ -88,7 +88,7 @@ fig,ax      = plt.subplots(nrows=3,ncols=2,sharey='row',sharex='col',figsize=(fi
 ax          = ax.ravel()
 
 fig.text(0.5, 0.965, 'anomalies',horizontalalignment='center',color='k',fontsize=fontsize+4)
-fig.text(0.5, 0.675, '0.9 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
+fig.text(0.5, 0.67, '0.9 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
 fig.text(0.5, 0.38, '0.1 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
 
 setup_subplot(0, ax[0], ds1, 'a)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
