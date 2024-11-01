@@ -65,7 +65,7 @@ fig,ax     = plt.subplots(nrows=3,ncols=2,figsize=(figsize[0],figsize[1]),subplo
 ax         = ax.ravel()
 
 #fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.25,wspace=0.025)
-fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.3,wspace=0.01)
+fig.subplots_adjust(right=0.95, left=0.05,top=0.975,bottom=0.05,hspace=-0.4,wspace=0.01)
 
 setup_subplot_xy(1, ax[0], 'a)', ds1, clevs, cmap, fontsize)
 setup_subplot_xy(2, ax[1], 'b)', ds2, clevs, cmap, fontsize)
