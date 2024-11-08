@@ -85,11 +85,12 @@ da7[variable] = da7[variable]*1000
 fontsize = 11
 clevs    = np.arange(5,55,5)
 cmap     = 'GnBu'
-figsize  = np.array([12,14])
+figsize  = np.array([12,16])
 fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
-fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.03,wspace=0.01)
+#fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.03,wspace=0.01)
+fig.subplots_adjust(right=0.925, left=0.075,hspace=0.03,wspace=0.01)
 
 title1 = r'a) 1 gridpoint$^2$ precision'
 title2 = r'b) 33 gridpoint$^2$ precision'
