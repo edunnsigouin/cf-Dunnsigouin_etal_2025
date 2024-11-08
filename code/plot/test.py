@@ -129,7 +129,13 @@ cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,
 fig.text(0.18,1.0,'grid scale precision',fontsize=fontsize+5) 
 fig.text(0.62,1.0,'optimized spatial precision',fontsize=fontsize+5)
 
-ax[0].set_ylabel('forecast lead day 5',fontsize=fontsize+5)
+nrows = 4
+y_positions = [1 - (i + 0.5) / nrows for i in range(nrows)]  # Centered vertically per row
+labels = ['forecast lead day 5', 'forecast lead day 3', 'forecast lead day 1', 'Storm Hans August 7th 2023']
+
+for y, label in zip(y_positions, labels):
+    fig.text(0.05, y, label, fontsize=fontsize + 5, va='center', ha='right', rotation=90)
+    
 #fig.text(-0.01,0.81,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
 #fig.text(-0.01,0.56,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
 #fig.text(-0.01,0.32,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
