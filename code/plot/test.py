@@ -27,7 +27,7 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
         rectangle_length = 0.25*ds2['box_size']
         rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
         ax.add_patch(rectangle)        
-        ax.text(0.1,0.91,stats,fontsize=fontsize+2,transform=ax.transAxes)
+        ax.text(0.1,0.88,stats,fontsize=fontsize+2,transform=ax.transAxes)
     else:
         rectangle = plt.Rectangle((31.75, 72.75), 0.25, 0.25, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
         ax.add_patch(rectangle)
