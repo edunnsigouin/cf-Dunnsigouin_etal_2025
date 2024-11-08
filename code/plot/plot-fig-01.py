@@ -82,7 +82,7 @@ fig,ax      = plt.subplots(nrows=3,ncols=2,sharey='row',sharex='col',figsize=(fi
 ax          = ax.ravel()
 
 fig.text(0.5, 0.965, 'anomalies',horizontalalignment='center',color='k',fontsize=fontsize+4)
-fig.text(0.5, 0.675, '0.9 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
+fig.text(0.5, 0.672, '0.9 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
 fig.text(0.5, 0.38, '0.1 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
 
 setup_subplot(0, ax[0], ds1, 'a)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
@@ -93,13 +93,12 @@ p1 = setup_subplot(4, ax[4], ds3, 'e)', clevs_score, clevs_ltg, cmap_score, cmap
 
 setup_subplot(1, ax[1], ds1, 'b)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-ax[1].plot([4.6,6.7], [1,33], 'bo-')
+ax[1].plot([4.6,6.7], [1,33], 'bo-',linewidth=2.5,markersize=10)
 
 setup_subplot(3, ax[3], ds2, 'd)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
 p2 = setup_subplot(5, ax[5], ds3, 'f)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-#fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.15,wspace=0.075)
 fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.12,wspace=0.04)
 
 cb1_ax = fig.add_axes([0.075, 0.045, 0.41, 0.02])
