@@ -116,9 +116,7 @@ p = setup_subplot_xy(6, ax[5], da6['EFI'], da6[variable], clevs, cmap, fontsize,
 setup_subplot_xy(7, ax[6], da5['EFI'], da7[variable], clevs, cmap, fontsize, 'g)', stats5)
 
 ax[7].set_frame_on(False)
-
-#cbar_ax = fig.add_axes([0.52, 0.2, 0.4, 0.02])
-cbar_ax = fig.add_axes([0.55, 0.03, 0.35, 0.02])
+cbar_ax = fig.add_axes([0.5, 0.15, 0.4, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize+2, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,y=1.01)
@@ -135,7 +133,6 @@ ncols = 2
 x_positions = [(i + 0.5) / ncols for i in range(ncols)]  # Centered above each column
 top_labels = ['grid scale precision', 'optimized spatial precision']
 
-# Place text at the top of the figure centered above each column
 for x, label in zip(x_positions, top_labels):
     fig.text(x, 0.99, label, fontsize=fontsize + 5, va='bottom', ha='center')  # Adjust y-position if needed
     
