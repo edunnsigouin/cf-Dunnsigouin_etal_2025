@@ -91,8 +91,7 @@ ax       = ax.ravel()
 
 
 #fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.03,wspace=0.01)
-#fig.subplots_adjust(hspace=0.03,wspace=0.01)
-fig.subplots_adjust(top=0.95, bottom=0.05, left=0.05, right=0.98, hspace=0.02, wspace=0.02)
+fig.subplots_adjust(top=0.9, bottom=0.05, left=0.05, right=0.98, hspace=0.02, wspace=0.02)
 
 
 title1 = r'a) 1 gridpoint$^2$ precision'
