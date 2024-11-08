@@ -89,8 +89,11 @@ figsize  = np.array([12,13])
 fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
+
 #fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.03,wspace=0.01)
-fig.subplots_adjust(hspace=0.03,wspace=0.01)
+#fig.subplots_adjust(hspace=0.03,wspace=0.01)
+fig.subplots_adjust(top=0.95, bottom=0.05, left=0.05, right=0.98, hspace=0.02, wspace=0.02)
+
 
 title1 = r'a) 1 gridpoint$^2$ precision'
 title2 = r'b) 33 gridpoint$^2$ precision'
@@ -117,7 +120,8 @@ setup_subplot_xy(7, ax[6], da5['EFI'], da7[variable], clevs, cmap, fontsize, 'g)
 
 ax[7].set_frame_on(False)
 
-cbar_ax = fig.add_axes([0.52, 0.2, 0.4, 0.02])
+#cbar_ax = fig.add_axes([0.52, 0.2, 0.4, 0.02])
+cbar_ax = fig.add_axes([0.55, 0.03, 0.35, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize+2, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,y=1.01)
@@ -129,6 +133,7 @@ fig.text(0.055,0.58,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
 fig.text(0.055,0.37,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
 fig.text(0.055,0.12,r'Storm Hans August 7$^{th}$ 2023',rotation=90,fontsize=fontsize+5)
 
+plt.tight_layout()
 
 if write2file: plt.savefig(path_out + figname_out,bbox_inches='tight')
 plt.show()
