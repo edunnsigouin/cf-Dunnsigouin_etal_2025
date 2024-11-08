@@ -134,7 +134,7 @@ x_positions = [(i + 0.5) / ncols for i in range(ncols)]  # Centered above each c
 top_labels = ['grid scale precision', 'optimized spatial precision']
 
 for x, label in zip(x_positions, top_labels):
-    fig.text(x, 0.99, label, fontsize=fontsize + 5, va='bottom', ha='center')  # Adjust y-position if needed
+    fig.text(x, 0.995, label, fontsize=fontsize + 5, va='bottom', ha='center')  # Adjust y-position if needed
     
 plt.tight_layout()
 
