@@ -33,7 +33,7 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
         ax.add_patch(rectangle)
         
     ax.coastlines(color='k',linewidth=1)
-    ax.set_title(title, fontsize=fontsize + 4,loc='left', ha='left', y=0.89, x=0.02, bbox={'facecolor': 'white', 'edgecolor': 'black', 'pad': 3})    
+    ax.set_title(title, fontsize=fontsize + 4,loc='left', ha='left', y=0.92, x=0.02, bbox={'facecolor': 'white', 'edgecolor': 'black', 'pad': 3})    
     
     return p
 
@@ -116,7 +116,7 @@ p = setup_subplot_xy(6, ax[5], da6['EFI'], da6[variable], clevs, cmap, fontsize,
 setup_subplot_xy(7, ax[6], da5['EFI'], da7[variable], clevs, cmap, fontsize, 'g)', stats5)
 
 ax[7].set_frame_on(False)
-cbar_ax = fig.add_axes([0.52, 0.12, 0.45, 0.02])
+cbar_ax = fig.add_axes([0.52, 0.12, 0.47, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize+5, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,y=1.01)
