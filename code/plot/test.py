@@ -85,7 +85,7 @@ da7[variable] = da7[variable]*1000
 fontsize = 11
 clevs    = np.arange(5,55,5)
 cmap     = 'GnBu'
-figsize  = np.array([12,16])
+figsize  = np.array([12,15])
 fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
@@ -128,7 +128,6 @@ fig.text(0.055,0.58,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
 fig.text(0.055,0.37,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
 fig.text(0.055,0.12,r'Storm Hans August 7$^{th}$ 2023',rotation=90,fontsize=fontsize+5)
 
-plt.tight_layout()
 
 if write2file: plt.savefig(path_out + figname_out)
 plt.show()
