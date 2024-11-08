@@ -93,7 +93,13 @@ p1 = setup_subplot(4, ax[4], ds3, 'e)', clevs_score, clevs_ltg, cmap_score, cmap
 
 setup_subplot(1, ax[1], ds1, 'b)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-ax[1].plot([4.6,6.7], [1,33], 'bo-',linewidth=2.5,markersize=10)
+ax[1].plot([4.6,6.7], [1,33], 'bo',markersize=8)
+#ax[1].plot([4.6,6.7], [1,33], 'bo-',markersize=10)
+
+
+ax[1].annotate("", xy=(6.9, 17), xytext=(4.4, 17),
+            arrowprops=dict(arrowstyle="<->",linewidth=3, color='blue'))
+
 
 setup_subplot(3, ax[3], ds2, 'd)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
