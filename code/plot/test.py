@@ -128,6 +128,8 @@ fig.text(0.055,0.58,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
 fig.text(0.055,0.37,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
 fig.text(0.055,0.12,r'Storm Hans August 7$^{th}$ 2023',rotation=90,fontsize=fontsize+5)
 
+plt.tight_layout()
+
 if write2file: plt.savefig(path_out + figname_out)
 plt.show()
 
