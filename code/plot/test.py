@@ -127,12 +127,12 @@ cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,
 #fig.text(0.21,0.965,'grid scale precision',fontsize=fontsize+5)
 fig.text(0.21,1.0,'grid scale precision',fontsize=fontsize+5) 
 fig.text(0.63,1.0,'optimized spatial precision',fontsize=fontsize+5)
-fig.text(-0.1,0.8,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
-fig.text(0.0,0.58,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
-fig.text(0.0,0.37,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
-fig.text(0.0,0.12,r'Storm Hans August 7$^{th}$ 2023',rotation=90,fontsize=fontsize+5)
+fig.text(-0.01,0.8,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
+fig.text(-0.01,0.58,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
+fig.text(-0.01,0.37,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
+fig.text(-0.01,0.12,r'Storm Hans August 7$^{th}$ 2023',rotation=90,fontsize=fontsize+5)
 
-plt.tight_layout()
+#plt.tight_layout()
 
 if write2file: plt.savefig(path_out + figname_out,bbox_inches='tight')
 plt.show()
