@@ -90,7 +90,6 @@ fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_
 ax       = ax.ravel()
 
 
-#fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.03,wspace=0.01)
 fig.subplots_adjust(top=0.9, bottom=0.05, left=0.15, right=0.98, hspace=0.02, wspace=0.02)
 
 title1 = r'a) 1 gridpoint$^2$ precision'
@@ -124,11 +123,7 @@ cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.02
 cb.ax.tick_params(labelsize=fontsize+2, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,y=1.01)
 
-
-
-#fig.text(0.18,1.0,'grid scale precision',fontsize=fontsize+5) 
-#fig.text(0.62,1.0,'optimized spatial precision',fontsize=fontsize+5)
-
+# figure labels
 nrows = 4
 y_positions = [1 - (i + 0.5) / nrows for i in range(nrows)]  # Centered vertically per row
 labels = ['forecast lead day 5', 'forecast lead day 3', 'forecast lead day 1', 'Storm Hans August 7th 2023']
@@ -142,13 +137,8 @@ top_labels = ['grid scale precision', 'optimized spatial precision']
 
 # Place text at the top of the figure centered above each column
 for x, label in zip(x_positions, top_labels):
-    fig.text(x, 1.0, label, fontsize=fontsize + 5, va='bottom', ha='center')  # Adjust y-position if needed
+    fig.text(x, 0.99, label, fontsize=fontsize + 5, va='bottom', ha='center')  # Adjust y-position if needed
     
-#fig.text(-0.01,0.81,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
-#fig.text(-0.01,0.56,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
-#fig.text(-0.01,0.32,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
-#fig.text(-0.01,0.05,r'Storm Hans August 7$^{th}$ 2023',rotation=90,fontsize=fontsize+5)
-
 plt.tight_layout()
 
 if write2file: plt.savefig(path_out + figname_out,bbox_inches='tight')
