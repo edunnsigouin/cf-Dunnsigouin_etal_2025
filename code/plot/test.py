@@ -89,8 +89,8 @@ figsize  = np.array([12,13])
 fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
-#fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.03,wspace=0.01)
-fig.subplots_adjust(hspace=0.03,wspace=0.01)
+fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.03,wspace=0.01)
+#fig.subplots_adjust(hspace=0.03,wspace=0.01)
 
 title1 = r'a) 1 gridpoint$^2$ precision'
 title2 = r'b) 33 gridpoint$^2$ precision'
@@ -130,7 +130,7 @@ fig.text(0.055,0.37,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
 fig.text(0.055,0.12,r'Storm Hans August 7$^{th}$ 2023',rotation=90,fontsize=fontsize+5)
 
 
-if write2file: plt.savefig(path_out + figname_out)
+if write2file: plt.savefig(path_out + figname_out,bbox_inches='tight')
 plt.show()
 
 
