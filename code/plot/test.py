@@ -134,7 +134,7 @@ y_positions = [1 - (i + 0.5) / nrows for i in range(nrows)]  # Centered vertical
 labels = ['forecast lead day 5', 'forecast lead day 3', 'forecast lead day 1', 'Storm Hans August 7th 2023']
 
 for y, label in zip(y_positions, labels):
-    fig.text(0.05, y, label, fontsize=fontsize + 5, va='center', ha='right', rotation=90)
+    fig.text(-0.01, y, label, fontsize=fontsize + 5, va='center', ha='right', rotation=90)
     
 #fig.text(-0.01,0.81,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
 #fig.text(-0.01,0.56,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
