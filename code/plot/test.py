@@ -142,7 +142,7 @@ top_labels = ['grid scale precision', 'optimized spatial precision']
 
 # Place text at the top of the figure centered above each column
 for x, label in zip(x_positions, top_labels):
-    fig.text(x, 0.98, label, fontsize=fontsize + 5, va='bottom', ha='center')  # Adjust y-position if needed
+    fig.text(x, 1.0, label, fontsize=fontsize + 5, va='bottom', ha='center')  # Adjust y-position if needed
     
 #fig.text(-0.01,0.81,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
 #fig.text(-0.01,0.56,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
