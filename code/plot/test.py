@@ -126,8 +126,8 @@ cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,
 
 
 
-fig.text(0.18,1.0,'grid scale precision',fontsize=fontsize+5) 
-fig.text(0.62,1.0,'optimized spatial precision',fontsize=fontsize+5)
+#fig.text(0.18,1.0,'grid scale precision',fontsize=fontsize+5) 
+#fig.text(0.62,1.0,'optimized spatial precision',fontsize=fontsize+5)
 
 nrows = 4
 y_positions = [1 - (i + 0.5) / nrows for i in range(nrows)]  # Centered vertically per row
@@ -135,6 +135,14 @@ labels = ['forecast lead day 5', 'forecast lead day 3', 'forecast lead day 1', '
 
 for y, label in zip(y_positions, labels):
     fig.text(0.01, y, label, fontsize=fontsize + 5, va='center', ha='right', rotation=90)
+
+ncols = 2
+x_positions = [(i + 0.5) / ncols for i in range(ncols)]  # Centered above each column
+top_labels = ['grid scale precision', 'optimized spatial precision']
+
+# Place text at the top of the figure centered above each column
+for x, label in zip(x_positions, top_labels):
+    fig.text(x, 0.98, label, fontsize=fontsize + 5, va='bottom', ha='center')  # Adjust y-position if needed
     
 #fig.text(-0.01,0.81,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
 #fig.text(-0.01,0.56,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
