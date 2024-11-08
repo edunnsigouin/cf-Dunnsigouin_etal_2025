@@ -125,12 +125,15 @@ cb.ax.tick_params(labelsize=fontsize+2, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,y=1.01)
 
 
+
 fig.text(0.18,1.0,'grid scale precision',fontsize=fontsize+5) 
 fig.text(0.62,1.0,'optimized spatial precision',fontsize=fontsize+5)
-fig.text(-0.01,0.81,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
-fig.text(-0.01,0.56,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
-fig.text(-0.01,0.32,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
-fig.text(-0.01,0.05,r'Storm Hans August 7$^{th}$ 2023',rotation=90,fontsize=fontsize+5)
+
+ax[0].set_ylabel('forecast lead day 5',fontsize=fontsize+5)
+#fig.text(-0.01,0.81,'forecast lead day 5',rotation=90,fontsize=fontsize+5)
+#fig.text(-0.01,0.56,'forecast lead day 3',rotation=90,fontsize=fontsize+5)
+#fig.text(-0.01,0.32,'forecast lead day 1',rotation=90,fontsize=fontsize+5)
+#fig.text(-0.01,0.05,r'Storm Hans August 7$^{th}$ 2023',rotation=90,fontsize=fontsize+5)
 
 plt.tight_layout()
 
