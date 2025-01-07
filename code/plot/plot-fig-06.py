@@ -22,7 +22,7 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
         ax.pcolor(time, box_size, ds['significance'], hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
 
         dummy = ax.contour(time, box_size, ds['score'], levels=clevs_score, linewidths=2,linestyles='-',colors = [(0.5,0.5,0.5)])
-        ax.clabel(dummy, clevs_score, inline=True, fmt='%1.1f', fontsize=fontsize)
+        #ax.clabel(dummy, clevs_score, inline=True, fmt='%1.1f', fontsize=fontsize)
 
         #ax.contour(time, box_size, ds['score'], levels=[0.8], linewidths=3,linestyles='-',colors = [(1.0,0.0,0.0)])
         
@@ -72,16 +72,15 @@ fig,ax      = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
 
 p1 = setup_subplot(0, ax, ds1, 'a)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize+2)
 
+ax.annotate("", xy=(1, 33), xytext=(15, 33),arrowprops=dict(arrowstyle="<->,head_length=0.75,head_width=0.75",linewidth=3, color='red'))
+ax.annotate("", xy=(5, 1), xytext=(5, 57),arrowprops=dict(arrowstyle="<->,head_length=0.75,head_width=0.75",linewidth=3, color='red'))
+ax.annotate("", xy=(1, 9), xytext=(9, 57),arrowprops=dict(arrowstyle="<->,head_length=0.75,head_width=0.75",linewidth=3, color='red'))
 
-#ax[1].plot([4.6,6.7], [1,33], 'bo',markersize=8)
-#ax[1].plot([4.6,6.7], [1,33], 'bo-',markersize=10)
+fig.text(0.5, 0.56, 'fixed spatial scale',horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',
+                                                                                facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+2)
 
-ax.annotate("", xy=(1, 33), xytext=(15, 33),arrowprops=dict(arrowstyle="<->",linewidth=2, color='red'))
-ax.annotate("", xy=(5, 1), xytext=(5, 57),arrowprops=dict(arrowstyle="<->",linewidth=2, color='red'))
-#ax.annotate("", xy=(1.75, 1.0), xytext=(1.95, 2),arrowprops=dict(arrowstyle="->",linewidth=3, color='red'))
-#ax.annotate("", xy=(4.35, 56), xytext=(4.35, 57),arrowprops=dict(arrowstyle="<-",linewidth=3, color='red'))
-
-ax.annotate("", xy=(1, 9), xytext=(9, 57),arrowprops=dict(arrowstyle="<->",linewidth=2, color='red'))
+fig.text(0.22, 0.31, 'optimized accuracy',rotation=45,horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',
+	                                                                        facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+2)
 
 fig.subplots_adjust(right=0.9, left=0.1,top=0.9,bottom=0.21)
 
