@@ -16,8 +16,8 @@ from datetime import datetime, timedelta
 # INPUT ----------------------------------------------- 
 variables           = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 product             = 'forecast'              # hindcast or forecast ?
-first_forecast_date = '20120322' # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 186        # number of forecast initializations  
+first_forecast_date = '20230102' # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 104        # number of forecast initializations  
 season              = 'annual'
 grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
 domain              = 'southern_norway'
@@ -43,10 +43,10 @@ for variable in variables:
             if variable == 'tp24': # daily accumulated precip (m)
 
                 # files downloaded into different paths if before our after 2020
-                if date >= datetime(2020,1,2):
-                    path_in = config.dirs['s2s_' + product + '_6hourly'] + 'tp6/'
-                else:
-                    path_in = config.dirs['s2s_' + product + '_6hourly_student'] + 'tp6/'
+                #if date >= datetime(2020,1,2):
+                #    path_in = config.dirs['s2s_' + product + '_6hourly'] + 'tp6/'
+                #else:
+                path_in = config.dirs['s2s_' + product + '_6hourly_student'] + 'tp6/'
 
                 path_out                         = config.dirs['s2s_' + product + '_daily_student'] + variable + '/'
                 filename_in                      = 'tp6_' + basename + '.nc'

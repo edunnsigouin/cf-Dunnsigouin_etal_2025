@@ -22,9 +22,9 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product             = 'forecast' # forecast/vr_forecast
-first_forecast_date = '20230803' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 6        # number of forecast initializations   
-grid                = '0.25/0.25' # degree lat/lon resolution
+first_forecast_date = '20231228' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 50        # number of forecast initializations   
+grid                = '0.5/0.5' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var                 = 'tp'
 comp_lev            = 5 # file compression level
@@ -92,6 +92,7 @@ forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast,'ann
 #forecast_dates = pd.date_range(first_forecast_date, periods=number_forecast, freq="D")
 print(forecast_dates)
 
+
 # populate dictionary some more and download eachforcast one-by-one
 if write2file:
     for date in forecast_dates:
@@ -125,5 +126,6 @@ if write2file:
             misc.compress_file(comp_lev,4,filename_nc,path)
     
             misc.toc()
+
 
 

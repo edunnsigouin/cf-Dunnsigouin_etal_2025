@@ -116,7 +116,7 @@ p = setup_subplot_xy(6, ax[5], da6['EFI'], da6[variable], clevs, cmap, fontsize,
 setup_subplot_xy(7, ax[6], da5['EFI'], da7[variable], clevs, cmap, fontsize, 'g)', stats5)
 
 ax[7].set_frame_on(False)
-cbar_ax = fig.add_axes([0.52, 0.12, 0.47, 0.02])
+cbar_ax = fig.add_axes([0.52, 0.25, 0.47, 0.02])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 cb.ax.tick_params(labelsize=fontsize+5, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,y=1.01)

@@ -20,7 +20,7 @@ def preprocess(ds):
 product               = 'forecast'          # forecast or hindcast
 variable              = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 first_forecast_date   = '20120102'          # first initialization date of forecast (either a monday or thursday) 
-number_forecasts      = 1148                 # number of forecasts
+number_forecasts      = 1252                 # number of forecasts
 season                = 'annual'
 grid                  = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
 domain                = 'oslo'
@@ -32,6 +32,7 @@ forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,sea
 
 forecast_dates = forecast_dates.delete(22) # missing forecast on 2012-03-19
 forecast_dates = forecast_dates.delete(357) # missing forecast on 2015-06-08
+forecast_dates = forecast_dates.delete(1082) # missing forecast on 2022-05-23
 
 # define stuff  
 path_in           = config.dirs['s2s_' + product + '_daily_student'] + variable + '/'

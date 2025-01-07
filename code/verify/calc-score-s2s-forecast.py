@@ -26,16 +26,16 @@ from forsikring  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
 score_flag               = 'fbss'
-time_flag                = 'weekly'                 # daily or weekly
-variable                 = 't2m24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-domain                   = 'europe'                 # europe or norway only?
+time_flag                = 'daily'                 # daily or weekly
+variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+domain                   = 'scandinavia'                 # europe or norway only?
 first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 209                      # number of forecasts 
+number_forecasts         = 313                      # number of forecasts 
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
-grids                    = ['0.25x0.25','0.5x0.5']
+grids                    = ['0.25x0.25']
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 number_bootstrap         = 10000                    # number of times to shuffle initialization dates for error bars
-pval                     = 0.1
+pval                     = 0.9
 dt                       = 0.05                     # interpolation for lead time gained & max skill calculation
 write2file               = True
 # -----------------------------------------------------
@@ -45,6 +45,7 @@ misc.tic()
 # define stuff
 forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
 print(forecast_dates)
+
 
 if score_flag == 'fmsess':
     path_in_forecast        = config.dirs['s2s_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'

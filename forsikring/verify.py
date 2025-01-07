@@ -29,8 +29,14 @@ def boxcar_smoother_xy_optimized(box_sizes, da, output_type):
         raise ValueError("The last two dimensions of 'da' must be 'latitude' and 'longitude'")
 
     # Initialize output array smooth_values = np.full((len(box_sizes),) + da.shape, np.nan, dtype='float32')
+    #coords        = {'box_size': box_sizes, **da.coords}
+    #dims          = ['box_size'] + list(da.dims)
+
+    # initialize output array    
+    temp          = np.zeros((box_sizes.size,) + da.shape)
     coords        = {'box_size': box_sizes, **da.coords}
     dims          = ['box_size'] + list(da.dims)
+    smooth_values = xr.DataArray(temp, coords=coords, dims=dims)
     
     # Apply the uniform filter for each box size
     for i, size in enumerate(box_sizes):
@@ -40,9 +46,10 @@ def boxcar_smoother_xy_optimized(box_sizes, da, output_type):
 
     # Create the DataArray if desired. Else, remains numpy array
     if output_type == 'xarray':
-        return xr.DataArray(smooth_values, coords=coords, dims=dims)
-    elif output_type == 'numpy':
+        #return xr.DataArray(smooth_values, coords=coords, dims=dims)
         return smooth_values
+    elif output_type == 'numpy':
+        return smooth_values.values
     
 
 def boxcar_smoother_xy(box_sizes,da):
