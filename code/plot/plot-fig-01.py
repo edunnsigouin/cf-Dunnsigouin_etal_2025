@@ -51,11 +51,11 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
     
     ax.set_ylim([box_size[0], box_size[-2]])
     ax.set_title(title_text, fontsize=fontsize + 4,loc='left', ha='left', y=0.89, x=0.015, bbox={'facecolor': 'white', 'edgecolor': 'black', 'pad': 3})
-    return p
+    return p, contour
 
 
 # INPUT -----------------------
-write2file = False
+write2file = True
 # -----------------------------
 
 # define stuff         
@@ -89,21 +89,102 @@ setup_subplot(0, ax[0], ds1, 'a)', clevs_score, clevs_ltg, cmap_score, cmap_ltg,
 
 setup_subplot(2, ax[2], ds2, 'c)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-p1 = setup_subplot(4, ax[4], ds3, 'e)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
+p1, contour_1 = setup_subplot(4, ax[4], ds3, 'e)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-setup_subplot(1, ax[1], ds1, 'b)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
+p_b, contour_b = setup_subplot(1, ax[1], ds1, 'b)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-ax[1].plot([4.6,6.7], [1,33], 'bo',markersize=8)
+
+
+####
+
+# Plot the two blue dots
+#ax[1].plot([4.6, 6.7], [1, 33], 'bo', markersize=8)
+
+# ============== EXTRACT THE PATH FROM THE CONTOUR =====================
+# Suppose we want the 4th level in the contour (just an example):
+level_index = 5
+collection  = contour_b.collections[level_index]
+paths       = collection.get_paths()
+
+# We'll assume there's only one path in that level (or pick the correct one)
+p = paths[0]   # if multiple, pick the correct path manually
+
+# The two points between which we want the arrow:
+xA, yA = 4.6,  1
+xB, yB = 6.7, 33
+
+# Extract the path vertices
+verts = p.vertices
+xs    = verts[:, 0]
+ys    = verts[:, 1]
+
+# Find the indices nearest each point
+distA = np.hypot(xs - xA, ys - yA)
+distB = np.hypot(xs - xB, ys - yB)
+
+iA = np.argmin(distA)
+iB = np.argmin(distB)
+
+start_i = min(iA, iB)
+end_i   = max(iA, iB)
+
+sub_verts = verts[start_i : end_i+1]
+
+# Build a sub-path
+from matplotlib.path import Path
+from matplotlib.patches import FancyArrowPatch, ArrowStyle
+
+codes = np.full(len(sub_verts), Path.LINETO)
+codes[0] = Path.MOVETO
+contour_subpath = Path(sub_verts, codes)
+
+# Define an arrow style
+arrow_style = ArrowStyle.CurveFilledB(head_length=6, head_width=4)
+
+# Create the arrow patch
+arrow_patch = FancyArrowPatch(
+    path=contour_subpath,
+    arrowstyle=arrow_style,
+    color='red',
+    linewidth=3,
+    zorder=5
+)
+
+# Add it to ax[1]
+ax[1].add_patch(arrow_patch)
+####
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#ax[1].plot([4.6,6.7], [1,33], 'bo',markersize=8)
 #ax[1].plot([4.6,6.7], [1,33], 'bo-',markersize=10)
 
 
-ax[1].annotate("", xy=(6.9, 17), xytext=(4.4, 17),
-            arrowprops=dict(arrowstyle="<->",linewidth=3, color='blue'))
-
+ax[1].annotate("", xy=(4.6, 1), xytext=(6.7, 1),
+            arrowprops=dict(arrowstyle="<|-,head_length=0.6,head_width=0.4",linewidth=3, color='blue'))
 
 setup_subplot(3, ax[3], ds2, 'd)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-p2 = setup_subplot(5, ax[5], ds3, 'f)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
+p2, contour_2 = setup_subplot(5, ax[5], ds3, 'f)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
 fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.12,wspace=0.04)
 
