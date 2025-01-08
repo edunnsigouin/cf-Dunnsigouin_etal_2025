@@ -76,11 +76,14 @@ ax.annotate("", xy=(1, 33), xytext=(15, 33),arrowprops=dict(arrowstyle="<->,head
 ax.annotate("", xy=(5, 1), xytext=(5, 57),arrowprops=dict(arrowstyle="<->,head_length=0.75,head_width=0.75",linewidth=3, color='red'))
 ax.annotate("", xy=(1, 9), xytext=(9, 57),arrowprops=dict(arrowstyle="<->,head_length=0.75,head_width=0.75",linewidth=3, color='red'))
 
-fig.text(0.5, 0.56, 'fixed spatial scale',horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',
-                                                                                facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+2)
+fig.text(0.5, 0.54, 'fixed spatial\nprecision',horizontalalignment='center',
+         bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+1)
 
-fig.text(0.22, 0.31, 'optimized accuracy',rotation=45,horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',
-	                                                                        facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+2)
+fig.text(0.23, 0.32,'optimized spatial\nprecision',rotation=45,
+         horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+1)
+
+fig.text(0.26, 0.75, 'fixed lead\ntime',horizontalalignment='center',
+         bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+1)
 
 fig.subplots_adjust(right=0.9, left=0.1,top=0.9,bottom=0.21)
 
@@ -88,7 +91,7 @@ cb1_ax = fig.add_axes([0.1, 0.075, 0.8, 0.05])
 cb1    = fig.colorbar(p1, cax=cb1_ax, orientation='horizontal',ticks=clevs_score, pad=0.025)
 cb1.ax.tick_params(labelsize=fontsize, size=0) 
 cb1.ax.yaxis.set_label_position('right') 
-cb1.set_label('accuracy [FMSESS or FBSS]',
+cb1.set_label('accuracy [FMSESS]',
               fontsize=fontsize+2)
 
 # write2file
