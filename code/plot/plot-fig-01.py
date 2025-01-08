@@ -158,27 +158,6 @@ ax[1].add_patch(arrow_patch)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#ax[1].plot([4.6,6.7], [1,33], 'bo',markersize=8)
-#ax[1].plot([4.6,6.7], [1,33], 'bo-',markersize=10)
-
-
 ax[1].annotate("", xy=(4.6, 1), xytext=(6.7, 1),
             arrowprops=dict(arrowstyle="<|-,head_length=0.6,head_width=0.4",linewidth=3, color='blue'))
 

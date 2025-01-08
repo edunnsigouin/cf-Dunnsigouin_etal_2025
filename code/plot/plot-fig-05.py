@@ -72,9 +72,9 @@ fig,ax      = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
 
 p1 = setup_subplot(0, ax, ds1, 'a)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize+2)
 
-ax.annotate("", xy=(1, 33), xytext=(15, 33),arrowprops=dict(arrowstyle="<->,head_length=0.75,head_width=0.75",linewidth=3, color='red'))
-ax.annotate("", xy=(5, 1), xytext=(5, 57),arrowprops=dict(arrowstyle="<->,head_length=0.75,head_width=0.75",linewidth=3, color='red'))
-ax.annotate("", xy=(1, 9), xytext=(9, 57),arrowprops=dict(arrowstyle="<->,head_length=0.75,head_width=0.75",linewidth=3, color='red'))
+ax.annotate("", xy=(1, 33), xytext=(15, 33),arrowprops=dict(arrowstyle="<|-|>,head_length=0.6,head_width=0.4",linewidth=3, color='red'))
+ax.annotate("", xy=(5, 1), xytext=(5, 57),arrowprops=dict(arrowstyle="<|-|>,head_length=0.6,head_width=0.4",linewidth=3, color='red'))
+ax.annotate("", xy=(1, 9), xytext=(9, 57),arrowprops=dict(arrowstyle="<|-|>,head_length=0.6,head_width=0.4",linewidth=3, color='red'))
 
 fig.text(0.5, 0.54, 'fixed spatial\nprecision',horizontalalignment='center',
          bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+1)
