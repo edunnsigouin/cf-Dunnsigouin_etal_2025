@@ -87,7 +87,7 @@ fig.text(0.26, 0.75, 'fixed lead\ntime',horizontalalignment='center',
 
 fig.subplots_adjust(right=0.9, left=0.1,top=0.9,bottom=0.21)
 
-cb1_ax = fig.add_axes([0.1, 0.075, 0.8, 0.05])
+cb1_ax = fig.add_axes([0.1, 0.075, 0.8, 0.04])
 cb1    = fig.colorbar(p1, cax=cb1_ax, orientation='horizontal',ticks=clevs_score, pad=0.025)
 cb1.ax.tick_params(labelsize=fontsize, size=0) 
 cb1.ax.yaxis.set_label_position('right') 
