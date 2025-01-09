@@ -86,7 +86,7 @@ fig.text(0.275, 0.75, 'fixed lead\ntime',horizontalalignment='center',
          bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+1)
 
 
-fig.text(0.56, 0.72,'optimized spatial\nprecision',
+fig.text(0.53, 0.73,'optimized\naccuracy',
          horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+1)
 
 fig.subplots_adjust(right=0.9, left=0.1,top=0.9,bottom=0.21)
