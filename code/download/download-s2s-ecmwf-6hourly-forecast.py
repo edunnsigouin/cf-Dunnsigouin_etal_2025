@@ -22,9 +22,9 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product             = 'forecast' # forecast/vr_forecast
-first_forecast_date = '20231228' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 50        # number of forecast initializations   
-grid                = '0.5/0.5' # degree lat/lon resolution
+first_forecast_date = '20230731' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 3        # number of forecast initializations   
+grid                = '0.25/0.25' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var                 = 'tp'
 comp_lev            = 5 # file compression level
@@ -88,8 +88,8 @@ dic = {
 }    
 
 # get all dates for monday and thursday forecast initializations
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast,'annual')
-#forecast_dates = pd.date_range(first_forecast_date, periods=number_forecast, freq="D")
+#forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast,'annual')
+forecast_dates = pd.date_range(first_forecast_date, periods=number_forecast, freq="D")
 print(forecast_dates)
 
 
