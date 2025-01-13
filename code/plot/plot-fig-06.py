@@ -44,7 +44,7 @@ variable             = 'tp24'
 domain               = 'scandinavia' 
 date                 = '2023-08-07'
 grid                 = '0.25x0.25'
-write2file           = False
+write2file           = True
 # -----------------------------
 
 # define stuff
@@ -131,7 +131,7 @@ for y, label in zip(y_positions, labels):
 
 ncols = 2
 x_positions = [(i + 0.5) / ncols for i in range(ncols)]  # Centered above each column
-top_labels = ['grid scale precision', 'optimized spatial precision']
+top_labels = ['grid scale precision', 'optimized accuracy']
 
 for x, label in zip(x_positions, top_labels):
     fig.text(x, 0.995, label, fontsize=fontsize + 5, va='bottom', ha='center')  # Adjust y-position if needed
