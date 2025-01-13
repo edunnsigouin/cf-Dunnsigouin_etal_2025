@@ -20,10 +20,10 @@ from forsikring import config,s2s,misc
 area       = '73.5/-27/33/45' # or 'E' for europe
 grid       = '0.25/0.25' # '0.25/0.25' or '0.5/0.5'
 variables  = ['tp6'] # tp6,sf6
-date_start = '2023-01-01'
-date_end   = '2023-11-29'
+date_start = '2024-01-01'
+date_end   = '2025-01-01'
 comp_lev   = 5 # file compression level
-write2file = False
+write2file = True
 # -----------------------------------------------------
 
 c         = cdsapi.Client()
@@ -31,7 +31,7 @@ data_type = 'reanalysis-era5-single-levels'
 
 dic1 = {
     'product_type': 'reanalysis',
-    'format': 'netcdf',
+    'data_format': 'netcdf',
     'variable': '',
     'year': '',
     'month': '',
@@ -43,6 +43,8 @@ dic1 = {
 
 # create list of daily dates to download
 dates = pd.date_range(start=date_start,end=date_end, freq="1D")
+print(dates)
+
 
 for variable in variables:
     
@@ -73,7 +75,6 @@ for variable in variables:
             dic2['day']   = str(dates[i+1].day)
             date2         = str(dates[i+1].year) + '-' + str(dates[i+1].month).zfill(2) + '-' + str(dates[i+1].day).zfill(2)
             filename2     = 'temp_' + variable + '_' + gridstring + '_' + date2 + '.nc'
-
             filename3     = variable + '_' + gridstring + '_' + date1 + '.nc'
 
             if write2file:
@@ -84,8 +85,9 @@ for variable in variables:
 
                 c.retrieve(data_type,dic1,path + filename1)
                 c.retrieve(data_type,dic2,path + filename2)
-                
+
                 ds         = xr.open_mfdataset([path + filename1,path + filename2])
+                ds         = ds.rename({'valid_time':'time'})
                 ds['time'] = ds.time - np.timedelta64(1,'h') # shift time to put all required data on same day
 
                 if variable == 'tp6':
@@ -122,6 +124,6 @@ for variable in variables:
                         print('compress files to reduce space..')
                         print('')
                         misc.compress_file(comp_lev,3,filename_out,path)
-                        
+
 
 

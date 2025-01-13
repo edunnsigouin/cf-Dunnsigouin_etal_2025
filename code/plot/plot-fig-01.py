@@ -55,7 +55,7 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
 
 
 # INPUT -----------------------
-write2file = False
+write2file = True
 # -----------------------------
 
 # define stuff         
@@ -158,8 +158,13 @@ ax[1].add_patch(arrow_patch)
 
 
 
-ax[1].annotate("", xy=(4.6, 1), xytext=(6.7, 1),
+ax[1].annotate("", xy=(4.6, 33), xytext=(6.7, 33),
             arrowprops=dict(arrowstyle="<|-,head_length=0.6,head_width=0.4",linewidth=3, color='blue'))
+
+ax[1].annotate("", xy=(4.6, 1), xytext=(4.6, 33),
+            arrowprops=dict(arrowstyle="<|-,head_length=0.6,head_width=0.4",linewidth=3, color='black'))
+
+
 
 setup_subplot(3, ax[3], ds2, 'd)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 

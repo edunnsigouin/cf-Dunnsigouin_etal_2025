@@ -12,12 +12,12 @@ from forsikring import config,s2s,misc
 
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe
-grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
-variables  = ['t2m6'] # mwd6, swh6, hmax6
-date_start = '1961-01-01'
-date_end   = '2023-01-01'#'2023-01-01'
+grid       = '0.25/0.25' # '0.25/0.25' or '0.5/0.5'
+variables  = ['tp6'] # mwd6, swh6, hmax6
+date_start = '2023-01-01'
+date_end   = '2024-01-01'#'2023-01-01'
 comp_lev   = 5 # file compression level
-write2file = True
+write2file = False
 # -----------------------------------------------------
 
 c         = cdsapi.Client()
