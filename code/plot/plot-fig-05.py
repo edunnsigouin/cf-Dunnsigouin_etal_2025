@@ -22,7 +22,7 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
         ax.pcolor(time, box_size, ds['significance'], hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
 
         dummy = ax.contour(time, box_size, ds['score'], levels=clevs_score, linewidths=2,linestyles='-',colors = [(0.5,0.5,0.5)])
-        #ax.clabel(dummy, clevs_score, inline=True, fmt='%1.1f', fontsize=fontsize)
+        ax.clabel(dummy, clevs_score, inline=True, fmt='%1.1f', fontsize=fontsize)
 
         #ax.contour(time, box_size, ds['score'], levels=[0.8], linewidths=3,linestyles='-',colors = [(1.0,0.0,0.0)])
         
@@ -73,11 +73,11 @@ fig,ax      = plt.subplots(nrows=1,ncols=1,figsize=(figsize[0],figsize[1]))
 p1 = setup_subplot(0, ax, ds1, 'a)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize+2)
 
 ax.annotate("", xy=(1, 33), xytext=(15, 33),arrowprops=dict(arrowstyle="<|-|>,head_length=0.6,head_width=0.4",linewidth=3, color='red'))
-ax.annotate("", xy=(3, 1), xytext=(3, 57),arrowprops=dict(arrowstyle="<|-|>,head_length=0.6,head_width=0.4",linewidth=3, color='red'))
-ax.annotate("", xy=(1, 9), xytext=(9, 57),arrowprops=dict(arrowstyle="<|-|>,head_length=0.6,head_width=0.4",linewidth=3, color='red'))
+ax.annotate("", xy=(3, 1), xytext=(3, 57),arrowprops=dict(arrowstyle="<|-|>,head_length=0.6,head_width=0.4",linewidth=3, color='black'))
+ax.annotate("", xy=(1, 9), xytext=(9, 57),arrowprops=dict(arrowstyle="<|-|>,head_length=0.6,head_width=0.4",linewidth=3, color='blue'))
 
 fig.text(0.5, 0.54, 'fixed spatial\nprecision',horizontalalignment='center',
-         bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+1)
+         bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='red',fontsize=fontsize+1)
 
 #fig.text(0.23, 0.32,'optimized spatial\nprecision',rotation=45,
 #         horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+1)
@@ -87,7 +87,7 @@ fig.text(0.275, 0.75, 'fixed lead\ntime',horizontalalignment='center',
 
 
 fig.text(0.53, 0.73,'optimized\naccuracy',
-         horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+1)
+         horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='blue',fontsize=fontsize+1)
 
 fig.subplots_adjust(right=0.9, left=0.1,top=0.9,bottom=0.21)
 
