@@ -64,7 +64,7 @@ path_out          = config.dirs['fig'] + 'paper/'
 filename_in_1     = 'fmsess_tp24_daily_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
 filename_in_2     = 'fbss_tp24_pval0.9_daily_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
 filename_in_3     = 'fbss_tp24_pval0.1_daily_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
-figname_out       = 'fig_S1.png'
+figname_out       = 'fig_S1.pdf'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)

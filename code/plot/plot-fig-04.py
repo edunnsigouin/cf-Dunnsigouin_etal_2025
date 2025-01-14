@@ -46,7 +46,7 @@ filename_in_3     = 'fbss_xy_tp24_pval0.9_weekly_europe_annual_boxsize_1_leadtim
 filename_in_4     = 'fbss_xy_tp24_pval0.9_weekly_europe_annual_boxsize_33_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc'
 filename_in_5     = 'fbss_xy_tp24_pval0.1_weekly_europe_annual_boxsize_1_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc'
 filename_in_6     = 'fbss_xy_tp24_pval0.1_weekly_europe_annual_boxsize_33_leadtime_2_2020-01-02_2022-12-29_0.25x0.25.nc'
-figname_out       = 'fig_04.png'
+figname_out       = 'fig_04.pdf'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
