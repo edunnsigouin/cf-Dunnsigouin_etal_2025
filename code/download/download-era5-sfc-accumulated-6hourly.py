@@ -18,7 +18,7 @@ from forsikring import config,s2s,misc
 
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe
-grid       = '0.25/0.25' # '0.25/0.25' or '0.5/0.5'
+grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
 variables  = ['tp6'] # tp6,sf6
 date_start = '2024-01-01'
 date_end   = '2025-01-01'

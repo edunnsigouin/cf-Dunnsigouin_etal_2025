@@ -1,5 +1,5 @@
 """
-Plots fig. S1 in Dunn-Sigouin et al. 
+Plots fig. 1 in Dunn-Sigouin et al. 
 """
 
 import numpy     as np
@@ -11,7 +11,7 @@ import matplotlib as mpl
 
 def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize):
     """ 
-    Sets up specifics of subplots for fig. S1
+    Sets up specifics of subplots for fig. 1
     """
     time        = ds['time']
     time_interp = ds['time_interp']
@@ -28,7 +28,7 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
         ax.set_yticklabels(['1', '9', '17', '25', '33', '41', '49', '57'], fontsize=fontsize)
         ax.set_ylabel(r'precision [gridpoints$^2$]', fontsize=fontsize)
 
-    if (flag == 1) or (flag == 3) or (flag == 5):
+    if (flag == 1) or (flag == 3) or (flag == 5) :
 
         p = ax.pcolormesh(time_interp, box_size, ds['lead_time_gained'], vmin=clevs_ltg[0], vmax=clevs_ltg[-1], cmap=cmap_ltg,edgecolor='none',shading='auto')
         ax.pcolor(time, box_size, ds['significance'], hatch='\\\\', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[0.8,0.8,0.8], lw=0)
@@ -50,22 +50,21 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
     ax.set_xticklabels(['1', '', '', '', '5', '', '', '', '', '10', '', '', '', '', '15'], fontsize=fontsize)
     
     ax.set_ylim([box_size[0], box_size[-2]])
-    ax.set_title(title_text, fontsize=fontsize + 3)
-    
-    return p
+    ax.set_title(title_text, fontsize=fontsize + 4,loc='left', ha='left', y=0.89, x=0.015, bbox={'facecolor': 'white', 'edgecolor': 'black', 'pad': 3})
+    return p, contour
 
 
 # INPUT -----------------------
-write2file = False
+write2file = True
 # -----------------------------
 
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
-filename_in_1     = 'fmsess_tp24_daily_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_2     = 'fbss_tp24_pval0.9_daily_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
-filename_in_3     = 'fbss_tp24_pval0.1_daily_europe_ndjfm_2020-01-02_2022-12-29_0.25x0.25.nc'
-figname_out       = 'fig_S1.png'
+filename_in_1     = 'fmsess_tp24_daily_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
+filename_in_2     = 'fbss_tp24_pval0.9_daily_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
+filename_in_3     = 'fbss_tp24_pval0.1_daily_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
+figname_out       = 'fig_S2.png'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
@@ -83,32 +82,33 @@ fig,ax      = plt.subplots(nrows=3,ncols=2,sharey='row',sharex='col',figsize=(fi
 ax          = ax.ravel()
 
 fig.text(0.5, 0.965, 'anomalies',horizontalalignment='center',color='k',fontsize=fontsize+4)
-fig.text(0.5, 0.67, '0.9 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
-fig.text(0.5, 0.375, '0.1 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
+fig.text(0.5, 0.672, '0.9 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
+fig.text(0.5, 0.38, '0.1 quantile extremes',horizontalalignment='center',color='k',fontsize=fontsize+4)
 
 setup_subplot(0, ax[0], ds1, 'a)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
 setup_subplot(2, ax[2], ds2, 'c)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-p1 = setup_subplot(4, ax[4], ds3, 'e)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
+p1, contour_1 = setup_subplot(4, ax[4], ds3, 'e)', clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-setup_subplot(1, ax[1], ds1, 'b)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
+p_b, contour_b = setup_subplot(1, ax[1], ds1, 'b)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
+
 
 setup_subplot(3, ax[3], ds2, 'd)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-p2 = setup_subplot(5, ax[5], ds3, 'f)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
+p2, contour_2 = setup_subplot(5, ax[5], ds3, 'f)', clevs_score,clevs_ltg, cmap_score, cmap_ltg, fontsize)
 
-fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.15,wspace=0.075)
+fig.subplots_adjust(right=0.925, left=0.075,top=0.96,hspace=0.12,wspace=0.04)
 
-cb1_ax = fig.add_axes([0.075, 0.05, 0.41, 0.02])
+cb1_ax = fig.add_axes([0.075, 0.045, 0.41, 0.02])
 cb1    = fig.colorbar(p1, cax=cb1_ax, orientation='horizontal',ticks=clevs_score, pad=0.025)
 cb1.ax.tick_params(labelsize=fontsize, size=0) 
-cb1.ax.set_title('accuracy [FMSESS or FBSS]', fontsize=fontsize+3,y=-2)
+cb1.ax.set_title('accuracy [FMSESS or FBSS]', fontsize=fontsize+2,y=-2)
 
-cb2_ax = fig.add_axes([0.515, 0.05, 0.41, 0.02])
+cb2_ax = fig.add_axes([0.515, 0.045, 0.41, 0.02])
 cb2    = fig.colorbar(p2, cax=cb2_ax, orientation='horizontal',ticks=clevs_ltg[2::4], pad=0.025)
 cb2.ax.tick_params(labelsize=fontsize, size=0)
-cb2.ax.set_title('lead time gained or lost [days]', fontsize=fontsize+3,y=-2)
+cb2.ax.set_title('lead time gained or lost [days]', fontsize=fontsize+2,y=-2)
 
 # write2file
 if write2file: plt.savefig(path_out + figname_out)
