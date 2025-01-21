@@ -6,8 +6,11 @@ import numpy     as np
 import xarray    as xr
 from matplotlib  import pyplot as plt
 from forsikring  import misc,s2s,config
+from forsikring  import dim_025x025 as dim
 import matplotlib as mpl
 
+def spatial_scale_scaling(dim):
+    return np.mean(np.cos(np.deg2rad(dim.latitude)))
 
 def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, cmap_ltg, fontsize):
     """ 
@@ -39,7 +42,9 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
         
         ax2 = ax.twinx()
         ax2.set_yticks(np.array([0, 9, 17, 25, 33, 41, 49, 57]))
-        ax2.set_yticklabels(['9', '81', '153', '225', '297', '369', '441', '513'], fontsize=fontsize)
+        scaling = spatial_scale_scaling(dim)
+        yticklabels = scaling*np.array([9.0, 81.0, 153.0, 225.0, 297.0, 369.0, 441.0, 513.0])
+        ax2.set_yticklabels(yticklabels.astype(int), fontsize=fontsize)        
         ax2.set_ylabel(r'precision [km$^2$]', fontsize=fontsize)
 
     if (flag == 4) or (flag == 5):
