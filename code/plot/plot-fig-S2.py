@@ -43,7 +43,7 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
         ax2 = ax.twinx()
         ax2.set_yticks(np.array([0, 9, 17, 25, 33, 41, 49, 57]))
         scaling = spatial_scale_scaling(dim)
-        yticklabels = scaling*np.array([9.0, 81.0, 153.0, 225.0, 297.0, 369.0, 441.0, 513.0])
+        yticklabels = scaling*27*np.array([1, 9, 17, 25, 33, 41, 49, 57])
         ax2.set_yticklabels(yticklabels.astype(int), fontsize=fontsize)
 
         ax2.set_ylabel(r'precision [km$^2$]', fontsize=fontsize)
@@ -70,7 +70,7 @@ path_out          = config.dirs['fig'] + 'paper/'
 filename_in_1     = 'fmsess_tp24_daily_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
 filename_in_2     = 'fbss_tp24_pval0.9_daily_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
 filename_in_3     = 'fbss_tp24_pval0.1_daily_europe_mjjas_2020-05-04_2022-09-29_0.25x0.25.nc'
-figname_out       = 'fig_S2.pdf'
+figname_out       = 'fig_S2.png'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
