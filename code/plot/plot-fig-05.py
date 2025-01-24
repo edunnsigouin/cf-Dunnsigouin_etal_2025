@@ -37,7 +37,7 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
         ax2 = ax.twinx()
         ax2.set_yticks(np.array([0, 9, 17, 25, 33, 41, 49, 57]))
         scaling = spatial_scale_scaling(dim)
-        yticklabels = scaling*np.array([9.0, 81.0, 153.0, 225.0, 297.0, 369.0, 441.0, 513.0])
+        yticklabels = scaling*27*np.array([1, 9, 17, 25, 33, 41, 49, 57])
         ax2.set_yticklabels(yticklabels.astype(int), fontsize=fontsize)
         ax2.set_ylabel(r'precision [km$^2$]', fontsize=fontsize)
 
@@ -61,12 +61,10 @@ write2file = True
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
 filename_in_1     = 'fmsess_tp24_daily_scandinavia_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-figname_out       = 'fig_05.pdf'
+figname_out       = 'fig_05.png'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
-
-print(ds1)
 
 # plot 
 fontsize    = 11
@@ -84,18 +82,14 @@ ax.annotate("", xy=(1, 33), xytext=(15, 33),arrowprops=dict(arrowstyle="<|-|>,he
 ax.annotate("", xy=(3, 1), xytext=(3, 57),arrowprops=dict(arrowstyle="<|-|>,head_length=0.6,head_width=0.4",linewidth=3, color='black'))
 ax.annotate("", xy=(1, 9), xytext=(9, 57),arrowprops=dict(arrowstyle="<|-|>,head_length=0.6,head_width=0.4",linewidth=3, color='blue'))
 
-fig.text(0.5, 0.54, 'fixed spatial\nprecision',horizontalalignment='center',
-         bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='red',fontsize=fontsize+1)
+fig.text(0.5, 0.52, 'fixed spatial\nprecision',horizontalalignment='center',
+         bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='red',fontsize=fontsize+3)
 
-#fig.text(0.23, 0.32,'optimized spatial\nprecision',rotation=45,
-#         horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+1)
+fig.text(0.29, 0.75, 'fixed lead\ntime',horizontalalignment='center',
+         bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+3)
 
-fig.text(0.275, 0.75, 'fixed lead\ntime',horizontalalignment='center',
-         bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+1)
-
-
-fig.text(0.53, 0.73,'optimized\naccuracy',
-         horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='blue',fontsize=fontsize+1)
+fig.text(0.54, 0.71,'optimized\naccuracy',
+         horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='blue',fontsize=fontsize+3)
 
 fig.subplots_adjust(right=0.9, left=0.1,top=0.9,bottom=0.21)
 

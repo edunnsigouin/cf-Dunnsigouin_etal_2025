@@ -57,7 +57,7 @@ filename5        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + 
 filename6        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
 filename7        = config.dirs['era5_forecast_' + time_flag] + '/' + variable + '/' + variable + '_' + grid + '_' + date + '.nc'
 path_out         = config.dirs['fig'] + 'paper/'
-figname_out      = 'fig_06.pdf'
+figname_out      = 'fig_06.png'
 
 # read in data
 da1 = xr.open_dataset(filename1).sel(time=date).sel(box_size=1)
