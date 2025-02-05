@@ -1,6 +1,6 @@
 """
 Converts s2s forecast format data into anomaly relative
-to smoothed climatological mean from hindcast data for Fig. 5 of paper.
+to smoothed climatological mean from hindcast data for Fig. 6 of paper.
 Anomalies are normalized. 
 If daily forecast date does not correspond to bi-weekly hindcast date,
 the we use the most recent hindcast as the climatology for a given forecast. 
@@ -116,8 +116,8 @@ def initialize_score_array(time,box_sizes,name):
 # INPUT -----------------------------------------------
 time_flag           = 'daily'                 # daily or weekly
 variable            = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20230803'             # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 6                      # number of forecasts 
+first_forecast_date = '20230731'             # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 1                      # number of forecasts 
 season              = 'annual'
 grid                = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
 domain              = 'scandinavia'
@@ -164,7 +164,7 @@ for date in forecast_dates:
     filename_forecast2       = path_in_forecast2 + variable + '_' + grid + '_' + date + '.nc'
 
     fmsess                        = initialize_score_array(forecast1.time,box_sizes,'fmsess')
-    forecast_mse2, reference_mse2 = verify.calc_forecast_and_reference_error('fmsess', filename_verification2, filename_forecast2, variable, box_sizes)
+    forecast_mse2, reference_mse2 = verify.calc_forecast_and_reference_error('fmsess', filename_verification2, filename_forecast2, variable, box_sizes,grid)
     fmsess[:,:]                   = 1.0 - forecast_mse2 / reference_mse2
 
     
@@ -176,7 +176,7 @@ for date in forecast_dates:
     filename_forecast3      = path_in_forecast3 + variable + '_' + grid + '_' + date + '.nc'
 
     fbss                          = initialize_score_array(forecast1.time,box_sizes,'fbss')
-    forecast_mse3, reference_mse3 = verify.calc_forecast_and_reference_error('fbss', filename_verification3, filename_forecast3, variable, box_sizes, pval)
+    forecast_mse3, reference_mse3 = verify.calc_forecast_and_reference_error('fbss', filename_verification3, filename_forecast3, variable, box_sizes, grid, pval)
     fbss[:,:]                     = 1.0 - forecast_mse3 / reference_mse3
 
     # modify metadata 

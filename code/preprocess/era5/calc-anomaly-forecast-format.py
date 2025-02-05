@@ -10,19 +10,19 @@ from forsikring import misc,s2s,config,verify
 
 # INPUT -----------------------------------------------
 time_flag           = 'daily'                 # daily or weekly
-variable            = 't2m24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20200102'             # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 105                      # number of forecasts 
+variable            = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+first_forecast_date = '20230731'             # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 5                      # number of forecasts 
 season              = 'annual'
-grid                = '0.5x0.5'          # '0.25x0.25' & '0.5x0.5'
-domain              = 'europe'
+grid                = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
+domain              = 'scandinavia'
 box_sizes           = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!  
 write2file          = True
 # -----------------------------------------------------
 
 # get forecast dates 
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
-#forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts).strftime('%Y-%m-%d') 
+#forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
+forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts).strftime('%Y-%m-%d') 
 print(forecast_dates)
 
 for date in forecast_dates:

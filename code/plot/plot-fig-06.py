@@ -44,7 +44,7 @@ variable             = 'tp24'
 domain               = 'scandinavia' 
 date                 = '2023-08-07'
 grid                 = '0.25x0.25'
-write2file           = True
+write2file           = False
 # -----------------------------
 
 # define stuff

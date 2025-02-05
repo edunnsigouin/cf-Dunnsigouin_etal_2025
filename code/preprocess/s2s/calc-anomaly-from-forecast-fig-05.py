@@ -40,8 +40,8 @@ def find_most_recent_hindcast(forecast_file, hindcast_dir):
 # INPUT -----------------------------------------------
 time_flag           = 'daily'                 # daily or weekly
 variable            = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20230803'             # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 6                      # number of forecasts 
+first_forecast_date = '20230731'             # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 5                      # number of forecasts 
 season              = 'annual'
 grid                = '0.25x0.25'          # '0.25x0.25' & '0.5x0.5'
 domain              = 'scandinavia'
