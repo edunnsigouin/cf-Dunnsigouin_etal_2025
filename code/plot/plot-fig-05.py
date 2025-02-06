@@ -61,7 +61,8 @@ write2file = True
 path_in           = config.dirs['verify_s2s_forecast_daily']
 path_out          = config.dirs['fig'] + 'paper/'
 filename_in_1     = 'fmsess_tp24_daily_scandinavia_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-figname_out       = 'fig_05.png'
+#figname_out       = 'fig_05.png'
+figname_out       = 'test.png'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
@@ -85,11 +86,11 @@ ax.annotate("", xy=(1, 9), xytext=(9, 57),arrowprops=dict(arrowstyle="<|-|>,head
 fig.text(0.5, 0.52, 'fixed spatial\nprecision',horizontalalignment='center',
          bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='red',fontsize=fontsize+3)
 
-fig.text(0.29, 0.75, 'fixed lead\ntime',horizontalalignment='center',
-         bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+3)
+#fig.text(0.29, 0.75, 'fixed lead\ntime',horizontalalignment='center',
+#         bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='k',fontsize=fontsize+3)
 
-fig.text(0.54, 0.71,'optimized\naccuracy',
-         horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='blue',fontsize=fontsize+3)
+#fig.text(0.54, 0.71,'optimized\naccuracy',
+#         horizontalalignment='center',bbox=dict(boxstyle='square,pad=.2',facecolor='w', edgecolor='k'),color='blue',fontsize=fontsize+3)
 
 fig.subplots_adjust(right=0.9, left=0.1,top=0.9,bottom=0.21)
 
