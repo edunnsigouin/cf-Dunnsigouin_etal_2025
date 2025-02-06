@@ -138,5 +138,5 @@ cbar.set_label('Rainfall (mm/day)')
 
 plt.tight_layout()
 
-if write2file: plt.savefig('/nird/home/edu061/cf-forsikring/fig/paper/test.png')
+if write2file: plt.savefig('/nird/home/edu061/cf-forsikring/fig/paper/XXX.png')
 plt.show()
