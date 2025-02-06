@@ -1,0 +1,134 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
+from scipy.ndimage import gaussian_filter
+
+# -----------------------------
+# 1. Zoomed-in domain around the watershed
+#    (Previously, watershed was near lat ~59.7 to 60.5, lon ~6.0 to 7.5)
+# -----------------------------
+lat_min, lat_max = 58, 62  # A ~1.4° lat span
+lon_min, lon_max = 5, 9   # A ~1.9° lon span
+
+# High-resolution grid (adjust as desired)
+num_lat = 40
+num_lon = 60
+
+lat = np.linspace(lat_min, lat_max, num_lat)
+lon = np.linspace(lon_min, lon_max, num_lon)
+LON, LAT = np.meshgrid(lon, lat)
+
+# -----------------------------
+# 2. Create synthetic rainfall with multiple structures
+# -----------------------------
+np.random.seed(42)
+
+# (A) Random noise
+random_field = np.random.rand(num_lat, num_lon)
+
+# (B) Sinusoidal wave pattern
+wave_pattern = (
+    8 * np.sin(2 * np.pi * (LAT - lat_min) / (lat_max - lat_min)) *
+    np.cos(2 * np.pi * (LON - lon_min) / (lon_max - lon_min))
+)
+
+# (C) Gaussian "lumps" for localized heavy rain
+lumps = np.zeros_like(LAT)
+
+# Lump #1 (centered near the middle of the domain)
+center1_lat, center1_lon = 60.0, 7.0
+lump1 = 15.0 * np.exp(-((LAT - center1_lat)**2 + (LON - center1_lon)**2) / 0.5)
+lumps += lump1
+
+# Lump #2 (also within the zoomed domain)
+center2_lat, center2_lon = 60.3, 6.7
+lump2 = 25.0 * np.exp(-((LAT - center2_lat)**2 + (LON - center2_lon)**2) / 0.6)
+lumps += lump2
+
+# Combine everything, add an offset to ensure positive mm/day
+rain_data_original = 10 + 10 * random_field + wave_pattern + lumps
+
+# -----------------------------
+# 3. Apply spatial smoothing
+# -----------------------------
+sigma = 4.0
+rain_data_smoothed = gaussian_filter(rain_data_original, sigma=sigma)
+
+# -----------------------------
+# 4. Define a larger, irregular watershed entirely on land
+#    (Coordinates updated for the new zoomed domain)
+# -----------------------------
+watershed_lon = [6.0, 6.8, 7.5, 7.2, 6.3, 6.0]
+watershed_lat = [59.7, 60.1, 60.3, 60.5, 60.4, 59.7]
+# The last point equals the first to close the polygon when plotting.
+
+# -----------------------------
+# 5. Plotting
+# -----------------------------
+fig = plt.figure(figsize=(12, 6))
+projection = ccrs.PlateCarree()
+
+# Common color scale
+vmin = rain_data_original.min()
+vmax = rain_data_original.max()
+
+# -----------------------------
+# Subplot A: Original (High-Resolution) Data
+# -----------------------------
+ax1 = fig.add_subplot(1, 2, 1, projection=projection)
+ax1.set_extent([lon_min, lon_max, lat_min, lat_max], crs=projection)
+
+# Coastlines might be partial here because we are zoomed in;
+# but we'll include them for context if available
+ax1.coastlines(resolution='50m')
+
+# Remove lat/lon labels
+ax1.gridlines(draw_labels=False, linewidth=0.5, color='gray', alpha=0.5)
+
+pcm1 = ax1.pcolormesh(
+    lon, lat, rain_data_original,
+    cmap='Blues', shading='auto',
+    vmin=vmin, vmax=vmax
+)
+
+# Watershed boundary in red
+ax1.plot(
+    watershed_lon, watershed_lat,
+    color='red', linewidth=2,
+    transform=ccrs.PlateCarree()
+)
+
+cbar1 = plt.colorbar(pcm1, ax=ax1, orientation='vertical', fraction=0.04, pad=0.05)
+cbar1.set_label('Rainfall (mm/day)')
+
+ax1.set_title('Original (High-Res) Rainfall')
+
+# -----------------------------
+# Subplot B: Smoothed Data
+# -----------------------------
+ax2 = fig.add_subplot(1, 2, 2, projection=projection)
+ax2.set_extent([lon_min, lon_max, lat_min, lat_max], crs=projection)
+
+ax2.coastlines(resolution='50m')
+ax2.gridlines(draw_labels=False, linewidth=0.5, color='gray', alpha=0.5)
+
+pcm2 = ax2.pcolormesh(
+    lon, lat, rain_data_smoothed,
+    cmap='Blues', shading='auto',
+    vmin=vmin, vmax=vmax
+)
+
+# Plot the same watershed boundary
+ax2.plot(
+    watershed_lon, watershed_lat,
+    color='red', linewidth=2,
+    transform=ccrs.PlateCarree()
+)
+
+cbar2 = plt.colorbar(pcm2, ax=ax2, orientation='vertical', fraction=0.04, pad=0.05)
+cbar2.set_label('Rainfall (mm/day)')
+
+ax2.set_title('Smoothed Rainfall')
+
+plt.tight_layout()
+plt.show()
