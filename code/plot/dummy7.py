@@ -32,6 +32,7 @@ ax.annotate(
     )
 )
 
+"""
 ax.annotate(
     '',
     xy=(9, 0),         # arrow head
@@ -42,7 +43,7 @@ ax.annotate(
 	color='tab:red'
     )
 )
-
+"""
 
 x_arrow_label = 3.2
 y_arrow_label = 0.3
@@ -56,6 +57,7 @@ ax.text(
     # You could also set va='center' if you want to center vertically
 )
 
+"""
 x_arrow_label = 4
 y_arrow_label = 0.61
 ax.text(
@@ -67,7 +69,7 @@ ax.text(
     ha='left'   # center-aligned horizontally                                                                                                                  
     # You could also set va='center' if you want to center vertically                                                                                           
 )
-
+"""
 #ax.set_title("Prediction Skill vs. Lead Time")
 
 plt.tight_layout()
