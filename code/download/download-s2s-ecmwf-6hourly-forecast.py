@@ -22,8 +22,8 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product             = 'forecast' # forecast/vr_forecast
-first_forecast_date = '20231130' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 1        # number of forecast initializations   
+first_forecast_date = '20230629' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 53        # number of forecast initializations   
 grid                = '0.5/0.5' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var                 = 'tp'
@@ -102,7 +102,14 @@ print(forecast_dates)
 if write2file:
     for date in forecast_dates:
 
-        if date > reference_time: dic['stream'] = 'eefo' # ecmwf changed where they store extended range forecasts after 2023-06-27
+        # ecmwf changed where they store extended range forecasts after 2023-06-27.
+        # after this date, there is no more vr_forecast. One needs to download
+        # at extended range from lead-time 0 to 46 days at lower resolution 0.5x0.5
+        # from eefo. Same for its corresponding hindcasts.        
+        if ((date > reference_time) & (grid == '0.5/0.5')):
+            dic['stream'] = 'eefo' 
+            dic['step']   = '0/to/1104/by/6'
+            dic['number'] = '1/to/100'
 
         for dtype in dtypes:
 

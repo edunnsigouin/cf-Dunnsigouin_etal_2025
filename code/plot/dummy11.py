@@ -99,7 +99,7 @@ ax1.plot(
     color='red', linewidth=2,
     transform=ccrs.PlateCarree()
 )
-ax1.set_title('raw forecast')
+#ax1.set_title('raw forecast at lead-day 5')
 
 # Subplot B: Smoothed Data
 ax2 = fig.add_subplot(1, 2, 2, projection=projection)
@@ -117,7 +117,7 @@ ax2.plot(
     color='red', linewidth=2,
     transform=ccrs.PlateCarree()
 )
-ax2.set_title('spatially aggregated')
+#ax2.set_title('spatially aggregated forecast',fontsize=12)
 
 # Single Horizontal Colorbar
 sm = plt.cm.ScalarMappable(norm=pcm1.norm, cmap=pcm1.cmap)
