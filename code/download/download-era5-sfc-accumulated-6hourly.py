@@ -18,10 +18,10 @@ from forsikring import config,s2s,misc
 
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe
-grid       = '0.5/0.5' # '0.25/0.25' or '0.5/0.5'
+grid       = '0.25/0.25' # '0.25/0.25' or '0.5/0.5'
 variables  = ['tp6'] # tp6,sf6
-date_start = '2024-01-01'
-date_end   = '2025-01-01'
+date_start = '1955-01-01'
+date_end   = '1960-01-01'
 comp_lev   = 5 # file compression level
 write2file = True
 # -----------------------------------------------------
@@ -83,6 +83,7 @@ for variable in variables:
                 print('downloading file: ' + date1)
                 print('')
 
+                
                 c.retrieve(data_type,dic1,path + filename1)
                 c.retrieve(data_type,dic2,path + filename2)
 
@@ -107,6 +108,7 @@ for variable in variables:
                 os.system('rm ' + path + filename1 + ' ' + path + filename2)
                 ds.close()
                 
+
                 if (dates[i+1].year - dates[i].year == 1) or (dates[i+1].strftime('%Y-%m-%d') == date_end): # if new year or end of dates
 
                         print('')
@@ -115,6 +117,7 @@ for variable in variables:
                         filenames    = variable + '_' + gridstring + '_' + str(year) + '-*'
                         filename_out = variable + '_' + gridstring + '_' + str(year) + '.nc'
                         ds           = xr.open_mfdataset(path + filenames)
+
                         with ProgressBar():
                                 ds = ds.compute()
                         ds.to_netcdf(path + filename_out)

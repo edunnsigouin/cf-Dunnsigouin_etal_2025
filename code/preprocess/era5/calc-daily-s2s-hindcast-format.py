@@ -52,17 +52,17 @@ def initialize_hindcast_array(date,number_hdate,variable,dim):
 
 # INPUT -----------------------------------------------
 variables           = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20230731'           # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 5                    # number of forecasts   
+first_forecast_date = '20230102'           # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 104                    # number of forecasts   
 number_hdate        = 20
 season              = 'annual'
-grid                = '0.25x0.25'        # '0.25x0.25' or '0.5x0.5'
+grid                = '0.5x0.5'        # '0.25x0.25' or '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------         
 
 # get all dates for monday and thursday forecast initializations 
-#forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
-forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts)
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
+#forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts)
 print(forecast_dates)
 
 for variable in variables:

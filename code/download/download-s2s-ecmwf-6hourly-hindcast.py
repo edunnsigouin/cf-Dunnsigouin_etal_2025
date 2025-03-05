@@ -26,8 +26,8 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product             = 'hindcast' # hindcast/vr_hindcast
-first_forecast_date = '20230102' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 104          # number of forecast initializations      
+first_forecast_date = '20230501' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 1          # number of forecast initializations      
 nhdates             = 20 # number of hindcast years  
 grid                = '0.25/0.25' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
@@ -76,6 +76,9 @@ elif var =='t2m': # 2 meter temperature
     param = '167.128'
 
     
+print('test')
+dtypes = ['pf']
+
 # populate API dictionary
 dic1 = {
     'class': 'od',
