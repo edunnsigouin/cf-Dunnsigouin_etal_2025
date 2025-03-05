@@ -8,22 +8,26 @@ import xarray   as xr
 import pandas   as pd
 import os
 from forsikring import config,misc,s2s
-from matplotlib  import pyplot as plt
+from datetime   import datetime
 
 # INPUT ----------------------------------------------- 
 variables           = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-product             = 'hindcast'              # hindcast or forecast ?
-first_forecast_date = '20230102' # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 34        # number of forecast initializations  
+product             = 'forecast'              # hindcast or forecast ?
+first_forecast_date = '20230629' # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 53        # number of forecast initializations  
 season              = 'annual'
-grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
+grid                = '0.5x0.5'             # '0.25x0.25' or '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
+forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
 #forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts).strftime('%Y-%m-%d')
 print(forecast_dates)
+
+# extended range forecast has changed format after 23-06-28.
+# i.e. for low-res 0.5x0.5, forecast starts at lead-time 0 and has 100 ensemble members
+reference_time = datetime(2023, 6, 27, 0, 0, 0)
 
 
 for variable in variables:
@@ -31,10 +35,11 @@ for variable in variables:
         for dtype in ['cf','pf']:
 
             misc.tic()
-            print('variable: ' + variable + ', date: ' + date + ', dtype: ' + dtype)
+            datestring = date.strftime('%Y-%m-%d')
+            print('variable: ' + variable + ', date: ' + datestring + ', dtype: ' + dtype)
             
-            forecastcycle = s2s.which_mv_for_init(date,model='ECMWF',fmt='%Y-%m-%d')
-            basename      = '%s_%s_%s_%s'%(forecastcycle,grid,date,dtype)
+            forecastcycle = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
+            basename      = '%s_%s_%s_%s'%(forecastcycle,grid,datestring,dtype)
                 
             if variable == 'tp24': # daily accumulated precip (m)
 
@@ -52,7 +57,12 @@ for variable in variables:
                 if grid == '0.25x0.25':
                     # drop first 'day' for high res data since it accumulates data when
                     # there is no data (i.e. initialization time)
-                    ds = ds.isel(time=slice(1,ds.time.size)) 
+                    ds = ds.isel(time=slice(1,ds.time.size))
+                elif ((date > reference_time) & (grid == '0.5x0.5')): # new low-res forecast format. start = day 0 and 100 ensemble members!
+                    # drop first 'day' for high res data since it accumulates data when
+                    # there is no data (i.e. initialization time)
+                    ds = ds.isel(time=slice(1,ds.time.size))
+                    
                 # metadata    
                 ds                                  = ds.rename({'tp6':variable})    
                 ds[variable].attrs['units']         = 'm'
@@ -194,9 +204,9 @@ for variable in variables:
         if write2file:
             
             print('combine cf and pf files into one file..')
-            basename_cf     = '%s_%s_%s_%s'%(forecastcycle,grid,date,'cf')
-            basename_pf     = '%s_%s_%s_%s'%(forecastcycle,grid,date,'pf')
-            basename        = '%s_%s'%(grid,date) 
+            basename_cf     = '%s_%s_%s_%s'%(forecastcycle,grid,datestring,'cf')
+            basename_pf     = '%s_%s_%s_%s'%(forecastcycle,grid,datestring,'pf')
+            basename        = '%s_%s'%(grid,datestring) 
             filename_out_cf = variable + '_' + basename_cf + '.nc'
             filename_out_pf = variable + '_' + basename_pf + '.nc'
             filename_out    = variable + '_' + basename + '.nc'
