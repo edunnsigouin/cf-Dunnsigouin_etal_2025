@@ -1,0 +1,151 @@
+"""
+Coded example of section 9.2.1 in Jolliffe and Stephenson textbook.
+Shows different value curves for deterministic binary forecasts 
+with diffferent skill as a function of the cost-loss ratio
+and a given climatological base-rate 's'. 
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# input ----------------------------------------------------------
+N          = 1000        # length of time series (number of days)
+s          = 0.1       # climatological base rate for the observed event
+write2file = True
+# -----------------------------------------------------------------
+
+def create_fake_data(N, s, p_correct_yes=0.99, p_correct_no=0.99):
+    """
+    Creates a fake observed event series `obs` and a fake binary forecast `fcst`
+    of the same length N.
+    - obs[i] = 1 if event occurs, else 0
+    - fcst[i] = 1 if forecast says "yes", else 0
+    The skill of the forecast is governed by p_correct_yes and p_correct_no:
+      p_correct_yes = probability(fcst=1 | obs=1)
+      p_correct_no  = probability(fcst=0 | obs=0)
+    """
+    # Generate the observed events with base rate s
+    # obs[i] = 1 with probability s, 0 otherwise
+    obs = np.random.rand(N) < s  # boolean array; True=1, False=0
+
+    # Forecast with "pretty skillful" behavior:
+    # If the event is 1, forecast is correct with prob p_correct_yes
+    # If the event is 0, forecast is correct with prob p_correct_no
+    fcst = np.zeros_like(obs, dtype=int)
+    for i in range(N):
+        if obs[i]:  # true event
+            # forecast "yes" with probability p_correct_yes
+            fcst[i] = 1 if (np.random.rand() < p_correct_yes) else 0
+        else:       # no event
+            # forecast "no" with probability p_correct_no
+            fcst[i] = 0 if (np.random.rand() < p_correct_no) else 1
+
+    return obs.astype(int), fcst
+
+
+def compute_contingency_table(obs, fcst):
+    """
+    Given 1D arrays of obs (0 or 1) and fcst (0 or 1),
+    returns the contingency table:
+       a = hits        (obs=1, fcst=1)
+       b = false alarms (obs=0, fcst=1)
+       c = misses      (obs=1, fcst=0)
+       d = correct nulls (obs=0, fcst=0)
+    """
+    a = np.sum((obs == 1) & (fcst == 1))
+    b = np.sum((obs == 0) & (fcst == 1))
+    c = np.sum((obs == 1) & (fcst == 0))
+    d = np.sum((obs == 0) & (fcst == 0))
+
+    print("Contingency table (a,b,c,d) =", (a, b, c, d))
+    
+    return a, b, c, d
+
+
+def compute_value_vs_alpha(a, b, c, d, alpha_vals):
+    """
+    Computes the forecast 'value' V(alpha) for alpha in [0,1], using eqn. (9.8).
+    We define:
+      s = base rate  = (a + c)/n
+      H = hit rate   = a / (a + c)
+      F = false alarm rate = b / (b + d)
+
+    Then compute:
+      V(alpha) = [ min(alpha, s) - F(1-s) alpha - H s (1-alpha) - s ]
+                 / [ min(alpha, s) - s alpha ]
+
+    For alpha < s, one piece; for alpha > s, another piece. We can directly
+    implement eqn. (9.8) with 'min(alpha, s)' in code.
+
+    Returns
+    -------
+    alpha_vals : 1D array of alpha in [0,1]
+    V_vals     : 1D array of corresponding forecast values
+    """
+    n = float(a + b + c + d)
+    s = (a + c)/n         # base rate
+    H = a / (a + c) if (a + c) > 0 else 0
+    F = b / (b + d) if (b + d) > 0 else 0
+
+    print(f'Hit rate: {H}')
+    print(f'False-alarm rate: {F}')
+    
+    V_vals = []
+
+    for alpha in alpha_vals:
+        # eqn. 9.8
+        numerator   = min(alpha, s) - F*(1 - s)*alpha + H*s*(1 - alpha) - s
+        denominator = min(alpha, s) - s*alpha
+        # We need to watch out for denominator=0 if alpha=s or alpha=0, etc.
+        if abs(denominator) < 1e-12:
+            V = np.nan  # not well-defined
+        else:
+            V = numerator / denominator
+        V_vals.append(V)
+
+    return np.round(H,1),np.round(F,1), np.array(V_vals)
+
+
+
+if __name__ == "__main__":
+
+    alpha_vals = np.linspace(0, 1, 200)  # 200 points between 0 and 1
+    p_corrects = np.array([0.75,0.85,0.95])
+    V_vals     = np.zeros((p_corrects.size,alpha_vals.size))
+    H          = np.zeros((p_corrects.size))
+    F          = np.zeros((p_corrects.size))
+    
+    for pc, p_correct in enumerate(p_corrects):
+        
+        # 1) Generate fake data
+        obs, fcst = create_fake_data(N, s, p_correct_yes=p_correct, p_correct_no=p_correct)
+
+        # 2) Compute contingency table
+        a, b, c, d = compute_contingency_table(obs, fcst)
+
+        # 3) Compute value vs. alpha in [0..1]
+        H[pc], F[pc], V_vals[pc,:] = compute_value_vs_alpha(a, b, c, d, alpha_vals)
+
+
+    # 5) Plot the forecast value curve
+    plt.figure(figsize=(7, 5))
+
+    plt.plot(alpha_vals, V_vals[0,:], 'tab:blue', linestyle='-',linewidth=1.5,label=f'lower-skill: HR={H[0]}, FA={F[0]}')
+    plt.plot(alpha_vals, V_vals[1,:], 'tab:red', linestyle='-',linewidth=1.5,label=f'medium-skill: HR={H[1]}, FA={F[1]}')
+    plt.plot(alpha_vals, V_vals[2,:], 'tab:green', linestyle='-',linewidth=1.5,label=f'high-skill: HR={H[2]}, FA={F[2]}')
+    
+    plt.axhline(0.0, color='gray', linestyle='--')
+    plt.title(f'Forecast Value of deterministic binary forecast for s={s}')
+    plt.xlabel("Cost-Loss Ratio  (alpha = C/L)")
+    plt.ylabel("Value (V)")
+    plt.ylim([-0.1, 1.1])  # Somewhat bigger y-range
+    plt.grid(True, alpha=0.3)
+    plt.legend(loc='best')
+    
+    plt.tight_layout()
+    if write2file:
+        figname_out = '/nird/home/edu061/cf-forsikring/fig/student/value_curve_example_deterministic_binary_forecast.pdf'
+        plt.savefig(figname_out)
+    plt.show()
+
+
