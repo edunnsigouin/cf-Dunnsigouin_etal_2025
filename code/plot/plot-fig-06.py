@@ -20,7 +20,7 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
     p = ax.contourf(lon, lat, ds2,levels=clevs,cmap=cmap,extend='max',transform=ccrs.PlateCarree())
     ax.contour(lon, lat, ds2, levels=clevs,colors = [(1,1,1)],linewidths=0.5,transform=ccrs.PlateCarree())
 
-    if flag < 8:
+    if flag < 7:
         ds1 = ds1  > 0.8
         ds1 = ds1.where(ds1, np.nan)
         ax.pcolor(lon, lat, ds1, hatch='..', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[1.0,0.0,0.0], lw=0)
@@ -29,8 +29,15 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
         ax.add_patch(rectangle)        
         ax.text(0.1,0.89,stats,fontsize=fontsize+2,transform=ax.transAxes)
     else:
-        rectangle = plt.Rectangle((31.75, 72.75), 0.25, 0.25, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
+        #rectangle = plt.Rectangle((31.75, 72.75), 0.25, 0.25, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
+        #ax.add_patch(rectangle)
+        ds1 = ds1  > 0.8
+        ds1 = ds1.where(ds1, np.nan)
+        ax.pcolor(lon, lat, ds1, hatch='..', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[1.0,0.0,0.0], lw=0)
+        rectangle_length = 0.25*ds2['box_size']
+        rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
         ax.add_patch(rectangle)
+        #ax.text(0.1,0.89,stats,fontsize=fontsize+2,transform=ax.transAxes)
         
     ax.coastlines(color='k',linewidth=1)
     ax.set_title(title, fontsize=fontsize + 4,loc='left', ha='left', y=0.91, x=0.02, bbox={'facecolor': 'white', 'edgecolor': 'black', 'pad': 3})    
@@ -125,7 +132,7 @@ cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,
 # figure labels
 nrows = 4
 y_positions = [1 - (i + 0.5) / nrows for i in range(nrows)]  # Centered vertically per row
-labels = ['forecast lead day 5', 'forecast lead day 3', 'forecast lead day 1', 'Storm Hans August 7th 2023']
+labels = ['forecast lead day 5', 'forecast lead day 3', 'forecast lead day 1', 'verification August 7th 2023']
 
 for y, label in zip(y_positions, labels):
     fig.text(0.01, y, label, fontsize=fontsize + 5, va='center', ha='right', rotation=90)
