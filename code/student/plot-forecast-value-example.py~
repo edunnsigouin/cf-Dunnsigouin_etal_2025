@@ -1,0 +1,154 @@
+
+#
+# A Python script illustrating a simple cost-loss decision example,
+# comparing:
+#   1) a "good reliability" forecast
+#   2) a "poor reliability" forecast
+# vs. a binary ground truth of whether an event (e.g., >2 claims) occurs.
+#
+# The script factors tasks into helper functions, uses user-specified parameters,
+# and ends with a two-panel matplotlib plot comparing forecasts vs. the ground truth.
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+###############################################################################
+# 1. USER PARAMETERS
+###############################################################################
+N_DAYS = 1000         # Number of days to simulate
+P_CLIM = 0.10       # Climatological probability that event occurs
+COST   = 0.2        # Cost of mitigating action
+LOSS   = 1.0        # Loss if event occurs and we did not mitigate
+
+###############################################################################
+# 2. HELPER FUNCTIONS
+###############################################################################
+def generate_ground_truth(n_days, p_clim):
+    """
+    Create a binary time series representing whether an event E occurs (1) or not (0).
+    Each day has probability p_clim of E=1, independently.
+    """
+    gt = (np.random.rand(n_days) < p_clim).astype(int)
+    return gt
+
+def generate_forecast_good_reliability(ground_truth):
+    """
+    Generate forecast probabilities that are fairly well calibrated:
+      - If ground_truth=1, forecast ~0.6..0.9
+      - If ground_truth=0, forecast ~0.0..0.3
+    """
+    n_days = len(ground_truth)
+    forecast_probs = np.empty(n_days)
+    for i in range(n_days):
+        if ground_truth[i] == 1:
+            forecast_probs[i] = 0.6 + 0.3*np.random.rand()
+        else:
+            forecast_probs[i] = 0.0 + 0.3*np.random.rand()
+    return forecast_probs
+
+def generate_forecast_poor_reliability(ground_truth):
+    """
+    Generate forecast probabilities that are poorly calibrated:
+    - We ignore ground_truth and just pick random values near 0.4,
+      so there's minimal correlation to the actual event.
+    """
+    n_days = len(ground_truth)
+    forecast_probs = 0.4 + 0.2 * (np.random.rand(n_days) - 0.5) * 2.0
+    # clip within [0,1]
+    forecast_probs = np.clip(forecast_probs, 0, 1)
+    return forecast_probs
+
+def compute_decision_costs(ground_truth, forecast_probs, cost, loss):
+    """
+    For each day, decide whether to mitigate (cost) or not (risk loss)
+    using the cost-loss rule: mitigate if p>R where R=cost/loss.
+    
+    Returns:
+        daily_cost: array of costs for each day
+        avg_cost: mean cost over all days
+    """
+    n_days     = len(ground_truth)
+    R          = cost / loss  # threshold probability
+    daily_cost = np.zeros(n_days)
+
+    for i in range(n_days):
+        p = forecast_probs[i]
+        if p > R:
+            daily_cost[i] = cost  # mitigate
+        else:
+            daily_cost[i] = loss if ground_truth[i] == 1 else 0.0
+
+    avg_cost = np.mean(daily_cost)
+    return daily_cost, avg_cost
+
+def compute_decision_costs_climatology(ground_truth, p_clim, cost, loss):
+    """
+    Using only the climatological probability, the user either:
+        - always mitigate => daily cost = cost
+        - never mitigate  => daily cost = (prob of event) * loss in expectation
+    We pick whichever yields the lower expected cost over the long run.
+    Then we compute the actual daily costs accordingly.
+    """
+    # Compare p_clim*loss vs cost
+    if p_clim * loss < cost:
+        # cheaper not to mitigate
+        daily_cost = ground_truth * loss
+        avg_cost = daily_cost.mean()
+    else:
+        # cheaper to always mitigate
+        daily_cost = np.full_like(ground_truth, cost, dtype=float)
+        avg_cost = cost
+    return daily_cost, avg_cost
+
+###############################################################################
+# 3. MAIN SCRIPT
+###############################################################################
+def main():
+    np.random.seed(42)  # for reproducibility
+
+    # 1. Generate ground truth
+    ground_truth = generate_ground_truth(N_DAYS, P_CLIM)
+
+    # 2. Generate two forecasts (good vs. poor reliability)
+    fcst_good = generate_forecast_good_reliability(ground_truth)
+    fcst_poor = generate_forecast_poor_reliability(ground_truth)
+
+    # 3. Compute decision costs for each forecast
+    _, avg_good = compute_decision_costs(ground_truth, fcst_good, COST, LOSS)
+    _, avg_poor = compute_decision_costs(ground_truth, fcst_poor, COST, LOSS)
+
+    # 4. Compute cost if we only know climatology
+    _, avg_clim = compute_decision_costs_climatology(ground_truth, P_CLIM, COST, LOSS)
+
+    # 5. Print comparison of average costs
+    print('--- Results ---')
+    print(f'Climatology Avg Cost: {avg_clim:.3f}')
+    print(f'Good Forecast  Avg Cost: {avg_good:.3f}')
+    print(f'Poor Forecast  Avg Cost: {avg_poor:.3f}')
+
+    # 6. Plot timeseries of ground truth vs forecast probabilities
+    days = np.arange(N_DAYS)
+
+    fig, axes = plt.subplots(2, 1, figsize=(8, 6), sharex=True)
+
+    # Panel 1: Good forecast vs. ground truth
+    axes[0].plot(days, ground_truth, 'o-', label='Ground Truth (1=Event)')
+    axes[0].plot(days, fcst_good, 'x--', label='Good Forecast Prob.')
+    axes[0].set_title('Good Reliability Forecast vs. Ground Truth')
+    axes[0].set_ylabel('Event / Probability')
+    axes[0].legend()
+
+    # Panel 2: Poor forecast vs. ground truth
+    axes[1].plot(days, ground_truth, 'o-', label='Ground Truth (1=Event)')
+    axes[1].plot(days, fcst_poor, 'x--', label='Poor Forecast Prob.')
+    axes[1].set_title('Poor Reliability Forecast vs. Ground Truth')
+    axes[1].set_xlabel('Day Index')
+    axes[1].set_ylabel('Event / Probability')
+    axes[1].legend()
+
+    plt.tight_layout()
+    plt.show()
+
+# If run as a script, invoke main():
+if __name__ == '__main__':
+    main()

@@ -10,7 +10,7 @@ from forsikring      import misc,s2s,config
 from scipy           import signal, ndimage
 
 # INPUT -----------------------
-domain            = 'bergen'# europe/nordic/vestland                       
+domain            = 'oslo'# europe/nordic/vestland                       
 write2file        = False
 # -----------------------------
 

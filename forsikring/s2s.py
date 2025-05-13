@@ -181,3 +181,41 @@ def mask_skill_values(data_array):
     masked_significance = significance_mask.where(significance_mask, np.nan)
 
     return masked_significance
+
+
+def convert_grib_to_netcdf(filename1_grb, filename2_grb, dtype):
+
+    # read in files and combine them
+    filenames = [filename1_grb, filename2_grb]
+    datasets  = [xr.open_dataset(filename, engine='cfgrib') for filename in filenames]
+    ds1       = xr.concat(datasets,dim='time')
+
+    # drop unecessary variables + rename variables
+    if dtype == 'cf':
+        ds1 = ds1.drop_vars({'valid_time','surface','number'})
+    elif dtype == 'pf':
+        ds1 = ds1.drop_vars({'valid_time','surface'})
+    ds1       = ds1.rename({'time':'hdate','step':'time'})
+
+    # 1. Convert 'hdate' from datetime64[ns] to YYYYMMDD integer format
+    hdate_int = ds1['hdate'].dt.strftime('%Y%m%d').astype('int32')
+    
+    # 2. Convert 'time' from timedelta64[ns] to datetime64[ns]
+    # Assuming that time starts from a base reference, e.g., 2023-01-01
+    base_time = pd.to_datetime('1900-01-01')  # Adjust this base as needed
+    time_as_datetime = base_time + pd.to_timedelta(ds1['time'].values)
+
+    # 3. Reorder dimensions: From (hdate, time, latitude, longitude) to (longitude, latitude, time, hdate)
+    #ds1 = ds1.transpose('longitude', 'latitude', 'time', 'hdate')
+
+    # 4. Update coordinates and variables
+    # Convert hdate_int into a DataArray and set it as a coordinate
+    ds1.coords['hdate'] = ('hdate', hdate_int.data)  # Use .data to get the underlying numpy array
+    ds1.coords['time'] = ('time', time_as_datetime)
+
+    # 5. Convert variables to match the new data format 
+    ds1['tp']        = ds1['tp'].astype('float64')
+    ds1['longitude'] = ds1['longitude'].astype('float32')
+    ds1['latitude']  = ds1['latitude'].astype('float32')
+    
+    return ds1

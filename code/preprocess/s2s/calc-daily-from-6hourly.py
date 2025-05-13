@@ -12,9 +12,9 @@ from datetime   import datetime
 
 # INPUT ----------------------------------------------- 
 variables           = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-product             = 'forecast'              # hindcast or forecast ?
-first_forecast_date = '20230629' # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 53        # number of forecast initializations  
+product             = 'hindcast'              # hindcast or forecast ?
+first_forecast_date = '20230102' # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 51        # number of forecast initializations  
 season              = 'annual'
 grid                = '0.5x0.5'             # '0.25x0.25' or '0.5x0.5'
 write2file          = True
@@ -59,7 +59,7 @@ for variable in variables:
                     # there is no data (i.e. initialization time)
                     ds = ds.isel(time=slice(1,ds.time.size))
                 elif ((date > reference_time) & (grid == '0.5x0.5')): # new low-res forecast format. start = day 0 and 100 ensemble members!
-                    # drop first 'day' for high res data since it accumulates data when
+                    # drop first 'day' since it accumulates data when
                     # there is no data (i.e. initialization time)
                     ds = ds.isel(time=slice(1,ds.time.size))
                     

@@ -17,9 +17,9 @@ from forsikring import config,misc,s2s
 # INPUT ----------------------------------------------- 
 variables           = ['tp']                  
 dtypes              = ['cf','pf']             # control & perturbed forecasts/hindcasts
-product             = 'forecast'              # hindcast or forecast
-first_forecast_date = '20230629' # first initialization date of forecast (either a monday or thursday) 
-number_forecasts    = 53         # number of forecast initializations 
+product             = 'hindcast'              # hindcast or forecast
+first_forecast_date = '20230102' # first initialization date of forecast (either a monday or thursday) 
+number_forecasts    = 51         # number of forecast initializations 
 season              = 'annual'
 grid                = '0.5x0.5'             # '0.25x0.25' or '0.5x0.5'
 comp_lev            = 5                       # level of compression with nccopy (1-10)
@@ -88,7 +88,8 @@ for variable in variables:
                 ds_vr.close()
 
             # rename variable and attributes    
-            ds = ds.rename({variable:variable_out})    
+            ds               = ds.rename({variable:variable_out})
+            ds[variable_out] = ds[variable_out].astype('float32')
             if variable == 'tp':
                 ds[variable_out].attrs['units']      = 'm'
                 ds[variable_out].attrs['long_name']  = '6-hourly accumulated precipitation'

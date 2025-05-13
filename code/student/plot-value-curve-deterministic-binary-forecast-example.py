@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 # input ----------------------------------------------------------
 N          = 1000        # length of time series (number of days)
 s          = 0.1       # climatological base rate for the observed event
-write2file = True
+write2file = False
 # -----------------------------------------------------------------
 
 def create_fake_data(N, s, p_correct_yes=0.99, p_correct_no=0.99):

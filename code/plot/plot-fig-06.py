@@ -20,7 +20,7 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
     p = ax.contourf(lon, lat, ds2,levels=clevs,cmap=cmap,extend='max',transform=ccrs.PlateCarree())
     ax.contour(lon, lat, ds2, levels=clevs,colors = [(1,1,1)],linewidths=0.5,transform=ccrs.PlateCarree())
 
-    if flag < 7:
+    if flag < 8:
         ds1 = ds1  > 0.8
         ds1 = ds1.where(ds1, np.nan)
         ax.pcolor(lon, lat, ds1, hatch='..', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[1.0,0.0,0.0], lw=0)
@@ -44,7 +44,7 @@ variable             = 'tp24'
 domain               = 'scandinavia' 
 date                 = '2023-08-07'
 grid                 = '0.25x0.25'
-write2file           = False
+write2file           = True
 # -----------------------------
 
 # define stuff
@@ -55,7 +55,8 @@ filename3        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + 
 filename4        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-05_EFI.nc'
 filename5        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
 filename6        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
-filename7        = config.dirs['era5_forecast_' + time_flag] + '/' + variable + '/' + variable + '_' + grid + '_' + date + '.nc'
+#filename7        = config.dirs['era5_forecast_' + time_flag] + '/' + variable + '/' + variable + '_' + grid + '_' + date + '.nc'
+filename7        = config.dirs['era5_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
 path_out         = config.dirs['fig'] + 'paper/'
 figname_out      = 'fig_06.png'
 
@@ -66,7 +67,7 @@ da3 = xr.open_dataset(filename3).sel(time=date).sel(box_size=1)
 da4 = xr.open_dataset(filename4).sel(time=date).sel(box_size=19)
 da5 = xr.open_dataset(filename5).sel(time=date).sel(box_size=1)
 da6 = xr.open_dataset(filename6).sel(time=date).sel(box_size=9)
-da7 = xr.open_dataset(filename7).sel(time=date)
+da7 = xr.open_dataset(filename7).sel(time=date).sel(box_size=1)
 
 # extract specified domain
 dim = misc.subselect_xy_domain_from_dim(dim,domain,grid)
@@ -79,7 +80,7 @@ da6 = da6.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 da7 = da7.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 
 # convert to mm/day 
-da7[variable] = da7[variable]*1000
+#da7[variable] = da7[variable]*1000
 
 # plot 
 fontsize = 11
@@ -113,7 +114,7 @@ setup_subplot_xy(3, ax[2], da3['EFI'], da3[variable], clevs, cmap, fontsize, 'c)
 setup_subplot_xy(4, ax[3], da4['EFI'], da4[variable], clevs, cmap, fontsize, 'd)', stats4)
 setup_subplot_xy(5, ax[4], da5['EFI'], da5[variable], clevs, cmap, fontsize, 'e)', stats5)
 p = setup_subplot_xy(6, ax[5], da6['EFI'], da6[variable], clevs, cmap, fontsize, 'f)', stats6)
-setup_subplot_xy(7, ax[6], da5['EFI'], da7[variable], clevs, cmap, fontsize, 'g)', stats5)
+setup_subplot_xy(7, ax[6], da7['EFI'], da7[variable], clevs, cmap, fontsize, 'g)', stats5)
 
 ax[7].set_frame_on(False)
 cbar_ax = fig.add_axes([0.52, 0.21, 0.47, 0.02])

@@ -38,6 +38,7 @@ era5_forecast_daily_student_combined = processed + "era5/s2s-model-format/foreca
 era5_forecast_daily_smooth           = processed + "era5/s2s-model-format/forecast/daily/values_smooth/"
 era5_forecast_daily_anomaly          = processed + "era5/s2s-model-format/forecast/daily/anomaly_smooth/"
 era5_forecast_daily_binary           = processed + "era5/s2s-model-format/forecast/daily/binary_smooth/"
+era5_forecast_daily_EFI              = processed + "era5/s2s-model-format/forecast/daily/EFI_smooth/"
 era5_forecast_weekly                 = processed + "era5/s2s-model-format/forecast/weekly/values/"
 era5_forecast_weekly_anomaly         = processed + "era5/s2s-model-format/forecast/weekly/anomaly_smooth/"
 era5_forecast_weekly_binary          = processed + "era5/s2s-model-format/forecast/weekly/binary_smooth/"
@@ -96,6 +97,7 @@ dirs = {"proj":proj,
         "era5_forecast_daily_smooth":era5_forecast_daily_smooth,
         "era5_forecast_daily_anomaly":era5_forecast_daily_anomaly,
         "era5_forecast_daily_binary":era5_forecast_daily_binary,
+        "era5_forecast_daily_EFI":era5_forecast_daily_EFI,
         "era5_forecast_weekly":era5_forecast_weekly,
         "era5_forecast_weekly_anomaly":era5_forecast_weekly_anomaly,
         "era5_forecast_weekly_binary":era5_forecast_weekly_binary,        

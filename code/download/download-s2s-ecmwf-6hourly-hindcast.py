@@ -26,10 +26,10 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product             = 'hindcast' # hindcast/vr_hindcast
-first_forecast_date = '20230102' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 51          # number of forecast initializations      
+first_forecast_date = '20230810' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 41          # number of forecast initializations      
 nhdates             = 20 # number of hindcast years  
-grid                = '0.5/0.5' # degree lat/lon resolution
+grid                = '0.25/0.25' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var                 = 'tp'
 comp_lev            = 5 # file compression level
@@ -137,14 +137,18 @@ if write2file:
                 server.execute(dic2, path + filename2_grb)
 
                 print('convert grib to netcdf..')
-                os.system('grib_copy ' + path + filename1_grb + ' ' + path + filename2_grb + ' ' + path + filename3_grb)
-                os.system('rm ' + path + filename1_grb)
-                os.system('rm ' + path + filename2_grb)
-                s2s.grib_to_netcdf(path,filename3_grb,filename_nc)
-            
+                combined_data = s2s.convert_grib_to_netcdf(path + filename1_grb, path + filename2_grb,dtype)
+                combined_data.to_netcdf(path + filename_nc,format='NETCDF4_CLASSIC')
+
                 print('compress files to reduce space..')
                 misc.compress_file(comp_lev,4,filename_nc,path)
 
+                print('delete old files..')
+                os.system('rm ' + path + filename1_grb)
+                os.system('rm ' + path + filename2_grb)
+                os.system('rm ' + path + filename1_grb + '*.idx')
+                os.system('rm ' + path + filename2_grb + '*.idx')
+                
             elif product == 'vr_hindcast':
             
                 datestring       = date.strftime('%Y-%m-%d')
