@@ -92,7 +92,7 @@ da8 = da8.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 fontsize = 11
 clevs    = np.arange(5,55,5)
 cmap     = 'GnBu'
-figsize  = np.array([6,8])
+figsize  = np.array([12,16])
 fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
@@ -139,7 +139,7 @@ for y, label in zip(y_positions, labels):
 
 ncols = 2
 x_positions = [(i + 0.5) / ncols for i in range(ncols)]  # Centered above each column
-top_labels = ['grid scale precision', 'optimized accuracy']
+top_labels = ['grid scale', 'aggregated']
 
 for x, label in zip(x_positions, top_labels):
     fig.text(x, 0.995, label, fontsize=fontsize + 5, va='bottom', ha='center')  # Adjust y-position if needed
