@@ -78,7 +78,7 @@ stats = [
 titles = ['a)', 'b)','c)','d)','e)','f)','g)','h)']
 
 # Set up figure and gridspec
-fig = plt.figure(figsize=(6, 8))
+fig = plt.figure(figsize=(12, 12))
 gs = gridspec.GridSpec(nrows=4, ncols=2, figure=fig, 
                        wspace=0.05, hspace=0.15,
                        top=0.95, bottom=0.12, left=0.08, right=0.95)
