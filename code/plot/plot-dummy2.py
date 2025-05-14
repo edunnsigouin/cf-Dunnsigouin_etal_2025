@@ -42,7 +42,7 @@ fontsize = 11
 clevs = np.arange(5, 55, 5)
 cmap = 'GnBu'
 path_out = config.dirs['fig'] + 'paper/'
-figname_out = 'dummy.png'
+figname_out = 'dummy.pdf'
 
 # Define dimensions
 dim = misc.get_dim(grid, 'daily')
@@ -115,5 +115,5 @@ for x, label in zip(col_positions, col_labels):
 
 # Save or show
 if write2file:
-    plt.savefig(path_out + figname_out, dpi=300)
+    plt.savefig(path_out + figname_out, format='pdf', bbox_inches='tight')
 plt.show()
