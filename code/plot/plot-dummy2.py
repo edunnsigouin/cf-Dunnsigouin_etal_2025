@@ -78,10 +78,9 @@ stats = [
 titles = ['a)', 'b)','c)','d)','e)','f)','g)','h)']
 
 # Set up figure and gridspec
-fig = plt.figure(figsize=(12, 12))
-gs = gridspec.GridSpec(nrows=4, ncols=2, figure=fig, 
-                       wspace=0.05, hspace=0.15,
-                       top=0.95, bottom=0.12, left=0.08, right=0.95)
+fig = plt.figure(figsize=(12, 16))
+#gs = gridspec.GridSpec(nrows=4, ncols=2, figure=fig, wspace=0.05, hspace=0.15, top=0.95, bottom=0.12, left=0.08, right=0.95)
+gs = gridspec.GridSpec(nrows=4, ncols=2, figure=fig,top=0.95, bottom=0.1, left=0.15, right=0.98, hspace=0.02, wspace=0.02)
 
 axes = [fig.add_subplot(gs[i, j], projection=ccrs.PlateCarree()) 
         for i in range(4) for j in range(2)]
@@ -90,13 +89,13 @@ axes = [fig.add_subplot(gs[i, j], projection=ccrs.PlateCarree())
 for i, ax in enumerate(axes):
     ds = datasets[i]
     stats_label = stats[i] if i < 6 else ''
-    #setup_subplot_xy(i+1, ax, ds['EFI'], ds[variable], clevs, cmap, fontsize, titles[i], stats_label)
+    setup_subplot_xy(i+1, ax, ds['EFI'], ds[variable], clevs, cmap, fontsize, titles[i], stats_label)
 
 # Colorbar
 cbar_ax = fig.add_axes([0.25, 0.05, 0.5, 0.02])
-#cb = fig.colorbar(axes[0].collections[0], cax=cbar_ax, orientation='horizontal', ticks=clevs)
-#cb.ax.tick_params(labelsize=fontsize + 2)
-#cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize + 4, y=1.01)
+cb = fig.colorbar(axes[0].collections[0], cax=cbar_ax, orientation='horizontal', ticks=clevs)
+cb.ax.tick_params(labelsize=fontsize + 2)
+cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize + 4, y=1.01)
 
 # Row labels
 row_labels = ['forecast lead day 5', 'forecast lead day 3',
