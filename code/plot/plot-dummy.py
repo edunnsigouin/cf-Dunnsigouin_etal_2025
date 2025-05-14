@@ -48,7 +48,7 @@ variable             = 'tp24'
 domain               = 'scandinavia' 
 date                 = '2023-08-07'
 grid                 = '0.25x0.25'
-write2file           = True
+write2file           = False
 # -----------------------------
 
 # define stuff
@@ -97,7 +97,7 @@ fig,ax   = plt.subplots(nrows=4,ncols=2,figsize=(figsize[0],figsize[1]),subplot_
 ax       = ax.ravel()
 
 
-fig.subplots_adjust(top=0.9, bottom=0.05, left=0.15, right=0.98, hspace=0.02, wspace=0.02)
+#fig.subplots_adjust(top=0.9, bottom=0.0, left=0.15, right=0.98, hspace=0.02, wspace=0.02)
 
 title1 = r'a) 1 gridpoint$^2$ precision'
 title2 = r'b) 33 gridpoint$^2$ precision'
@@ -114,17 +114,17 @@ stats4 = r'FMSESS = ' + str(da4['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = '
 stats5 = r'FMSESS = ' + str(da5['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = ' + str(da5['fbss'].values.round(2))
 stats6 = r'FMSESS = ' + str(da6['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = ' + str(da6['fbss'].values.round(2))
 
-setup_subplot_xy(1, ax[0], da1['EFI'], da1[variable], clevs, cmap, fontsize, 'a)', stats1)
-setup_subplot_xy(2, ax[1], da2['EFI'], da2[variable], clevs, cmap, fontsize, 'b)', stats2)
-setup_subplot_xy(3, ax[2], da3['EFI'], da3[variable], clevs, cmap, fontsize, 'c)', stats3)
-setup_subplot_xy(4, ax[3], da4['EFI'], da4[variable], clevs, cmap, fontsize, 'd)', stats4)
-setup_subplot_xy(5, ax[4], da5['EFI'], da5[variable], clevs, cmap, fontsize, 'e)', stats5)
-p = setup_subplot_xy(6, ax[5], da6['EFI'], da6[variable], clevs, cmap, fontsize, 'f)', stats6)
-setup_subplot_xy(7, ax[6], da7['EFI'], da7[variable], clevs, cmap, fontsize, 'g)', stats5)
-setup_subplot_xy(8, ax[7], da8['EFI'], da8[variable], clevs, cmap, fontsize, 'h)', stats5)
+#setup_subplot_xy(1, ax[0], da1['EFI'], da1[variable], clevs, cmap, fontsize, 'a)', stats1)
+#setup_subplot_xy(2, ax[1], da2['EFI'], da2[variable], clevs, cmap, fontsize, 'b)', stats2)
+#setup_subplot_xy(3, ax[2], da3['EFI'], da3[variable], clevs, cmap, fontsize, 'c)', stats3)
+#setup_subplot_xy(4, ax[3], da4['EFI'], da4[variable], clevs, cmap, fontsize, 'd)', stats4)
+#setup_subplot_xy(5, ax[4], da5['EFI'], da5[variable], clevs, cmap, fontsize, 'e)', stats5)
+#p = setup_subplot_xy(6, ax[5], da6['EFI'], da6[variable], clevs, cmap, fontsize, 'f)', stats6)
+#setup_subplot_xy(7, ax[6], da7['EFI'], da7[variable], clevs, cmap, fontsize, 'g)', stats5)
+#setup_subplot_xy(8, ax[7], da8['EFI'], da8[variable], clevs, cmap, fontsize, 'h)', stats5)
 
 #ax[7].set_frame_on(False)
-#cbar_ax = fig.add_axes([0.52, 0.21, 0.47, 0.02])
+cbar_ax = fig.add_axes([0.25, 0.05, 0.47, 0.02])
 #cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
 #cb.ax.tick_params(labelsize=fontsize+5, size=0)
 #cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,y=1.01)
@@ -146,7 +146,8 @@ for x, label in zip(x_positions, top_labels):
     
 plt.tight_layout()
 
-if write2file: plt.savefig(path_out + figname_out,bbox_inches='tight')
+#if write2file: plt.savefig(path_out + figname_out,bbox_inches='tight')
+if write2file: plt.savefig(path_out + figname_out) 
 plt.show()
 
 
