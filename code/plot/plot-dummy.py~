@@ -62,10 +62,10 @@ filename3        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + 
 filename4        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-05_EFI.nc'
 filename5        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
 filename6        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
-#filename7        = config.dirs['era5_forecast_' + time_flag] + '/' + variable + '/' + variable + '_' + grid + '_' + date + '.nc'
 filename7        = config.dirs['era5_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
+filename8        = config.dirs['era5_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
 path_out         = config.dirs['fig'] + 'paper/'
-figname_out      = 'fig_06.png'
+figname_out      = 'fig_dummy.png'
 
 # read in data
 da1 = xr.open_dataset(filename1).sel(time=date).sel(box_size=1)
@@ -75,6 +75,7 @@ da4 = xr.open_dataset(filename4).sel(time=date).sel(box_size=19)
 da5 = xr.open_dataset(filename5).sel(time=date).sel(box_size=1)
 da6 = xr.open_dataset(filename6).sel(time=date).sel(box_size=9)
 da7 = xr.open_dataset(filename7).sel(time=date).sel(box_size=1)
+da8 = xr.open_dataset(filename8).sel(time=date).sel(box_size=33)
 
 # extract specified domain
 dim = misc.subselect_xy_domain_from_dim(dim,domain,grid)
@@ -85,6 +86,7 @@ da4 = da4.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 da5 = da5.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 da6 = da6.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 da7 = da7.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
+da8 = da8.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 
 # convert to mm/day 
 #da7[variable] = da7[variable]*1000
@@ -122,12 +124,13 @@ setup_subplot_xy(4, ax[3], da4['EFI'], da4[variable], clevs, cmap, fontsize, 'd)
 setup_subplot_xy(5, ax[4], da5['EFI'], da5[variable], clevs, cmap, fontsize, 'e)', stats5)
 p = setup_subplot_xy(6, ax[5], da6['EFI'], da6[variable], clevs, cmap, fontsize, 'f)', stats6)
 setup_subplot_xy(7, ax[6], da7['EFI'], da7[variable], clevs, cmap, fontsize, 'g)', stats5)
+setup_subplot_xy(8, ax[7], da8['EFI'], da8[variable], clevs, cmap, fontsize, 'h)', stats5)
 
-ax[7].set_frame_on(False)
-cbar_ax = fig.add_axes([0.52, 0.21, 0.47, 0.02])
-cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
-cb.ax.tick_params(labelsize=fontsize+5, size=0)
-cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,y=1.01)
+#ax[7].set_frame_on(False)
+#cbar_ax = fig.add_axes([0.52, 0.21, 0.47, 0.02])
+#cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
+#cb.ax.tick_params(labelsize=fontsize+5, size=0)
+#cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,y=1.01)
 
 # figure labels
 nrows = 4
