@@ -23,11 +23,11 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
     ax.add_patch(rectangle)
 
     ax.coastlines()
-    ax.set_title(title, fontsize=fontsize + 4, loc='left', ha='left', y=0.91, x=0.02,
+    ax.set_title(title, fontsize=fontsize + 4, loc='left', ha='left', y=0.87, x=0.02,
                  bbox={'facecolor': 'white', 'edgecolor': 'black', 'pad': 3})
     
     if flag < 7:
-        ax.text(0.1, 0.89, stats, fontsize=fontsize + 2, transform=ax.transAxes)
+        ax.text(0.1, 0.84, stats, fontsize=fontsize + 2, transform=ax.transAxes)
 
     return p
 
@@ -78,9 +78,9 @@ stats = [
 titles = ['a)', 'b)','c)','d)','e)','f)','g)','h)']
 
 # Set up figure and gridspec
-fig = plt.figure(figsize=(12, 16))
+fig = plt.figure(figsize=(12, 12))
 #gs = gridspec.GridSpec(nrows=4, ncols=2, figure=fig, wspace=0.05, hspace=0.15, top=0.95, bottom=0.12, left=0.08, right=0.95)
-gs = gridspec.GridSpec(nrows=4, ncols=2, figure=fig,top=0.95, bottom=0.1, left=0.15, right=0.98, hspace=0.02, wspace=0.02)
+gs = gridspec.GridSpec(nrows=4, ncols=2, figure=fig,top=0.95, bottom=0.1, left=0.15, right=0.8, hspace=0.05, wspace=0.0)
 
 axes = [fig.add_subplot(gs[i, j], projection=ccrs.PlateCarree()) 
         for i in range(4) for j in range(2)]
@@ -89,7 +89,8 @@ axes = [fig.add_subplot(gs[i, j], projection=ccrs.PlateCarree())
 for i, ax in enumerate(axes):
     ds = datasets[i]
     stats_label = stats[i] if i < 6 else ''
-    setup_subplot_xy(i+1, ax, ds['EFI'], ds[variable], clevs, cmap, fontsize, titles[i], stats_label)
+    if i < 2:
+        setup_subplot_xy(i+1, ax, ds['EFI'], ds[variable], clevs, cmap, fontsize, titles[i], stats_label)
 
 # Colorbar
 cbar_ax = fig.add_axes([0.25, 0.05, 0.5, 0.02])
@@ -98,21 +99,21 @@ cb.ax.tick_params(labelsize=fontsize + 2)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize + 4, y=1.01)
 
 # Row labels
-row_labels = ['forecast lead day 5', 'forecast lead day 3',
-              'forecast lead day 1', 'verification August 7th 2023']
+row_labels    = ['forecast lead day 5', 'forecast lead day 3',
+                 'forecast lead day 1', 'verification August 7th 2023']
 row_positions = [0.875, 0.63, 0.385, 0.14]
 
 for y, label in zip(row_positions, row_labels):
-    fig.text(0.02, y, label, fontsize=fontsize + 4, va='center', ha='right', rotation=90)
+    fig.text(0.16, y, label, fontsize=fontsize + 4, va='center', ha='right', rotation=90)
 
 # Column labels
-col_labels = ['grid scale', 'aggregated']
-col_positions = [0.28, 0.73]
+col_labels    = ['grid scale', 'aggregated']
+col_positions = [0.32, 0.63]
 
 for x, label in zip(col_positions, col_labels):
-    fig.text(x, 0.975, label, fontsize=fontsize + 4, va='bottom', ha='center')
+    fig.text(x, 0.955, label, fontsize=fontsize + 4, va='bottom', ha='center')
 
 # Save or show
 if write2file:
-    plt.savefig(path_out + figname_out, format='pdf', bbox_inches='tight')
+    plt.savefig(path_out + figname_out)
 plt.show()

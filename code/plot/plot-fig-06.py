@@ -51,7 +51,7 @@ variable             = 'tp24'
 domain               = 'scandinavia' 
 date                 = '2023-08-07'
 grid                 = '0.25x0.25'
-write2file           = False
+write2file           = True
 # -----------------------------
 
 # define stuff
@@ -65,7 +65,7 @@ filename6        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + 
 #filename7        = config.dirs['era5_forecast_' + time_flag] + '/' + variable + '/' + variable + '_' + grid + '_' + date + '.nc'
 filename7        = config.dirs['era5_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
 path_out         = config.dirs['fig'] + 'paper/'
-figname_out      = 'fig_06.png'
+figname_out      = 'fig_06.pdf'
 
 # read in data
 da1 = xr.open_dataset(filename1).sel(time=date).sel(box_size=1)
