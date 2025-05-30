@@ -29,15 +29,13 @@ def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
         ax.add_patch(rectangle)        
         ax.text(0.1,0.86,stats,fontsize=fontsize+2,transform=ax.transAxes)
     else:
-        #rectangle = plt.Rectangle((31.75, 72.75), 0.25, 0.25, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
-        #ax.add_patch(rectangle)
         ds1 = ds1  > 0.8
         ds1 = ds1.where(ds1, np.nan)
         ax.pcolor(lon, lat, ds1, hatch='..', cmap=mpl.colors.ListedColormap(['none']), edgecolor=[1.0,0.0,0.0], lw=0)
         rectangle_length = 0.25*ds2['box_size']
         rectangle = plt.Rectangle((31.75, 72.75), rectangle_length, rectangle_length, angle=180, fc=(0.5,0.5,0.5,0),ec='r',lw=2)
         ax.add_patch(rectangle)
-        #ax.text(0.1,0.89,stats,fontsize=fontsize+2,transform=ax.transAxes)
+
         
     ax.coastlines(color='k',linewidth=1)
     ax.set_title(title, fontsize=fontsize + 4,loc='left', ha='left', y=0.88, x=0.02, bbox={'facecolor': 'white', 'edgecolor': 'black', 'pad': 3})    
@@ -60,7 +58,7 @@ filename1        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + 
 filename2        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-01_EFI.nc'
 filename3        = config.dirs['era5_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
 path_out         = config.dirs['fig'] + 'paper/'
-figname_out      = 'fig_response_to_reviewers.png'
+figname_out      = 'fig_response_to_reviewers.pdf'
 
 # read in data
 da1 = xr.open_dataset(filename1).sel(time=date).sel(box_size=1)
@@ -78,8 +76,8 @@ da3 = da3.sel(latitude=dim.latitude,longitude=dim.longitude,method='nearest')
 fontsize = 11
 clevs    = np.arange(5,55,5)
 cmap     = 'GnBu'
-figsize  = np.array([15,5])
-fig,ax   = plt.subplots(nrows=1,ncols=3,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
+figsize  = np.array([10,5])
+fig,ax   = plt.subplots(nrows=1,ncols=2,figsize=(figsize[0],figsize[1]),subplot_kw={'projection': ccrs.PlateCarree(central_longitude=0.0)})
 ax       = ax.ravel()
 
 
@@ -99,7 +97,7 @@ stats3 = r'FMSESS = ' + str(da1['fmsess'].values.round(2)) + '\nFBSS$_{0.9}$ = '
 
 setup_subplot_xy(1, ax[0], da1['EFI'], da1[variable], clevs, cmap, fontsize, 'a)', stats1)
 p = setup_subplot_xy(2, ax[1], da2['EFI'], da2[variable], clevs, cmap, fontsize, 'b)', stats2)
-setup_subplot_xy(3, ax[2], da3['EFI'], da3[variable], clevs, cmap, fontsize, 'c)', stats3)
+
 
 cbar_ax = fig.add_axes([0.25, 0.1, 0.5, 0.05])
 cb = fig.colorbar(p, cax=cbar_ax, orientation='horizontal',ticks=clevs, pad=0.025)
@@ -107,23 +105,29 @@ cb.ax.tick_params(labelsize=fontsize+5, size=0)
 cb.ax.set_title('daily accumulated precipitation [mm/day]', fontsize=fontsize+5,y=1.01)
 
 # figure labels
-#nrows = 4
-#y_positions = [1 - (i + 0.5) / nrows for i in range(nrows)]  # Centered vertically per row
-#labels = ['forecast lead day 5', 'forecast lead day 3', 'forecast lead day 1', 'verification August 7th 2023']
+nrows = 1
+y_positions = [1 - (i + 0.47) / nrows for i in range(nrows)]  # Centered vertically per row
+labels = ['forecast lead day 7']
 
-#for y, label in zip(y_positions, labels):
-#    fig.text(0.01, y, label, fontsize=fontsize + 5, va='center', ha='right', rotation=90)
+for y, label in zip(y_positions, labels):
+    fig.text(0.04, y, label, fontsize=fontsize + 5, va='center', ha='right', rotation=90)
 
 #ncols = 2
 #x_positions = [(i + 0.5) / ncols for i in range(ncols)]  # Centered above each column
 #top_labels = ['grid scale precision', 'optimized accuracy']
 
 #for x, label in zip(x_positions, top_labels):
-#    fig.text(x, 0.995, label, fontsize=fontsize + 5, va='bottom', ha='center')  # Adjust y-position if needed
+#    fig.text(x, 0.83, label, fontsize=fontsize + 5, va='bottom', ha='center')  # Adjust y-position if needed
+
+top_labels = ['grid scale precision', 'optimized accuracy']
+
+for i, label in enumerate(top_labels):
+    ax[i].text(0.5, 1.02, label, transform=ax[i].transAxes,
+               fontsize=fontsize + 5, ha='center', va='bottom')
     
 #plt.tight_layout()
 
-if write2file: plt.savefig(path_out + figname_out,bbox_inches='tight')
+if write2file: plt.savefig(path_out + figname_out)
 plt.show()
 
 
