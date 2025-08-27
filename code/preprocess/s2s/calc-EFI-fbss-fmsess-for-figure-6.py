@@ -9,7 +9,7 @@ import xarray     as xr
 import pandas     as pd
 import os
 from   datetime   import datetime
-from   forsikring import misc,s2s,config,verify
+from   Dunnsigouin_etal_2025 import misc,s2s,config,verify
 from   scipy      import stats
 import matplotlib.pyplot as plt
 

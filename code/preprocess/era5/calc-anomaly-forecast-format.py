@@ -6,7 +6,7 @@ to smoothed climatological mean from hindcast format data.
 import numpy    as np
 import xarray   as xr
 import pandas   as pd
-from forsikring import misc,s2s,config,verify
+from Dunnsigouin_etal_2025 import misc,s2s,config,verify
 
 # INPUT -----------------------------------------------
 time_flag           = 'daily'                 # daily or weekly

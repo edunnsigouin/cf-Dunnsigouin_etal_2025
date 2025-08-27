@@ -7,7 +7,7 @@ import numpy    as np
 import xarray   as xr
 import pandas   as pd
 import xesmf    as xe
-from forsikring import misc,s2s,config,verify
+from Dunnsigouin_etal_2025 import misc,s2s,config,verify
 
 # INPUT -----------------------------------------------
 variable            = 'tp24'                 # tp24 or t2m24

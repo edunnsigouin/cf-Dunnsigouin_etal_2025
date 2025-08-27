@@ -1,5 +1,5 @@
 """
-Downloads era5 6hourly data and agregates to yearly files.
+Downloads era5 6hourly sfc data and agregates to yearly files.
 """
 
 import numpy  as np
@@ -8,7 +8,7 @@ from dask.diagnostics import ProgressBar
 import cdsapi
 import pandas as pd
 import os
-from forsikring import config,s2s,misc
+from Dunnsigouin_etal_2025 import config,s2s,misc
 
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe

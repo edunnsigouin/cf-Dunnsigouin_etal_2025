@@ -13,7 +13,7 @@ import xarray as xr
 import pandas as pd
 from dask.diagnostics   import ProgressBar
 import os
-from forsikring import config,misc,s2s
+from Dunnsigouin_etal_2025 import config,misc,s2s
 
 
 def initialize_hindcast_array(date,number_hdate,variable,dim):

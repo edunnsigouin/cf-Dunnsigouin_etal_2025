@@ -7,7 +7,7 @@ import numpy    as np
 import xarray   as xr
 import pandas   as pd
 import os
-from forsikring import config,misc,s2s
+from Dunnsigouin_etal_2025 import config,misc,s2s
 from datetime   import datetime
 
 # INPUT ----------------------------------------------- 

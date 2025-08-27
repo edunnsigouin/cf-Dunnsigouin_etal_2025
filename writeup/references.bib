@@ -1,0 +1,907 @@
+%
+% JOURNAL ABBREVIATIONS
+%
+@STRING{AMS 	= "Amer.\ Meteor.\ Soc."}
+@STRING{AGU 	= "Amer.\ Geophys.\ Union"}
+@STRING{AIP 	= "Amer. Inst. Phys."}
+@STRING{ADGEO     = "Adv.\ Geosci."}
+@STRING{AFM       = "Agric.\ For.\ Meteor."}
+@STRING{AM        = "Ann.\ Meteor."}
+@STRING{AN        = "Astrophys.\ Norv."}		% Astrophysica Norvegica
+@STRING{AO        = "Atmos.--Ocean"}			% Atmosphere--Ocean, published by Canadian Meteorological Society (CMOS)
+@STRING{AR        = "Atmos.\ Res."}			% Atmospheric Research
+@STRING{ARFM      = "Annu.\ Rev.\ Fluid Mech."}
+@STRING{AUMET     = "Aust.\ Meteor.\ Mag."}
+@STRING{BAMS      = "Bull.\ Amer.\ Meteor.\ Soc."}
+@STRING{CAP       = "Contrib.\ Atmos.\ Phys."}
+@STRING{CC        = "Climate Change"}      % Climate Change 
+@STRING{CCH       = "Climatic Change"}			% Climatic Change
+@STRING{CDYN      = "Climate Dyn."}
+@STRING{CHAOS     = "Chaos"}
+@STRING{COL       = "Collier's"}
+@STRING{CRS       = "Cont.\ Shelf Res."}
+@STRING{DAO       = "Dyn.\ Atmos.\ Oceans"}
+@STRING{ECO       = "Ecology"}
+@STRING{EI        = "Earth Interact."}
+@STRING{GA        = "Geophysica"}			% Geophysica, published by Geophysical Society of Finland 
+@STRING{GEOMAG    = "Geophys.\ Mag."}
+@STRING{GN        = "Geophys.\ Norv."}			% Geophysica Norvegica
+@STRING{GRL       = "Geophys.\ Res.\ Lett."}
+@STRING{GEOINT    = "Geofis.\ Int."}			% Geofisica Internacional (Mexican journal -- vols. 3--5 contained proceedings from a hurricane conference
+@STRING{GEOPUB    = "Geofys.\ Publ."}
+@STRING{GPC       = "Global Planet.\ Change"}
+@STRING{HP        = "Health Phys."}
+@STRING{IAOP      = "Izv.\ Atmos.\ Ocean.\ Phys.\ (Engl.\ Transl.)"}
+@STRING{IJC       = "Int.\ J.\ Climatol."}
+@STRING{JAM       = "J.\ Appl.\ Meteor."}		% renamed to name below in 2006
+@STRING{JAMC      = "J.\ Appl.\ Meteor.\ Climatol."}  	% Journal of Applied Meteorology and Climatology (this journal used to be called the Journal of Applied Meteorology before 2006)
+@STRING{JAS       = "J.\ Atmos.\ Sci."}
+@STRING{JAOT      = "J.\ Atmos.\ Oceanic Technol."}
+@STRING{JCAM      = "J.\ Climate Appl.\ Meteor."}	% from 1983--87, now JAMC
+@STRING{JCLI      = "J.\ Climate"}
+@STRING{JCR       = "J.\ Coastal Res."}
+@STRING{JFM       = "J.\ Fluid\ Mech."}
+@STRING{JEM       = "J.\ Eng.\ Math."}			% Journal of Engineering Mathematics
+@STRING{JGR       = "J.\ Geophys.\ Res."}
+@STRING{JHM       = "J.\ Hydrometeor."}
+@STRING{JMS       = "J.\ Mar.\ Syst."}
+@STRING{JM        = "J.\ Meteor."}
+@STRING{JMR       = "J.\ Mar.\ Res."}
+@STRING{JMSJ      = "J.\ Meteor.\ Soc.\ Japan"}
+@STRING{JPO       = "J.\ Phys.\ Oceanogr."}
+@STRING{JOCEAN    = "J.\ Oceanogr."}			% Journal of Oceanography
+@STRING{JOSJ      = "J.\ Oceanogr.\ Soc.\ Japan"}
+@STRING{JSE       = "J.\ Struct.\ Eng."}	% Journal of Structural Engineering at ASCE
+@STRING{JTM       = "J.\ Tropical Meteor."}
+@STRING{JWEIA     = "J.\ Wind Eng.\ Ind.\ Aerodyn."}
+@STRING{MA        = "Meteor.\ Appl."}
+@STRING{MAP       = "Meteor.\ Atmos.\ Phys."}
+@STRING{METMON    = "Meteor.\ Monogr."}
+@STRING{METZEIT   = "Meteor.\ Z."}
+@STRING{MWL       = "Mar.\ Wea.\ Log"}
+@STRING{MWR       = "Mon.\ Wea.\ Rev."}
+@STRING{NAT       = "Nature"}
+@STRING{NHR       = "Nat.\ Hazards Rev."}
+@STRING{NWD       = "Natl.\ Weather Dig."}
+@STRING{OA        = "Oceanol. Aeta"}
+@STRING{OCEAN     = "Oceanography"}                	% a quarterly journal of The Oceanography Society
+@STRING{PAG       = "Pure Appl.\ Geophys."}
+@STRING{PF        = "Phys.\ Fluids"}
+@STRING{PHYSD     = "Physica D"}
+@STRING{PMG       = "Pap.\ Meteor.\ Geophys."}	% Papers in Meteorology and Geophysics
+@STRING{PNAS      = "Proc.\ Natl.\ Acad.\ Sci.\ (USA)"}
+@STRING{PRE       = "Phys.\ Rev.\ E"}
+@STRING{PRSA      = "Proc.\ Roy.\ Soc."}
+@STRING{PT        = "Phys.\ Today"}
+@STRING{PTRS      = "Philos.\ Trans.\ Roy.\ Soc.\ London"}
+@STRING{QJRMS     = "Quart.\ J.\ Roy.\ Meteor.\ Soc."}
+@STRING{RGEO      = "Rev. Geophys."}
+@STRING{SCI       = "Science"}
+@STRING{SOLA      = "SOLA"}				% Scientific Online Letters on the Atmosphere
+@STRING{TAGU      = "Eos, Trans.\ Amer.\ Geophys.\ Union"}
+@STRING{TELLUS    = "Tellus"}
+@STRING{TCFD      = "Theor.\ Comput.\ Fluid Dyn."}
+@STRING{WEA       = "Weather"}
+@STRING{WW        = "Weatherwise"}
+@STRING{WF        = "Wea.\ Forecasting"}
+@STRING{WMOB      = "WMO Bull."}
+
+%% SAMPLE REFERENCES. Insert your own reference database below the line.
+
+
+
+@article{Goddard2016,
+  title={From science to service},
+  author={Goddard, Lisa},
+  journal={Science},
+  volume={353},
+  number={6306},
+  pages={1366--1367},
+  year={2016},
+doi={10.1126/science.aag3087},
+  publisher={American Association for the Advancement of Science}
+}
+
+@article{Trenberth2016,
+  title={The vital need for a climate information system},
+  author={Trenberth, Kevin E and Marquis, Melinda and Zebiak, Stephen},
+  journal={Nature Climate Change},
+  volume={6},
+  number={12},
+  pages={1057--1059},
+  year={2016},
+doi={10.1038/nclimate3170},
+  publisher={Nature Publishing Group UK London}
+}
+
+
+@article{CoughlanDePerez2022,
+  title={Adapting to climate change through anticipatory action: The potential use of weather-based early warnings},
+  author={Coughlan de Perez, Erin and Harrison, Laura and Berse, Kristoffer and Easton-Calabria, Evan and Marunye, Joalane and Marake, Makoala and Murshed, Sonia Binte and Zauisomue, Erlich-Honest and others},
+  journal={Weather and Climate Extremes},
+  volume={38},
+  pages={100508},
+  year={2022},
+  doi={10.1016/j.wace.2022.100508},   
+  publisher={Elsevier}
+}
+
+@article{White2022,
+  title={Advances in the application and utility of subseasonal-to-seasonal predictions},
+  author={White, Christopher J and Domeisen, Daniela IV and Acharya, Nachiketa and Adefisan, Elijah A and Anderson, Michael L and Aura, Stella and Balogun, Ahmed A and Bertram, Douglas and Bluhm, Sonia and Brayshaw, David J and others},
+  journal={Bulletin of the American Meteorological Society},
+  volume={103},
+  number={6},
+  pages={E1448--E1472},
+  year={2022},
+  doi={10.1175/BAMS-D-20-0224.1}
+}
+
+@article{Okane2023,
+  title={Recent applications and potential of near-term (interannual to decadal) climate predictions},
+  author={O'Kane, Terence J and Scaife, Adam A and Kushnir, Yochanan and Brookshaw, Anca and Buontempo, Carlo and Carlin, David and Connell, Richenda K and Doblas-Reyes, Francisco and Dunstone, Nick and F{\"o}rster, Kristian and others},
+  journal={Frontiers in Climate},
+  volume={5},
+  pages={1121626},
+  year={2023},
+  doi={10.3389/fclim.2023.1121626},
+  publisher={Frontiers Media SA}
+}
+
+@article{Merryfield2020,
+  title={Current and emerging developments in subseasonal to decadal prediction},
+  author={Merryfield, William J and Baehr, Johanna and Batt{\'e}, Lauriane and Becker, Emily J and Butler, Amy H and Coelho, Caio AS and Danabasoglu, Gokhan and Dirmeyer, Paul A and Doblas-Reyes, Francisco J and Domeisen, Daniela IV and others},
+  journal={Bulletin of the American Meteorological Society},
+  volume={101},
+  number={6},
+  pages={E869--E896},
+  year={2020},
+  doi={10.1175/BAMS-D-19-0037.1},
+  publisher={American Meteorological Society}
+}
+
+
+
+@article{Merz2020,
+  title={Impact forecasting to support emergency management of natural hazards},
+  author={Merz, Bruno and Kuhlicke, Christian and Kunz, Michael and Pittore, Massimiliano and Babeyko, Andrey and Bresch, David N and Domeisen, Daniela IV and Feser, Frauke and Koszalka, Inga and Kreibich, Heidi and others},
+  journal={Reviews of Geophysics},
+  volume={58},
+  number={4},
+  pages={e2020RG000704},
+  year={2020},
+  doi={10.1029/2020RG000704},
+  publisher={Wiley Online Library}
+}
+
+@article{Hewitt2012,
+  title={The global framework for climate services},
+  author={Hewitt, Chris and Mason, Simon and Walland, David},
+  journal={Nature Climate Change},
+  volume={2},
+  number={12},
+  pages={831--832},
+  year={2012},
+  doi={10.1038/nclimate1745},
+  publisher={Nature Publishing Group UK London}
+}
+
+
+@online{Sendai2015,
+    author = "UNDRR",
+    year = "2015",
+    title = "Sendai Framework for Disaster Risk Reduction 2015-2030",
+    url  = "https://www.undrr.org/publication/sendai-framework-disaster-risk-reduction-2015-2030",
+    note = {(Accessed: 13.08.2024)}
+}
+
+@online{Taxonomy2020,
+    author = "European-Commission",
+    year = "2020",
+    title = "EU taxonomy for sustainable activities",
+    url  = "https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en",
+    note = {(Accessed: 13.08.2024)}
+}
+
+@online{Cusick2019,
+    author = "Daniel Cusick",
+    year = "2019",
+    title = "Tech Offers a Virtual Window into Future Climate Change Risk",
+    url  = "https://www.scientificamerican.com/article/tech-offers-a-virtual-window-into-future-climate-change-risk/",
+    note = {(Accessed: 13.08.2024)}
+}
+
+@article{Lam2023,
+  title={Learning skillful medium-range global weather forecasting},
+  author={Lam, Remi and Sanchez-Gonzalez, Alvaro and Willson, Matthew and Wirnsberger, Peter and Fortunato, Meire and Alet, Ferran and Ravuri, Suman and Ewalds, Timo and Eaton-Rosen, Zach and Hu, Weihua and others},
+  journal={Science},
+  volume={382},
+  number={6677},
+  pages={1416--1421},
+  year={2023},
+  doi={10.1126/science.adi233},
+  publisher={American Association for the Advancement of Science}
+}
+
+@article{Bi2023,
+  title={Accurate medium-range global weather forecasting with 3D neural networks},
+  author={Bi, Kaifeng and Xie, Lingxi and Zhang, Hengheng and Chen, Xin and Gu, Xiaotao and Tian, Qi},
+  journal={Nature},
+  volume={619},
+  number={7970},
+  pages={533--538},
+  year={2023},
+  doi={10.1038/s41586-023-06185-3},
+  publisher={Nature Publishing Group UK London}
+}
+
+@article{Li2024,
+  title={Generative emulation of weather forecast ensembles with diffusion models},
+  author={Li, Lizao and Carver, Robert and Lopez-Gomez, Ignacio and Sha, Fei and Anderson, John},
+  journal={Science Advances},
+  volume={10},
+  number={13},
+  pages={eadk4489},
+  year={2024},
+  doi={10.1126/sciadv.adk4489},
+  publisher={American Association for the Advancement of Science}
+}
+
+@article{Torralba2017,
+  title={Seasonal climate prediction: a new source of information for the management of wind energy resources},
+  author={Torralba, Ver{\'o}nica and Doblas-Reyes, Francisco J and MacLeod, Dave and Christel, Isadora and Davis, Melanie},
+  journal={Journal of Applied Meteorology and Climatology},
+  volume={56},
+  number={5},
+  pages={1231--1247},
+  year={2017},
+  doi={10.1175/JAMC-D-16-0204.1}, 
+  publisher={American Meteorological Society}
+}
+
+
+@article{Roosli2021,
+  title={Towards operational impact forecasting of building damage from winter windstorms in Switzerland},
+  author={R{\"o}{\"o}sli, Thomas and Appenzeller, Christof and Bresch, David N},
+  journal={Meteorological applications},
+  volume={28},
+  number={6},
+  pages={e2035},
+  year={2021},
+  doi={10.1002/met.2035}, 
+  publisher={Wiley Online Library}
+}
+
+@article{Graham2022,
+  title={The application of sub-seasonal to seasonal (S2S) predictions for hydropower forecasting},
+  author={Graham, Robert M and Browell, Jethro and Bertram, Douglas and White, Christopher J},
+  journal={Meteorological Applications},
+  volume={29},
+  number={1},
+  pages={e2047},
+  year={2022},
+  doi={10.1002/met.2047},
+  publisher={Wiley Online Library}
+}
+
+@article{Haupt2018,
+  title={100 years of progress in applied meteorology. Part I: Basic applications},
+  author={Haupt, Sue Ellen and Rauber, Robert M and Carmichael, Bruce and Knievel, Jason C and Cogan, James L},
+  journal={Meteorological Monographs},
+  volume={59},
+  pages={22--1},
+  year={2018},
+  doi={10.1175/AMSMONOGRAPHS-D-18-0004.1}
+}
+
+@article{haupt2019a,
+  title={100 years of progress in applied meteorology. Part II: Applications that address growing populations},
+  author={Haupt, Sue Ellen and Hanna, Steven and Askelson, Mark and Shepherd, Marshall and Fragomeni, Mariana A and Debbage, Neil and Johnson, Bradford},
+  journal={Meteorological Monographs},
+  volume={59},
+  pages={23--1},
+  year={2019},
+  doi={10.1175/AMSMONOGRAPHS-D-18-0007.1}
+}
+
+@article{haupt2019b,
+  title={100 years of progress in applied meteorology. Part III: Additional applications},
+  author={Haupt, Sue Ellen and Kosovi{\'c}, Branko and McIntosh, Scott W and Chen, Fei and Miller, Kathleen and Shepherd, Marshall and Williams, Marcus and Drobot, Sheldon},
+  journal={Meteorological Monographs},
+  volume={59},
+  pages={24--1},
+  year={2019},
+  doi={10.1175/AMSMONOGRAPHS-D-18-0012.1}
+}
+
+@incollection{Rickards2014,
+  title={Channelling the future? The use of seasonal climate forecasts in climate adaptation.},
+  author={Rickards, Lauren and Howden, Mark and Crimp, Steven},
+  booktitle={Climate change impact and adaptation in agricultural systems},
+  pages={233--252},
+  year={2014},
+  doi={10.1079/9781780642895.0233},
+  publisher={CABI Wallingford UK}
+}
+
+@article{Vandenhurk2018,
+  title={The match between climate services demands and Earth System Models supplies},
+  author={Van den Hurk, Bart and Hewitt, Chris and Jacob, Daniela and Bessembinder, Janette and Doblas-Reyes, Francisco and D{\"o}scher, Ralf},
+  journal={Climate Services},
+  volume={12},
+  pages={59--63},
+  year={2018},
+  doi={10.1016/j.cliser.2018.11.002},
+  publisher={Elsevier}
+}
+
+@article{Nissan2019,
+  title={On the use and misuse of climate change projections in international development},
+  author={Nissan, Hannah and Goddard, Lisa and de Perez, Erin Coughlan and Furlow, John and Baethgen, Walter and Thomson, Madeleine C and Mason, Simon J},
+  journal={Wiley Interdisciplinary Reviews: Climate Change},
+  volume={10},
+  number={3},
+  pages={e579},
+  year={2019},
+ doi={10.1002/wcc.579},
+  publisher={Wiley Online Library}
+}
+
+@article{Lemos2012,
+  title={Narrowing the climate information usability gap},
+  author={Lemos, Maria Carmen and Kirchhoff, Christine J and Ramprasad, Vijay},
+  journal={Nature climate change},
+  volume={2},
+  number={11},
+  pages={789--794},
+  year={2012},
+doi={10.1038/nclimate1614},
+  publisher={Nature Publishing Group UK London}
+}
+
+@article{RodriguesShepherd2022,
+  title={Small is beautiful: climate-change science as if people mattered},
+  author={Rodrigues, Regina R and Shepherd, Theodore G},
+  journal={PNAS nexus},
+  volume={1},
+  number={1},
+  pages={pgac009},
+  year={2022},
+doi={10.1093/pnasnexus/pgac009},
+  publisher={Oxford University Press}
+}
+
+@incollection{TothBuizza2019,
+  title={Weather forecasting: What sets the forecast skill horizon?},
+  author={Toth, Zoltan and Buizza, Roberto},
+  booktitle={Sub-Seasonal to Seasonal Prediction},
+  pages={17--45},
+  year={2019},
+doi={10.1016/B978-0-12-811714-9.00002-4},
+  publisher={Elsevier}
+}
+
+@article{Buizza2015,
+  title={Living with the butterfly effect: A seamless view of predictability},
+  author={Buizza, ROBERTO and Leutbecher, MARTIN and Thorpe, ALAN},
+  journal={ECMWF newsletter},
+  volume={145},
+  pages={18--23},
+  year={2015},
+doi={10.21957/x4h3e8w3}
+}
+
+@article{BuizzLeutbecher2015,
+  title={The forecast skill horizon},
+  author={Buizza, Roberto and Leutbecher, Martin},
+  journal={Quarterly Journal of the Royal Meteorological Society},
+  volume={141},
+  number={693},
+  pages={3366--3382},
+  year={2015},
+doi={10.1002/qj.2619},
+  publisher={Wiley Online Library}
+}
+
+@article{Fiedler2021,
+  title={Business risk and the emergence of climate analytics},
+  author={Fiedler, Tanya and Pitman, Andy J and Mackenzie, Kate and Wood, Nick and Jakob, Christian and Perkins-Kirkpatrick, Sarah E},
+  journal={Nature Climate Change},
+  volume={11},
+  number={2},
+  pages={87--94},
+  year={2021},
+doi={10.1038/s41558-020-00984-6},   
+  publisher={Nature Publishing Group UK London}
+}
+
+@article{Pitman2022,
+  title={Acute climate risks in the financial system: examining the utility of climate model projections},
+  author={Pitman, Andy J and Fiedler, Tanya and Ranger, Nicola and Jakob, Christian and Ridder, N and Perkins-Kirkpatrick, S and Wood, Nick and Abramowitz, Gabriel},
+  journal={Environmental Research: Climate},
+  volume={1},
+  number={2},
+  pages={025002},
+  year={2022},
+doi={10.1088/2752-5295/ac856f},
+  publisher={IOP Publishing}
+}
+
+@article{Bauer2015,
+  title={The quiet revolution of numerical weather prediction},
+  author={Bauer, Peter and Thorpe, Alan and Brunet, Gilbert},
+  journal={Nature},
+  volume={525},
+  number={7567},
+  pages={47--55},
+  year={2015},
+  doi={10.1038/nature14956},
+  publisher={Nature Publishing Group UK London}
+}
+
+@article{Benjamin2019,
+  title={100 years of progress in forecasting and NWP applications},
+  author={Benjamin, Stanley G and Brown, John M and Brunet, Gilbert and Lynch, Peter and Saito, Kazuo and Schlatter, Thomas W},
+  journal={Meteorological Monographs},
+  volume={59},
+  pages={13--1},
+  year={2019},
+doi={10.1175/AMSMONOGRAPHS-D-18-0020.1}
+}
+
+@article{Gong2003,
+  title={The effect of spatial aggregation on the skill of seasonal precipitation forecasts},
+  author={Gong, Xiaofeng and Barnston, Anthony G and Ward, M Neil},
+  journal={Journal of Climate},
+  volume={16},
+  number={18},
+  pages={3059--3071},
+  year={2003},
+doi={10.1175/1520-0442(2003)016<3059:TEOSAO>2.0.CO;2},
+  publisher={American Meteorological Society}
+}
+
+@article{Gilleland2009,
+  title={Intercomparison of spatial forecast verification methods},
+  author={Gilleland, Eric and Ahijevych, David and Brown, Barbara G and Casati, Barbara and Ebert, Elizabeth E},
+  journal={Weather and forecasting},
+  volume={24},
+  number={5},
+  pages={1416--1430},
+  year={2009},
+doi={10.1175/2009WAF2222269.1}
+}
+
+@article{JungLeutbecher2008,
+  title={Scale-dependent verification of ensemble forecasts},
+  author={Jung, Thomas and Leutbecher, Martin},
+  journal={Quarterly Journal of the Royal Meteorological Society},
+  volume={134},
+  number={633},
+  pages={973--984},
+  year={2008},
+doi= {https://doi.org/10.1002/qj.255},
+  publisher={Wiley Online Library}
+}
+
+@article{Gehne2016,
+  title={Comparison of global precipitation estimates across a range of temporal and spatial scales},
+  author={Gehne, Maria and Hamill, Thomas M and Kiladis, George N and Trenberth, Kevin E},
+  journal={Journal of Climate},
+  volume={29},
+  number={21},
+  pages={7773--7795},
+  year={2016},
+doi={10.1175/JCLI-D-15-0618.1},
+  publisher={American Meteorological Society}
+}
+
+@article{Vanstraaten2020,
+  title={The influence of aggregation and statistical post-processing on the subseasonal predictability of European temperatures},
+  author={Van Straaten, Chiem and Whan, Kirien and Coumou, Dim and van den Hurk, Bart and Schmeits, Maurice},
+  journal={Quarterly Journal of the Royal Meteorological Society},
+  volume={146},
+  number={731},
+  pages={2654--2670},
+  year={2020},
+doi={10.1002/qj.3810},
+  publisher={Wiley Online Library}
+}
+
+@article{Young2020,
+  title={Optimal spatial scales for seasonal forecasts over Africa},
+  author={Young, Matthew and Heinrich, Viola and Black, Emily and Asfaw, Dagmawi},
+  journal={Environmental Research Letters},
+  volume={15},
+  number={9},
+  pages={094023},
+  year={2020},
+  publisher={IOP Publishing},
+doi={10.1088/1748-9326/ab94e9}
+}
+
+@article{Rivoire2023,
+  title={Assessment of subseasonal-to-seasonal (S2S) ensemble extreme precipitation forecast skill over Europe},
+  author={Rivoire, Pauline and Martius, Olivia and Naveau, Philippe and Tuel, Alexandre},
+  journal={Natural Hazards and Earth System Sciences},
+  volume={23},
+  number={8},
+  pages={2857--2871},
+  year={2023},
+doi={10.5194/nhess-23-2857-2023},
+  publisher={Copernicus Publications G{\"o}ttingen, Germany}
+}
+
+@article{RobertsLean2008,
+  title={Scale-selective verification of rainfall accumulations from high-resolution forecasts of convective events},
+  author={Roberts, Nigel M and Lean, Humphrey W},
+  journal={Monthly Weather Review},
+  volume={136},
+  number={1},
+  pages={78--97},
+  year={2008},
+doi={10.1175/2007MWR2123.1},
+  publisher={American Meteorological Society}
+}
+
+@article{Mittermaier2010,
+  title={Intercomparison of spatial forecast verification methods: Identifying skillful spatial scales using the fractions skill score},
+  author={Mittermaier, Marion and Roberts, Nigel},
+  journal={Weather and Forecasting},
+  volume={25},
+  number={1},
+  pages={343--354},
+  year={2010},
+  publisher={American Meteorological Society}
+}
+
+@book{jolliffeStephenson2012,
+  title={Forecast verification: a practitioner's guide in atmospheric science},
+  author={Jolliffe, Ian T and Stephenson, David B},
+  year={2012},
+doi={10.1002/9781119960003},
+  publisher={John Wiley \& Sons}
+}
+
+@article{Keane2016,
+  title={Evaluation of the Plant--Craig stochastic convection scheme (v2. 0) in the ensemble forecasting system MOGREPS-R (24 km) based on the Unified Model (v7. 3)},
+  author={Keane, Richard J and Plant, Robert S and Tennant, Warren J},
+  journal={Geoscientific Model Development},
+  volume={9},
+  number={5},
+  pages={1921--1935},
+  year={2016},
+doi={10.5194/gmd-9-1921-2016},
+  publisher={Copernicus Publications G{\"o}ttingen, Germany}
+}
+
+@article{ZhaoZhang2018,
+  title={Assessing hourly precipitation forecast skill with the fractions skill score},
+  author={Zhao, Bin and Zhang, Bo},
+  journal={Journal of Meteorological Research},
+  volume={32},
+  number={1},
+  pages={135--145},
+  year={2018},
+  publisher={Springer},
+doi={10.1007/s13351-018-7058-1}
+}
+
+@article{Cafaro2021,
+  title={Do convection-permitting ensembles lead to more skillful short-range probabilistic rainfall forecasts over tropical East Africa?},
+  author={Cafaro, Carlo and Woodhams, Beth J and Stein, Thorwald HM and Birch, Cathryn E and Webster, Stuart and Bain, Caroline L and Hartley, Andrew and Clarke, Samantha and Ferrett, Samantha and Hill, Peter},
+  journal={Weather and Forecasting},
+  volume={36},
+  number={2},
+  pages={697--716},
+  year={2021},
+doi={10.1175/WAF-D-20-0172.1}
+}
+
+@article{Schwartz2019,
+  title={Medium-range convection-allowing ensemble forecasts with a variable-resolution global model},
+  author={Schwartz, Craig S},
+  journal={Monthly Weather Review},
+  volume={147},
+  number={8},
+  pages={2997--3023},
+  year={2019},
+doi={10.1175/MWR-D-18-0452.1},
+  publisher={American Meteorological Society}
+}
+
+
+@article{Hersbach2020,
+  title={{ERA5} hourly data on single levels from 1940 to present. {C}opernicus {C}limate {C}hange {S}ervice ({C3S}) {C}limate {D}ata {S}tore ({CDS})},
+  author={Hersbach, Hans, and Bell, B., and Berrisford, P., and G., Biavati, and Hor{\'a}nyi, Andr{\'a}s, and Muñoz Sabater, J., and Nicolas, J., and Peubey, C., and Radu, R., and Rozum, I., and Schepers, D., and Simmons, A., and Soci, C., and Dee, D., and Thépaut, J-N},
+  year={2023},
+  doi={10.24381/cds.adbb2d47}
+}
+
+
+@book{Buizza2018,
+  title={The development and evaluation process followed at ECMWF to upgrade the Integrated Forecasting System (IFS)},
+  author={Buizza, Roberto and Balmaseda, M Alonso and Brown, Andrew and English, S and Forbes, Richard and Geer, Alan and Haiden, T and Leutbecher, Martin and Magnusson, L and Rodwell, Mark and others},
+  year={2018},
+ doi={10.21957/xzopnhty9},
+  publisher={European Centre for Medium Range Weather Forecasts}
+}
+
+@online{MARS,
+    author = "ECMWF",
+    year = "2024",
+    title = "Meteorological Archival and Retrieval System (MARS)",
+    url  = "https://www.ecmwf.int/en/forecasts/access-forecasts/access-archive-datasets",
+    note = {(Accessed: 13.08.2024)}
+}
+
+
+@article{Lalaurette2003,
+  title={Early detection of abnormal weather conditions using a probabilistic extreme forecast index},
+  author={Lalaurette, Francois},
+  journal={Quarterly Journal of the Royal Meteorological Society},
+  volume={129},
+  number={594},
+  pages={3037--3057},
+  year={2003},
+doi={10.1256/qj.02.152},
+  publisher={Wiley Online Library}
+}
+
+@article{Granerod2023,
+  title={Ekstremv{\ae}ret’Hans’, ekstremt mye nedb{\o}r i deler av S{\o}r-Norge 07.-09. August 2023},
+  author={Graner{\o}d, M and Stabell, D and Mjelstad, H and Tajet, HTT},
+  journal={The Norwegian Meteorological Institute (ed) METinfo},
+  volume={26},
+  year={2023},
+url={}
+}
+
+@online{Ekroll2023,
+    author = "Ekroll, Henning Carr",
+    year = "2023",
+    title = "Ekstremværet Hans vil trolig koste langt mer enn storflommen i 1995",
+    url  = "https://www.aftenposten.no/norge/i/76w3oW/ekstremvaeret-hans-vil-trolig-koste-langt-mer-enn-storflommen-i-1995",
+    note = {(Accessed: 13.08.2024)}
+}
+
+@online{NNPP2023,
+    author = "Norwegian-Natural-Perils-Pool",
+    year = "2023",
+    title = "Rundt 10 000 innmeldte skader etter ekstremværet «Hans»",
+    url  = "https://www.naturskade.no/nyheter/2023/rundt-10-000-innmeldte-skader-etter-ekstremvaret-hans/",
+    note = {(Accessed: 13.08.2024)}
+}
+
+@online{KLP2023,
+    author = "KLP, Kommunal Landspensjonskasse Gjensidig Forsikringsselskap",
+    year = "2023",
+    title = "Dette lærte kommunene av ekstremværet Hans",
+    url  = "https://www.klp.no/artikler/dette-laerte-kommunene-av-ekstremvaeret-hans",
+    note = {(Accessed: 13.08.2024)}
+}
+
+@online{ECMWFb,
+    author = "ECMWF",
+    year = "2024",
+    title = "Section 5.3.1 M-climate, the ENS Model Climate",
+    url  = "https://confluence.ecmwf.int/display/FUG/Section+5.3.1+M-climate%2C+the+ENS+Model+Climate",
+    note = {(Accessed: 16.08.2024)}
+}
+
+@online{ECMWFc,
+    author = "ECMWF",
+    year = "2024",
+    title = "Section 8.1.9.2 Extreme Forecast Index - EFI",
+    url  = "https://confluence.ecmwf.int/display/FUG/Section+8.1.9.2+Extreme+Forecast+Index+-+EFI",
+    note = {(Accessed: 16.08.2024)}
+}
+
+
+@article{Mariotti2020,
+  title={Windows of opportunity for skillful forecasts subseasonal to seasonal and beyond},
+  author={Mariotti, Annarita and Baggett, Cory and Barnes, Elizabeth A and Becker, Emily and Butler, Amy and Collins, Dan C and Dirmeyer, Paul A and Ferranti, Laura and Johnson, Nathaniel C and Jones, Jeanine and others},
+  journal={Bulletin of the American Meteorological Society},
+  volume={101},
+  number={5},
+  pages={E608--E625},
+  year={2020},
+doi={10.1175/BAMS-D-18-0326.1}
+}
+
+@article{Findlater2021,
+  title={Climate services promise better decisions but mainly focus on better data},
+  author={Findlater, Kieran and Webber, Sophie and Kandlikar, Milind and Donner, Simon},
+  journal={Nature Climate Change},
+  volume={11},
+  number={9},
+  pages={731--737},
+  year={2021},
+doi={10.1038/s41558-021-01125-3},
+  publisher={Nature Publishing Group UK London}
+}
+
+@article{Hanssen2009,
+  title={Climate in Norway 2100},
+  author={Hanssen-Bauer, I and Drange, H and F{\o}rland, EJ and Roald, LA and B{\o}rsheim, KY and Hisdal, H and Lawrence, D and Nesje, A and Sandven, S and Sorteberg, A and others},
+  journal={Background information to NOU Climate adaptation (In Norwegian: Klima i Norge 2100. Bakgrunnsmateriale til NOU Klimatilplassing), Oslo: Norsk klimasenter},
+  year={2009},
+url={https://klimaservicesenter.no/kss/rapporter/kin2100}
+}
+
+@article{Benbouallegue2024,
+  title={The Rise of Data-Driven Weather Forecasting: A First Statistical Assessment of Machine Learning--Based Weather Forecasts in an Operational-Like Context},
+  author={Ben Bouall{\`e}gue, Zied and Clare, Mariana CA and Magnusson, Linus and Gascon, Estibaliz and Maier-Gerber, Michael and Janou{\v{s}}ek, Martin and Rodwell, Mark and Pinault, Florian and Dramsch, Jesper S and Lang, Simon TK and others},
+  journal={Bulletin of the American Meteorological Society},
+  volume={105},
+  number={6},
+  pages={E864--E883},
+  year={2024},
+  doi={10.1175/BAMS-D-23-0162.1},   
+  publisher={American Meteorological Society}
+}
+
+@online{EW4ALL,
+    author = "WMO",
+    year = "2022",
+    title = "WMO and the Early Warnings for All Initiative",
+    url  = "https://wmo.int/activities/early-warnings-all/wmo-and-early-warnings-all-initiative",
+    note = {(Accessed: 16.08.2024)}
+}
+
+@article{Lorenz1969,
+  title={The predictability of a flow which possesses many scales of motion},
+  author={Lorenz, Edward N},
+  journal={Tellus},
+  volume={21},
+  number={3},
+  pages={289--307},
+  year={1969},
+  publisher={Taylor \& Francis},
+  doi={10.1111/j.2153-3490.1969.tb00444.x}, 
+}
+
+@article{Palmer2014,
+  title={The real butterfly effect},
+  author={Palmer, TN and D{\"o}ring, Andreas and Seregin, G},
+  journal={Nonlinearity},
+  volume={27},
+  number={9},
+  pages={R123},
+  year={2014},
+  publisher={IOP Publishing},
+  doi={10.1088/0951-7715/27/9/R123},  
+}
+
+@article{Goddard2014,
+  title={The international research institute for climate \& society: why, what and how},
+  author={Goddard, Lisa and Baethgen, Walter E and Bhojwani, Haresh and Robertson, Andrew W},
+  journal={Earth Perspectives},
+  volume={1},
+  pages={1--14},
+  year={2014},
+  publisher={Springer},
+doi={10.1186/2194-6434-1-10}, 
+}
+
+@article{Michelangeli1995,
+  title={Weather regimes: Recurrence and quasi stationarity},
+  author={Michelangeli, Paul-Antoine and Vautard, Robert and Legras, Bernard},
+  journal={Journal of the atmospheric sciences},
+  volume={52},
+  number={8},
+  pages={1237--1256},
+  year={1995},
+  publisher={American Meteorological Society},
+doi={10.1175/1520-0469(1995)052<1237:WRRAQS>2.0.CO;2},
+}
+
+@article{Eyring2024,
+  title={AI-empowered next-generation multiscale climate modelling for mitigation and adaptation},
+  author={Eyring, Veronika and Gentine, Pierre and Camps-Valls, Gustau and Lawrence, David M and Reichstein, Markus},
+  journal={Nature Geoscience},
+  pages={1--9},
+  year={2024},
+  publisher={Nature Publishing Group UK London},
+doi={10.1038/s41561-024-01527-w},
+}
+
+@article{Necker2024,
+  title={The fractions skill score for ensemble forecast verification},
+  author={Necker, Tobias and Wolfgruber, Ludwig and Kugler, Lukas and Weissmann, Martin and Dorninger, Manfred and Serafin, Stefano},
+  journal={Quarterly Journal of the Royal Meteorological Society},
+  year={2024},
+  publisher={Wiley Online Library},
+  doi={10.1002/qj.4824}
+}
+
+@online{NRK2020,
+    author = "NRK",
+    year = "2020",
+    title = "Overfylte vannmagasin gir rekordlave strømpriser: – Får betalt for å bruke strøm",
+    url  = "https://www.nrk.no/vestland/overfylte-vannmagasin-gir-rekordlave-strompriser_-_-far-betalt-for-a-bruke-strom-1.15110896",
+    note = {(Accessed: 08.01.2025)}
+}
+
+@online{TV22024,
+    author = "TV2",
+    year = "2024",
+    title = "Ikke opplevd maken på 50 år: – Ekstremt",
+    url  = "https://www.tv2.no/nyheter/innenriks/ikke-opplevd-maken-pa-50-ar-ekstremt/17173589/",
+    note = {(Accessed: 08.01.2025)}
+}
+
+@online{NYT2017,
+    author = "nytimes",
+    year = "2017",
+    title = "Airlines Take a Proactive Approach to Potential Weather Woes",
+    url  = "https://www.nytimes.com/2017/03/14/business/airline-cancellations-delays-snowstorm.html",
+    note = {(Accessed: 09.01.2025)}
+}
+
+@online{NBC2011,
+    author = "NBC",
+    year = "2011",
+    title = "Airlines cancel flights before snow flies",
+    url  = "https://www.nbcnews.com/id/wbna41502385",
+    note = {(Accessed: 09.01.2025)}
+}
+
+
+@article{Price2024,
+  title={Probabilistic weather forecasting with machine learning},
+  author={Price, Ilan and Sanchez-Gonzalez, Alvaro and Alet, Ferran and Andersson, Tom R and El-Kadi, Andrew and Masters, Dominic and Ewalds, Timo and Stott, Jacklynn and Mohamed, Shakir and Battaglia, Peter and others},
+  journal={Nature},
+  volume={637},
+  number={8044},
+  pages={84--90},
+  year={2024},
+  publisher={Nature Publishing Group},
+doi={10.1038/s41586-024-08252-9}
+}
+
+@article{Lavers2022,
+ title={An evaluation of {ERA5} precipitation for climate monitoring},
+ author={Lavers, David A and Simmons, Adrian and Vamborg, Freja and Rodwell, Mark J},
+ journal={Quarterly Journal of the Royal Meteorological Society},
+ volume={148},
+ number={748},
+ pages={3152--3165},
+ year={2022},
+ publisher={Wiley Online Library},
+ doi={10.1002/qj.4351}
+}
+
+@article{WeisheimerPalmer2014,
+  title={On the reliability of seasonal climate forecasts},
+  author={Weisheimer, Antje and Palmer, TN},
+  journal={Journal of the Royal Society Interface},
+  volume={11},
+  number={96},
+  pages={20131162},
+  year={2014},
+  publisher={The Royal Society},
+doi={10.1098/rsif.2013.1162}
+}
+
+@article{Murphy1993,
+  title={What is a good forecast? An essay on the nature of goodness in weather forecasting},
+  author={Murphy, Allan H},
+  journal={Weather and forecasting},
+  volume={8},
+  number={2},
+  pages={281--293},
+  year={1993},
+  publisher={American Meteorological Society},
+doi={10.1175/1520-0434(1993)008<0281:WIAGFA>2.0.CO;2}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+

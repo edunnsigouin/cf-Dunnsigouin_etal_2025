@@ -1,5 +1,5 @@
 """
-Plots fig 05 in Dunn-Sigouin et al. 
+bla bla bla
 """
 
 import numpy         as np

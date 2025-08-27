@@ -14,7 +14,7 @@ from dask.diagnostics import ProgressBar
 import cdsapi
 import pandas as pd
 import os
-from forsikring import config,s2s,misc
+from Dunnsigouin_etal_2025 import config,s2s,misc
 
 # INPUT -----------------------------------------------
 area       = '73.5/-27/33/45' # or 'E' for europe

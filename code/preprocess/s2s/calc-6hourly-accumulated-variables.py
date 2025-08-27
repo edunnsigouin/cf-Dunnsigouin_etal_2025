@@ -12,7 +12,7 @@ import xarray   as xr
 import pandas   as pd
 import os
 from datetime   import datetime
-from forsikring import config,misc,s2s
+from Dunnsigouin_etal_2025 import config,misc,s2s
 
 # INPUT ----------------------------------------------- 
 variables           = ['tp']                  

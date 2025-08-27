@@ -22,7 +22,7 @@ downstream.
 import numpy     as np
 import xarray    as xr
 import os
-from forsikring  import misc,s2s,verify,config
+from Dunnsigouin_etal_2025  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
 score_flag               = 'fbss'

@@ -4,7 +4,7 @@ Converts daily s2s forecast format data weekly.
 
 import numpy    as np
 import xarray   as xr
-from forsikring import misc,s2s,config,verify
+from Dunnsigouin_etal_2025 import misc,s2s,config,verify
 
 # INPUT -----------------------------------------------
 product             = 'forecast'          # forecast or hindcast

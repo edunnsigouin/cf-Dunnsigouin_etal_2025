@@ -6,7 +6,7 @@ ERA5 data and outputs yearly files of continuous data.
 import numpy  as np
 import xarray as xr
 import os
-from forsikring import config,misc,s2s
+from Dunnsigouin_etal_2025 import config,misc,s2s
 
 # INPUT ----------------------------------------------- 
 variables  = ['tp24'] # tp24,rn24,mx24rn6,mx24tp6,mx24tpr

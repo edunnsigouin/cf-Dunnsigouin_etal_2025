@@ -4,7 +4,7 @@ Converts era5 s2s daily forecast format data into weekly.
 
 import numpy    as np
 import xarray   as xr
-from forsikring import misc,s2s,config,verify
+from Dunnsigouin_etal_2025 import misc,s2s,config,verify
 
 # INPUT -----------------------------------------------
 variable            = 'tp24'              # tp24,rn24,mx24rn6,mx24tp6,mx24tpr

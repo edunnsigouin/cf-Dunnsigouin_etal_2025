@@ -9,7 +9,7 @@ This code is split from the hindcast version because of space issues.
 import numpy    as np
 import xarray   as xr
 import pandas   as pd
-from forsikring import s2s, verify, misc, config
+from Dunnsigouin_etal_2025 import s2s, verify, misc, config
 
 # Input -----------------------------------
 variables           = ['tp24']                  # tp24,rn24,mx24rn6,mx24tp6,mx24tpr

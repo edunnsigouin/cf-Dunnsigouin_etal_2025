@@ -7,7 +7,7 @@ format data
 import xarray   as xr
 import numpy    as np
 import pandas   as pd
-from forsikring import config,misc,s2s, verify
+from Dunnsigouin_etal_2025 import config,misc,s2s, verify
 
 
 def initialize_quantile_array(variable,box_sizes,time_flag,dim):

@@ -18,7 +18,7 @@ import pandas                    as pd
 import xarray                    as xr
 import numpy                     as np
 from datetime                    import datetime
-from forsikring                  import config,misc,s2s
+from Dunnsigouin_etal_2025       import config,misc,s2s
 
 # input -----------------------------------
 product             = 'forecast' # forecast/vr_forecast

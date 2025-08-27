@@ -3,9 +3,9 @@ Calculates smoothed climatology per xy grid point from era5
 s2s hindcast format data.
 """
 
-import numpy           as np
-import xarray          as xr
-from forsikring        import misc,s2s,config,verify
+import numpy               as np
+import xarray              as xr
+from Dunnsigouin_etal_2025 import misc,s2s,config,verify
 import os
 
 # input ----------------------------------------------
