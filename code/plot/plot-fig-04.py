@@ -1,17 +1,17 @@
 """
-Plots fig. 03 in Dunn-Sigouin et al. 
+Plots fig. 04 in Dunn-Sigouin et al. 
 """
 
 import numpy       as np
 import xarray      as xr
 from matplotlib    import pyplot as plt
-from forsikring    import misc,s2s,config
+from Dunnsigouin_etal_2025    import misc,s2s,config
 import cartopy.crs as ccrs
 import matplotlib as mpl
 
 def setup_subplot_xy(flag, ax, title_text, ds, clevs, cmap, fontsize):
     """ 
-    Sets up specifics of subplots for fig.03
+    Sets up specifics of subplots for fig.04
     """
     lat   = ds.latitude
     lon   = ds.longitude

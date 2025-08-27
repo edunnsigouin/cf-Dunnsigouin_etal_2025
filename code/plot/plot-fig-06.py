@@ -1,18 +1,18 @@
 """
-Plots fig 05 in Dunn-Sigouin et al. 
+Plots fig 06 in Dunn-Sigouin et al. 
 """
 
 import numpy         as np
 import xarray        as xr
 from matplotlib      import pyplot as plt
 import cartopy.crs   as ccrs
-from forsikring      import misc,s2s,config
+from Dunnsigouin_etal_2025      import misc,s2s,config
 from scipy           import signal, ndimage
 import matplotlib    as mpl
 
 def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
     """ 
-    Sets up specifics of subplots for fig.05
+    Sets up specifics of subplots for fig.06
     """
     lat   = ds2.latitude
     lon   = ds2.longitude

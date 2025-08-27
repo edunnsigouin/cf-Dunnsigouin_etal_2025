@@ -1,18 +1,18 @@
 """
-bla bla bla
+fig. S5
 """
 
 import numpy         as np
 import xarray        as xr
 from matplotlib      import pyplot as plt
 import cartopy.crs   as ccrs
-from forsikring      import misc,s2s,config
+from Dunnsigouin_etal_2025      import misc,s2s,config
 from scipy           import signal, ndimage
 import matplotlib    as mpl
 
 def setup_subplot_xy(flag, ax, ds1, ds2, clevs, cmap, fontsize, title, stats):
     """ 
-    Sets up specifics of subplots for fig.05
+    Sets up specifics of subplots for fig.S5
     """
     lat   = ds2.latitude
     lon   = ds2.longitude

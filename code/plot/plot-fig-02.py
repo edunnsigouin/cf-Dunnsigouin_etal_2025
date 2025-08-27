@@ -5,7 +5,7 @@ Plots fig. 02 in Dunn-Sigouin et al.
 import numpy       as np
 import xarray      as xr
 from matplotlib    import pyplot as plt
-from forsikring    import misc,s2s,config
+from Dunnsigouin_etal_2025    import misc,s2s,config
 import cartopy.crs as ccrs
 import matplotlib as mpl
 

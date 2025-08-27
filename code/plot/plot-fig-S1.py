@@ -1,12 +1,12 @@
 """
-Plots fig. 1 in Dunn-Sigouin et al. 
+Plots fig. S1 in Dunn-Sigouin et al. 
 """
 
 import numpy     as np
 import xarray    as xr
 from matplotlib  import pyplot as plt
-from forsikring  import misc,s2s,config
-from forsikring  import dim_025x025 as dim
+from Dunnsigouin_etal_2025  import misc,s2s,config
+from Dunnsigouin_etal_2025  import dim_025x025 as dim
 import matplotlib as mpl
 
 def spatial_scale_scaling(dim):
