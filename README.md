@@ -1,6 +1,6 @@
 Instructions
 -------------
-The scripts to download senorge data, plot figures and make tables are provided. The organization of this project follows loosely from the [cookiecutter-science-project](https://github.com/jbusecke/cookiecutter-science-project) template written by [Julius Busecke](http://jbusecke.github.io/). The project is organized as an installable conda package.
+The organization of this project follows loosely from the [cookiecutter-science-project](https://github.com/jbusecke/cookiecutter-science-project) template written by [Julius Busecke](http://jbusecke.github.io/). The project is organized as an installable conda package.
 
 To get setup, first pull the directory from github to your local machine:
 
