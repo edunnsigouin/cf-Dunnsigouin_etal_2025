@@ -1,4 +1,4 @@
-name: geo_scipy
+name: Dunnsigouin_etal_2025
 channels:
   - defaults
 dependencies:

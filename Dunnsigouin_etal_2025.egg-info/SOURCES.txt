@@ -1,0 +1,16 @@
+LICENSE
+README.md
+setup.py
+Dunnsigouin_etal_2025/config.py
+Dunnsigouin_etal_2025/dim_025x025.py
+Dunnsigouin_etal_2025/dim_025x025_05x05.py
+Dunnsigouin_etal_2025/dim_05x05.py
+Dunnsigouin_etal_2025/dim_1x1.py
+Dunnsigouin_etal_2025/misc.py
+Dunnsigouin_etal_2025/s2s.py
+Dunnsigouin_etal_2025/verify.py
+Dunnsigouin_etal_2025.egg-info/PKG-INFO
+Dunnsigouin_etal_2025.egg-info/SOURCES.txt
+Dunnsigouin_etal_2025.egg-info/dependency_links.txt
+Dunnsigouin_etal_2025.egg-info/requires.txt
+Dunnsigouin_etal_2025.egg-info/top_level.txt

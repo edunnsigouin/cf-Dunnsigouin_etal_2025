@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(
-    name = "forsikring",
+    name = "Dunnsigouin_etal_2025",
     version = "0.0.1",
     author = "Etienne Dunn-Sigouin",
-    packages=['forsikring'],
+    packages=['Dunnsigouin_etal_2025'],
     install_requires=["numpy","xarray","scipy"],
 )
 

@@ -26,10 +26,10 @@ from forsikring                  import config,misc,s2s
 
 # input -----------------------------------
 product             = 'hindcast' # hindcast/vr_hindcast
-first_forecast_date = '20230831' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 35          # number of forecast initializations      
+first_forecast_date = '20231109' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 15          # number of forecast initializations      
 nhdates             = 20 # number of hindcast years  
-grid                = '0.25/0.25' # degree lat/lon resolution
+grid                = '0.5/0.5' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
 var                 = 'tp'
 comp_lev            = 5 # file compression level
@@ -93,6 +93,10 @@ dic1 = {
     'date':''
 }    
 
+# extended range forecast has a new 'stream' after 23-06-28.
+# reference_time used below to switch from enfh to eefh
+reference_time = datetime(2023, 6, 27, 0, 0, 0)
+
 # get all dates for monday and thursday forecast initializations
 forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast,'annual')
 print(forecast_dates)
@@ -101,6 +105,15 @@ print(forecast_dates)
 # populate dictionary some more and download each hindcast/forcast one-by-one
 if write2file:
     for date in forecast_dates:
+
+        # ecmwf changed where they store extended range forecasts after 2023-06-27.
+        # after this date, there is no more vr_hindcast. One needs to download
+        # at extended range from lead-time 0 to 46 days at lower resolution 0.5x0.5
+        # from eefh. Same for its corresponding hindcasts.        
+        if ((date > reference_time) & (grid == '0.5/0.5')):
+            dic1['stream'] = 'eefh' 
+            dic1['step']   = '0/to/1104/by/6'
+            
         for dtype in dtypes:
             
             misc.tic()
