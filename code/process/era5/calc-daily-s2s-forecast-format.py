@@ -6,6 +6,9 @@ era5 dates and put them into a new file.
 example: tp24_CY47R1_0.25x0.25_2021-01-04.nc is the forecast file
 and the new era5 file is tp24_0.25x0.25_2021-01-04.nc with dates corresponding
 to jan 04 to jan 04 + 46 days.
+
+NOTE: there is also an option for the 0.5x0.5 grid to be extended from lead day 1 to 46
+called grid = day1to46_0.5x0.5
 """
 
 import numpy  as np
@@ -17,10 +20,10 @@ from Dunnsigouin_etal_2025 import config,misc,s2s
 
 # INPUT -----------------------------------------------
 variables           = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20230102'           # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 104                    # number of forecasts   
+first_forecast_date = '20200102'           # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 313                    # number of forecasts   
 season              = 'annual'
-grids               = ['0.5x0.5']        # '0.25x0.25' or '0.5x0.5'
+grids               = ['day1to46_0.5x0.5']        # '0.25x0.25' or '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------         
 
@@ -40,14 +43,21 @@ for variable in variables:
             path_out     = config.dirs['era5_forecast_daily'] + variable + '/'
             datestring   = date.strftime('%Y-%m-%d')
             year         = date.strftime('%Y')
-            filename1_in = variable + '_' + grid + '_' + year + '.nc'
-            filename2_in = variable + '_' + grid + '_' + str(int(year)+1) + '.nc'
-            filename_out = '%s_%s_%s.nc'%(variable,grid,datestring)
 
+            if ((grid == '0.25x0.25') or (grid == '0.5x0.5')):
+                filename1_in = variable + '_' + grid + '_' + year + '.nc'
+                filename2_in = variable + '_' + grid + '_' + str(int(year)+1) + '.nc'
+                filename_out = '%s_%s_%s.nc'%(variable,grid,datestring)
+            elif grid == 'day1to46_0.5x0.5':
+                filename1_in = variable + '_' + '0.5x0.5' + '_' + year + '.nc'
+                filename2_in = variable + '_' + '0.5x0.5' + '_' + str(int(year)+1) + '.nc'
+                filename_out = '%s_%s_%s.nc'%(variable,grid,datestring)
+                
             # read data & pick out specific dates (46 = # of days in ecmwf forecast)
             if grid == '0.25x0.25': era5_dates = pd.date_range(date,periods=15,freq="D")
             elif grid == '0.5x0.5': era5_dates = pd.date_range(date,periods=31,freq="D") + np.timedelta64(15,'D')
-
+            elif grid == 'day1to46_0.5x0.5': era5_dates = pd.date_range(date,periods=46,freq="D")
+            
             # calculate explicitely
             with ProgressBar(): ds = xr.open_mfdataset([path_in + filename1_in,path_in + filename2_in]).sel(time=era5_dates).compute()
             #with ProgressBar(): ds = xr.open_mfdataset(path_in + filename1_in).sel(time=era5_dates).compute()

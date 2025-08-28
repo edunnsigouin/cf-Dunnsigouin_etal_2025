@@ -34,13 +34,15 @@ def get_dim(grid,time_flag):
     imports data dimensions given a grid 
     """
     if grid == '0.25x0.25':
-        from forsikring import dim_025x025 as dim
+        from Dunnsigouin_etal_2025 import dim_025x025 as dim
     elif grid == '0.5x0.5':
-        from forsikring import dim_05x05 as dim
+        from Dunnsigouin_etal_2025 import dim_05x05 as dim
+    elif grid == 'day1to46_0.5x0.5':
+        from Dunnsigouin_etal_2025 import dim_day1to46_05x05 as dim
     elif grid == '1.0x1.0':
-        from forsikring import dim_1x1 as dim
+        from Dunnsigouin_etal_2025 import dim_1x1 as dim
     elif grid == '0.25x0.25_0.5x0.5':
-        from forsikring import dim_025x025_05x05 as dim
+        from Dunnsigouin_etal_2025 import dim_025x025_05x05 as dim
         
     if time_flag == 'weekly':
         dim.time  = dim.timescale

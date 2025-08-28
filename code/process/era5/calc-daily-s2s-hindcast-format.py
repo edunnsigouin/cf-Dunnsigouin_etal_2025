@@ -6,6 +6,9 @@ era5 dates and put them into a new file.
 example: tp24_CY47R1_0.25x0.25_2021-01-04.nc is the hindcast file
 and the new era5 file is tp24_0.25x0.25_2021-01-04.nc with dates corresponding
 to jan 04 to jan 04 + 15 days.
+
+NOTE: there is also an option for the 0.5x0.5 grid to be extended from lead day 1 to 46
+called grid = day1to46_0.5x0.5 
 """
 
 import numpy  as np
@@ -25,7 +28,8 @@ def initialize_hindcast_array(date,number_hdate,variable,dim):
     # define lead time dim
     if grid == '0.25x0.25': time = pd.date_range(date,periods=15,freq="D")
     elif grid == '0.5x0.5': time = pd.date_range(date,periods=31,freq="D") + np.timedelta64(15,'D')
-
+    elif grid == 'day1to46_0.5x0.5': time = pd.date_range(date,periods=46,freq="D")
+    
     # define hindcast initialization dim
     start_date = (date - np.timedelta64(int(number_hdate*365.25),'D')) # need to convert timedelta to days instead of years (pandas doesnt allow 'Y' anymore..)
     hdate      = [(start_date.replace(year=start_date.year + i)).strftime('%Y%m%d') for i in range(0, number_hdate)]
@@ -52,11 +56,11 @@ def initialize_hindcast_array(date,number_hdate,variable,dim):
 
 # INPUT -----------------------------------------------
 variables           = ['tp24']             # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
-first_forecast_date = '20230102'           # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 104                    # number of forecasts   
+first_forecast_date = '20200102'           # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 313                    # number of forecasts   
 number_hdate        = 20
 season              = 'annual'
-grid                = '0.5x0.5'        # '0.25x0.25' or '0.5x0.5'
+grid                = 'day1to46_0.5x0.5'        # '0.25x0.25' or '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------         
 
@@ -86,11 +90,15 @@ for variable in variables:
             # pick out specific dates (46 = # of days in ecmwf forecast)
             if grid == '0.25x0.25': era5_dates = pd.date_range(temp_date,periods=15,freq="D").strftime('%Y-%m-%d')
             elif grid == '0.5x0.5': era5_dates = (pd.date_range(temp_date,periods=31,freq="D") + np.timedelta64(15,'D')).strftime('%Y-%m-%d')
+            elif grid == 'day1to46_0.5x0.5': era5_dates = pd.date_range(temp_date,periods=46,freq="D").strftime('%Y-%m-%d')
 
             # define input filenames
             years        = pd.date_range(temp_date,periods=2,freq="Y").strftime('%Y')
-            filenames_in = path_in + variable + '_' + grid + '_' + years + '.nc'
-            
+            if (grid == '0.25x0.25') or (grid == '0.5x0.5'):
+                filenames_in = path_in + variable + '_' + grid + '_' + years + '.nc'
+            elif grid == 'day1to46_0.5x0.5':
+                filenames_in = path_in + variable + '_0.5x0.5_' + years + '.nc'
+                
             # get data corresponding to era5 dates
             with ProgressBar():
                 hindcast[i,...] = xr.open_mfdataset(filenames_in).sel(time=era5_dates,method='nearest')[variable].compute().values
