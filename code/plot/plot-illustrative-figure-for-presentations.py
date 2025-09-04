@@ -1,24 +1,20 @@
-# =========================
-# User input parameters
-# =========================
-write2file = False  # True -> write PDFs; False -> just show on screen
+"""
+plots an illustrative figure used to explain the main idea of the paper
+"""
 
-# Output paths
-fig_path_01 = "presentation_fig_01.pdf"  # blue only
-fig_path_02 = "presentation_fig_02.pdf"  # blue + green
-fig_path_03 = "presentation_fig_03.pdf"  # blue + red
-
-
-# =========================
-# Imports
-# =========================
 import os
 import matplotlib.pyplot as plt
+from Dunnsigouin_etal_2025 import config
+
+# input ----------------------------------------------------------------
+path_in     = config.dirs['fig'] 
+fig_path_01 = path_in + "presentation_fig_01.pdf"  # blue only
+fig_path_02 = path_in + "presentation_fig_02.pdf"  # blue + green
+fig_path_03 = path_in + "presentation_fig_03.pdf"  # blue + red
+write2file  = True
+# ----------------------------------------------------------------------
 
 
-# =========================
-# Shared helpers (format + primitives)
-# =========================
 def setup_axes():
     """Create XKCD-styled axes with common limits, labels, and ticks."""
     plt.xkcd()
@@ -26,7 +22,7 @@ def setup_axes():
     ax.set_xlim(1, 10)
     ax.set_ylim(0, 1)
     ax.set_xlabel("Lead time (days)")
-    ax.set_ylabel("Forecast skill")
+    ax.set_ylabel("Forecast accuracy")
     ax.set_xticks(range(1, 11))
     ax.set_yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
     return fig, ax
@@ -66,17 +62,17 @@ def draw_green(ax):
 
 def annotate_blue(ax):
     """Blue label."""
-    ax.text(3.2, 0.3, "grid-scale", color="tab:blue", fontsize=20, ha="right")
+    ax.text(5.0, 0.15, "raw forecast", color="tab:blue", fontsize=20, ha="right")
 
 
 def annotate_red(ax):
     """Red label."""
-    ax.text(4, 0.61, "spatially-aggregated", color="tab:red", fontsize=20, ha="left")
+    ax.text(5, 0.58, "spatially-aggregated", color="tab:red", fontsize=20, ha="left")
 
 
 def annotate_green(ax):
     """Green label."""
-    ax.text(4, 0.61, "temporally-aggregated", color="tab:green", fontsize=20, ha="left")
+    ax.text(5, 0.5, "temporally-aggregated", color="tab:green", fontsize=20, ha="left")
 
 
 def finalize_figure(fig, outpath, write):
@@ -92,9 +88,6 @@ def finalize_figure(fig, outpath, write):
         plt.show()
 
 
-# =========================
-# Figure-specific functions
-# =========================
 def make_figure_blue_only(outpath, write):
     """Figure 1: blue arrow + blue text."""
     fig, ax = setup_axes()
@@ -123,14 +116,10 @@ def make_figure_blue_red(outpath, write):
     finalize_figure(fig, outpath, write)
 
 
-# =========================
-# Main
-# =========================
-def main():
+    
+if __name__ == "__main__":
+
     make_figure_blue_only(fig_path_01, write2file)
     make_figure_blue_green(fig_path_02, write2file)
     make_figure_blue_red(fig_path_03, write2file)
 
-
-if __name__ == "__main__":
-    main()

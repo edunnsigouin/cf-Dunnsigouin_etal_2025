@@ -22,7 +22,7 @@ def setup_axes():
     ax.set_xlim(1, 10)
     ax.set_ylim(0, 1)
     ax.set_xlabel("Lead time (days)")
-    ax.set_ylabel("Forecast skill")
+    ax.set_ylabel("Forecast accuracy")
     ax.set_xticks(range(1, 11))
     ax.set_yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
     return fig, ax
