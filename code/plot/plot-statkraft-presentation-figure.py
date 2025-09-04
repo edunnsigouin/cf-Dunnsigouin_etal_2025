@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-write2file = True
+write2file = False
 
 # Activate the XKCD sketch style
 plt.xkcd()
@@ -23,8 +23,8 @@ ax.set_yticks([0.0,0.2,0.4,0.6,0.8,1.0])
 # Draw a straight arrow from (1, 0.7) to (5, 0)
 ax.annotate(
     '',
-    xy=(6, 0),         # arrow head
-    xytext=(1, 0.7),   # arrow tail
+    xy=(7, 0),         # arrow head
+    xytext=(1, 0.8),   # arrow tail
     arrowprops=dict(
         arrowstyle="->, head_length=0.75, head_width=0.75",
         lw=4,
@@ -32,10 +32,10 @@ ax.annotate(
     )
 )
 
-"""
+# spatially aggregated
 ax.annotate(
     '',
-    xy=(9, 0),         # arrow head
+    xy=(10, 0),         # arrow head
     xytext=(1, 0.9),   # arrow tail 
     arrowprops=dict(
 	arrowstyle="->, head_length=0.75, head_width=0.75",
@@ -43,7 +43,31 @@ ax.annotate(
 	color='tab:red'
     )
 )
-"""
+
+
+
+# time-aggregated 
+ax.annotate(
+    '',
+    xy=(7, 0.4),         # arrow head 
+    xytext=(1, 0.4),   # arrow tail 
+    arrowprops=dict(
+        arrowstyle="->, head_length=0.75, head_width=0.75",
+        lw=4,
+        color='tab:green'
+    )
+)
+ax.annotate(
+    '',
+    xy=(10, 0.2),         # arrow head 
+    xytext=(7, 0.2),   # arrow tail
+    arrowprops=dict(
+        arrowstyle="->, head_length=0.75, head_width=0.75",
+        lw=4,
+        color='tab:green'
+    )
+)
+
 
 x_arrow_label = 3.2
 y_arrow_label = 0.3
@@ -57,7 +81,7 @@ ax.text(
     # You could also set va='center' if you want to center vertically
 )
 
-"""
+
 x_arrow_label = 4
 y_arrow_label = 0.61
 ax.text(
@@ -69,10 +93,21 @@ ax.text(
     ha='left'   # center-aligned horizontally                                                                                                                  
     # You could also set va='center' if you want to center vertically                                                                                           
 )
-"""
-#ax.set_title("Prediction Skill vs. Lead Time")
+
+
+x_arrow_label = 4
+y_arrow_label = 0.61
+ax.text(
+    x_arrow_label,
+    y_arrow_label,
+    'temporally-aggregated',
+    color='tab:green',
+    fontsize=20,
+    ha='left'   # center-aligned horizontally   
+)
+
 
 plt.tight_layout()
 
-if write2file: plt.savefig('/nird/home/edu061/cf-forsikring/fig/paper/presentation_figure.pdf')
+if write2file: plt.savefig('/nird/home/edu061/cf-Dunnsigouin_etal_2025/fig/presentation/presentation_figure.pdf')
 plt.show()
