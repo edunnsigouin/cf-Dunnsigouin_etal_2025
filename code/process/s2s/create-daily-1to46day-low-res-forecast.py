@@ -10,10 +10,10 @@ import xesmf    as xe
 from Dunnsigouin_etal_2025 import misc,s2s,config,verify
 
 # INPUT -----------------------------------------------
-variable            = 'tp24'                 # tp24 or t2m24
+variable            = 't2m24'                 # tp24 or t2m24
 product             = 'hindcast'              # hindcast or forecast ? 
 first_forecast_date = '20200102'             # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 313                      # number of forecasts 
+number_forecasts    = 209                      # number of forecasts 
 season              = 'annual'
 path_in             = config.dirs[f's2s_{product}_daily'] + variable + '/'
 path_out            = config.dirs[f's2s_{product}_daily'] + variable + '/'
@@ -76,5 +76,5 @@ if __name__ == "__main__":
         forecast_hr_regrid                     = regrid_hr_to_lr(forecast_hr, forecast_lr, variable)
         forecast_combined                      = concatenate_hr_regrid_to_lr_in_time(forecast_hr_regrid, forecast_lr)
         save_to_file(forecast_combined,filename_out,write2file)
-        
+
 

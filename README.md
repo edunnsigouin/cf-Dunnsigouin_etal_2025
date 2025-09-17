@@ -1,14 +1,18 @@
-Balancing accuracy versus precision: Enhancing the usability of sub-seasonal forecasts
+Balancing Accuracy Versus Precision: Enhancing the Usability of Sub-Seasonal Forecasts
 ============
 
 Authors
 --------
-Etienne Dunn-Sigouin<sup>1</sup>, Erik W. Kolstad<sup>1</sup>,C. Ole Wulff<sup>2</sup>, Douglas J. Parker<sup>2</sup>, and Richard J. Keane<sup>2</sup>.
+Etienne Dunn-Sigouin<sup>1,2</sup>, Erik W. Kolstad<sup>1,2</sup>, C. Ole Wulff<sup>1,2</sup>, Douglas J. Parker<sup>1,2,3,4</sup>, and Richard J. Keane<sup>3,5</sup>.
 
 1: NORCE Norwegian Research Center AS, Bergen, Norway.
+
 2: Bjerknes Centre for Climate Research, Bergen, Norway.
+
 3: School of Earth and Environment, University of Leeds, Leeds, UK.
+
 4: NCAS National Centre for Atmospheric Science, University of Leeds, Leeds, UK.
+
 5: Met Office, Exeter, UK.
 
 Key Points
