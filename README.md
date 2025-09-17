@@ -49,9 +49,7 @@ The paper was published in the journal [Climate Services](https://doi.org/10.101
 
 Data 
 ----
-We use three years (2020–2022) of sub-seasonal forecasts from the ECMWF downloaded from the [MARS archive](https://www.ecmwf.int/en/forecasts/access-forecasts/access-archive-datasets). We verify the forecasts using ERA5 reanlysis downloaded from the [Copernicus Climate Date Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview).
-
-Data used to reproduce the figures are included in the folder /DATA. 
+We use three years (2020–2022) of sub-seasonal forecasts from the ECMWF downloaded from the [MARS archive](https://www.ecmwf.int/en/forecasts/access-forecasts/access-archive-datasets). We verify the forecasts using ERA5 reanlysis downloaded from the [Copernicus Climate Date Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview).Data used to reproduce the figures are included in the folder data/. 
 
 
 Setting up the code
@@ -76,3 +74,8 @@ $ python setup.py develop
 ```
 
 Finally change the project directory in cf-Dunnsigouin_etal_2025/config.py to your local project directory
+
+
+Using the code
+-------------
+...
