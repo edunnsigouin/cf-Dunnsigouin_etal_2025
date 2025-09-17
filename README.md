@@ -76,10 +76,10 @@ $ python setup.py develop
 Finally change the project directory in cf-Dunnsigouin_etal_2025/config.py to your local project directory
 
 
-How to use the code
+Reproducing the paper figures
 -------------
 
-The code is split into five steps: 1) downloading, 2) preprocessing, 3) processing, 4) verifying and 5) plotting.
+The code is split into three steps: 1) downloading, 2) preprocessing, 3) processing, verifying and plotting
 
 1: Downloading
 
@@ -92,3 +92,18 @@ Download 6hourly subseasonal forecasts and hindcasts using download-s2s-ecmwf-6h
 Convert daily reanalysis data into daily s2s forecast and hindcast formats using calc-daily-s2s-forecast-format.py and calc-daily-s2s-hindcast-format.py.
 
 Convert raw 6hourly precipitation s2s forecasts and hindcasts into 6hourly accumulated files using calc-6hourly-accumulated-variables.py. Then, convert the t2m and tp into daily forecast and hindcast files using calc-daily-from-6hourly.py. Finally, create a single continuous low resolution forecast/hindcast for lead-times 1 to 46 using create-daily-1to46day-low-res-forecast.py. 
+
+3: Processing, verifying and plotting
+
+Figure 1: calculate era5 and s2s anomalies for the fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py calculate era5 binaries and s2s probabilities for the fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 1 using plot-fig-01.py.
+
+Figure 2:
+
+Figure 3:
+
+Figure 4:
+
+Figure 5:
+
+Figure 6:
+
