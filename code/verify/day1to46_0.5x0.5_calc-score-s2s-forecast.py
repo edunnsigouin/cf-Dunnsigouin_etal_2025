@@ -25,7 +25,7 @@ import os
 from Dunnsigouin_etal_2025  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
-score_flag               = 'fmsess'
+score_flag               = 'fbss'
 time_flag                = 'weekly'                 # daily or weekly
 variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?

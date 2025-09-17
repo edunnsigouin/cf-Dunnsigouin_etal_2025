@@ -37,7 +37,7 @@ def initialize_quantile_array(variable,box_sizes,time_flag,dim):
 
 # input ----------------------------------------------
 time_flag           = 'weekly'                   # daily or weekly
-variable            = 't2m24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+variable            = 'tp24'                  # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 first_forecast_date = '20200102'               # first initialization date of forecast (either a monday or thursday)   
 number_forecasts    = 313                        # number of forecast initializations 
 season              = 'annual'

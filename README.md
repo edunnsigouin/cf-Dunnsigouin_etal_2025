@@ -45,11 +45,11 @@ actionable information.
 
 Status
 ----------
-The paper was published in the journal [Climate Services](https://doi.org/10.1016/j.cliser.2025.100594). Comments, questions, and suggestions are appreciated. Feedback can be submitted through github [issues](https://github.com/edunnsigouin/cf-Dunnsigouin_etal_2025/issues) or via e-mail to Etienne Dunn-Sigouin (etdu@norceresearch.no).
+The paper was published [here](https://doi.org/10.1016/j.cliser.2025.100594) in the journal Climate Services. Comments, questions, and suggestions are appreciated. Feedback can be submitted through github [issues](https://github.com/edunnsigouin/cf-Dunnsigouin_etal_2025/issues) or via e-mail to Etienne Dunn-Sigouin (etdu@norceresearch.no).
 
 Data 
 ----
-We use three years (2020–2022) of sub-seasonal forecasts from the ECMWF downloaded from the [MARS archive](https://www.ecmwf.int/en/forecasts/access-forecasts/access-archive-datasets). We verify the forecasts using ERA5 reanlysis downloaded from the [Copernicus Climate Date Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview).Data used to reproduce the figures are included in the folder data/. 
+We use three years (2020–2022) of sub-seasonal forecasts from the ECMWF downloaded from the [MARS archive](https://www.ecmwf.int/en/forecasts/access-forecasts/access-archive-datasets). We verify the forecasts using ERA5 reanlysis downloaded from the [Copernicus Climate Date Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview). Data used to reproduce the figures are included in the folder data/. 
 
 
 Setting up the code
@@ -76,6 +76,11 @@ $ python setup.py develop
 Finally change the project directory in cf-Dunnsigouin_etal_2025/config.py to your local project directory
 
 
-Using the code
+How to use the code
 -------------
-...
+
+The code is split into five steps: 1) downloading, 2) preprocessing, 3) processing, 4) verifying and 5) plotting.
+
+1) Downloading
+
+Download reanalysis data using download-era5-sfc-accumulated-6hourly.py for total precipitation, and download-era5-sfc-6hourly.py for surface temperature. Download subseasonal forecasts and hindcasts using download-s2s-ecmwf-6hourly-forecast.py and download-s2s-ecmwf-6hourly-hindcast.py.
