@@ -30,7 +30,7 @@ time_flag                = 'weekly'                 # daily or weekly
 variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
 first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 2                      # number of forecasts 
+number_forecasts         = 313                      # number of forecasts 
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
 grid                     = 'day1to46_0.5x0.5'
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
@@ -42,11 +42,12 @@ write2file               = True
 
 misc.tic()
 
-# define stuff
+# get forecast dates
 forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season).strftime('%Y-%m-%d')
 print(forecast_dates)
 
-
+# define paths 
+path_out = config.dirs['verify_s2s_forecast_daily']
 if score_flag == 'fmsess':
     path_in_forecast        = config.dirs['s2s_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
     path_in_verification    = config.dirs['era5_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
@@ -55,16 +56,15 @@ elif score_flag == 'fbss':
     path_in_forecast        = config.dirs['s2s_forecast_' + time_flag + '_probability'] + str(pval) + '/' + domain + '/' + variable + '/'
     path_in_verification    = config.dirs['era5_forecast_' + time_flag + '_binary'] + str(pval) + '/' + domain + '/' + variable + '/'
     prefix                  = score_flag + '_' + variable + '_pval' + str(pval) + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
+    
+# define misc stuff 
+filename_out        = prefix + '_' + grid + '.nc'
+dim                 = verify.get_data_dimensions(grid, time_flag, domain)
 
-path_out        = config.dirs['verify_s2s_forecast_daily']
 
 
 print('\ncalculating ' + score_flag + ' for variable ' + variable + ' on grid ' + grid)
-    
-# define stuff 
-filename_out        = prefix + '_' + grid + '.nc'
-dim                 = verify.get_data_dimensions(grid, time_flag, domain)
-    
+
 # initialize output arrays
 [score,score_bootstrap,sig] = verify.initialize_misc_arrays(score_flag,dim,box_sizes,number_bootstrap)
 forecast_error              = verify.initialize_error_array(dim,box_sizes,forecast_dates)

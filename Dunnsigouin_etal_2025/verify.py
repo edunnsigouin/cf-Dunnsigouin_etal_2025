@@ -371,17 +371,17 @@ def initialize_ltg_and_max_skill_arrays(dim,box_sizes,number_bootstrap,dt,grids,
     Initializes lead_time_gained and max skill arrays
     Written here to clean up code.
     """
-    if (len(grids) == 2) and (time_flag == 'weekly'): 
-        time = np.arange(1,7,1)
-    elif (len(grids) == 2) and (time_flag == 'daily'):
-        time = np.arange(1,47,1)
-    elif len(grids) == 1:
-        time = dim.time
-    elif grids == 'day1to46_0.5x0.5':
-        time = dim.time
+    #if (len(grids) == 2) and (time_flag == 'weekly'): 
+    #    time = np.arange(1,7,1)
+    #elif (len(grids) == 2) and (time_flag == 'daily'):
+    #    time = np.arange(1,47,1)
+    #elif len(grids) == 1:
+    #    time = dim.time
+    #elif grids == 'day1to46_0.5x0.5':
+    #    time = dim.time
 
-    print(time)
-        
+    time = dim.time
+    
     time_interp           = np.linspace(time[0],time[-1],int((time[-1]-time[0])/dt+1.0))
     lead_time_gained      = np.zeros((box_sizes.size,time_interp.size),dtype=np.float32)
     max_skill_mask        = np.zeros((box_sizes.size,time_interp.size),dtype=np.float32)
