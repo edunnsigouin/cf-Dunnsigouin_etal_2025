@@ -81,6 +81,14 @@ How to use the code
 
 The code is split into five steps: 1) downloading, 2) preprocessing, 3) processing, 4) verifying and 5) plotting.
 
-1) Downloading
+1: Downloading
 
-Download reanalysis data using download-era5-sfc-accumulated-6hourly.py for total precipitation, and download-era5-sfc-6hourly.py for surface temperature. Download subseasonal forecasts and hindcasts using download-s2s-ecmwf-6hourly-forecast.py and download-s2s-ecmwf-6hourly-hindcast.py.
+Download reanalysis data using download-era5-sfc-accumulated-6hourly.py for total precipitation and download-era5-sfc-6hourly.py for surface temperature. These scripts download 6 hourly data, concatenate it to daily and then merge them into yearly files.
+
+Download 6hourly subseasonal forecasts and hindcasts using download-s2s-ecmwf-6hourly-forecast.py and download-s2s-ecmwf-6hourly-hindcast.py.
+
+2: Preprocessing
+
+Convert daily reanalysis data into daily s2s forecast and hindcast formats using calc-daily-s2s-forecast-format.py and calc-daily-s2s-hindcast-format.py.
+
+Convert raw 6hourly precipitation s2s forecasts and hindcasts into 6hourly accumulated files using calc-6hourly-accumulated-variables.py. Then, convert the t2m and tp into daily forecast and hindcast files using calc-daily-from-6hourly.py. Finally, create a single continuous low resolution forecast/hindcast for lead-times 1 to 46 using create-daily-1to46day-low-res-forecast.py. 
