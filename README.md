@@ -45,21 +45,19 @@ actionable information.
 
 Status
 ----------
-The paper was published in [Geophysical Research Letters](https://agupubs.onlinelibrary.wiley.com/journal/19448007), [doi: 10.1029/2020GL091540](https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2020GL091540). Comments, questions, and suggestions are appreciated. Feedback can be submitted through github [issues](https://github.com/edunnsigouin/cf-Dunnsigouin_etal_2025/issues) or via e-mail to Etienne Dunn-Sigouin (etdu@norceresearch.no).
+The paper was published in the journal [Climate Services](https://doi.org/10.1016/j.cliser.2025.100594). Comments, questions, and suggestions are appreciated. Feedback can be submitted through github [issues](https://github.com/edunnsigouin/cf-Dunnsigouin_etal_2025/issues) or via e-mail to Etienne Dunn-Sigouin (etdu@norceresearch.no).
 
 Data 
 ----
-The model simulations and analysis for this paper were performed using the Norwegian academic high-performance computing and storage facilities maintained by [Sigma2](https://www.sigma2.no/metacenter). The simulations were performed on the [FRAM](https://documentation.sigma2.no/hpc_machines/fram.html) machine and stored and processed on [NIRD](https://documentation.sigma2.no/files_storage/nird.html).
+We use three years (2020–2022) of sub-seasonal forecasts from the ECMWF downloaded from the [MARS archive](https://www.ecmwf.int/en/forecasts/access-forecasts/access-archive-datasets). We verify the forecasts using ERA5 reanlysis downloaded from the [Copernicus Climate Date Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview).
 
-The simulations are run with the [NCAR CESM2.1.0 CAM5 model](https://www.cesm.ucar.edu/models/) in a slab ocean aquaplanet configuration following the [TRACMIP protocol](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2016MS000748). ERA-Interim reanalysis data are available for download from [ECMWF](https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era-interim). 
+Data used to reproduce the figures are included in the folder /DATA. 
 
-Due to the large volume of raw simulation data (15T), only 'interim' data used to reproduce the figures are included here. Raw and processed data can be made available upon request.
 
-Code setup
+Setting up the code
 -------------
-The organization of this project follows loosely from the [cookiecutter-science-project](https://github.com/jbusecke/cookiecutter-science-project) template written by [Julius Busecke](http://jbusecke.github.io/). The project is organized as an installable conda package.
 
-To get setup, first pull the directory from github to your local machine:
+The project is organized as an installable conda package. To get setup, first pull the directory from github to your local machine:
 
 ``` bash
 $ git clone https://github.com/edunnsigouin/cf-Dunnsigouin_etal_2025/
