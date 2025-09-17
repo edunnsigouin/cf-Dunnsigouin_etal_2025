@@ -95,7 +95,7 @@ Convert raw 6hourly precipitation s2s forecasts and hindcasts into 6hourly accum
 
 3: Processing, verifying and plotting
 
-Figure 1: calculate era5 and s2s anomalies for the fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py calculate era5 binaries and s2s probabilities for the fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 1 using plot-fig-01.py.
+Figure 1: calculate era5 and s2s anomalies for the fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py. Calculate era5 binaries and s2s probabilities for the fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 1 using plot-fig-01.py.
 
 Figure 2:
 
