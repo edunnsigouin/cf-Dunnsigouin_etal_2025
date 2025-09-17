@@ -3,13 +3,18 @@ Balancing accuracy versus precision: Enhancing the usability of sub-seasonal for
 
 Authors
 --------
-[Etienne Dunn-Sigouin](https://sites.google.com/view/etiennedunnsigouin/home)<sup>1</sup>, [Camille Li](https://folk.uib.no/cli061/)<sup>1</sup>
-,and [Paul J. Kushner](http://www.pjk.atmosp.physics.utoronto.ca/)<sup>2</sup>.
+[Etienne Dunn-Sigouin](https://sites.google.com/view/etiennedunnsigouin/home)<sup>1</sup>, [Erik W. Kolstad](https://folk.uib.no/cli061/)<sup>1</sup>
+,[C. Ole Wulff](http://www.pjk.atmosp.physics.utoronto.ca/)<sup>2</sup>, [Douglas J. Parker](http://www.pjk.atmosp.physics.utoronto.ca/)<sup>2</sup>, and [Richard J. Keane](http://www.pjk.atmosp.physics.utoronto.ca/)<sup>2</sup>.
 
-1: [Geophysical Institute, University of Bergen](https://www.uib.no/en/gfi),
-[Bjerknes Centre for Climate Research](https://bjerknes.uib.no/en/frontpage), Bergen, Norway.
+1: [NORCE Norwegian Research Center AS, Bergen, Norway].
 
-2: [Department of Physics, University of Toronto](https://www.physics.utoronto.ca/), Toronto, ON, Canada.
+2: [Bjerknes Centre for Climate Research], Bergen, Norway.
+
+3: [School of Earth and Environment, University of Leeds], Leeds, UK.
+
+4: [NCAS National Centre for Atmospheric Science, University of Leeds], Leeds, UK.
+
+5: [Met Office], Exeter, UK.
 
 Key Points
 ----------
