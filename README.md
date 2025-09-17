@@ -3,17 +3,12 @@ Balancing accuracy versus precision: Enhancing the usability of sub-seasonal for
 
 Authors
 --------
-Etienne Dunn-Sigouin<sup>1</sup>, [Erik W. Kolstad](https://folk.uib.no/cli061/)<sup>1</sup>
-,[C. Ole Wulff](http://www.pjk.atmosp.physics.utoronto.ca/)<sup>2</sup>, [Douglas J. Parker](http://www.pjk.atmosp.physics.utoronto.ca/)<sup>2</sup>, and [Richard J. Keane](http://www.pjk.atmosp.physics.utoronto.ca/)<sup>2</sup>.
+Etienne Dunn-Sigouin<sup>1</sup>, Erik W. Kolstad<sup>1</sup>,C. Ole Wulff<sup>2</sup>, Douglas J. Parker<sup>2</sup>, and Richard J. Keane<sup>2</sup>.
 
 1: NORCE Norwegian Research Center AS, Bergen, Norway.
-
 2: Bjerknes Centre for Climate Research, Bergen, Norway.
-
 3: School of Earth and Environment, University of Leeds, Leeds, UK.
-
 4: NCAS National Centre for Atmospheric Science, University of Leeds, Leeds, UK.
-
 5: Met Office, Exeter, UK.
 
 Key Points
