@@ -43,7 +43,7 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
         ax2 = ax.twinx()
         ax2.set_yticks(np.array([0, 9, 17, 25, 33, 41, 49, 57]))
         scaling = spatial_scale_scaling(dim)
-        yticklabels = scaling*27*np.array([1, 9, 17, 25, 33, 41, 49, 57])
+        yticklabels = scaling*56*np.array([1, 9, 17, 25, 33, 41, 49, 57])
         ax2.set_yticklabels(yticklabels.astype(int), fontsize=fontsize)
         ax2.set_ylabel(r'precision [km$^2$]', fontsize=fontsize)
 
@@ -61,17 +61,16 @@ def setup_subplot(flag, ax, ds, title_text, clevs_score, clevs_ltg, cmap_score, 
 
 
 # INPUT -----------------------
-write2file = False
+write2file = True
 # -----------------------------
 
 # define stuff         
 path_in           = config.dirs['verify_s2s_forecast_daily']
-path_out          = config.dirs['fig'] + 'paper/'
-#filename_in_1     = 'fmsess_tp24_weekly_europe_annual_2020-01-02_2022-12-29.nc'
+path_out          = config.dirs['fig'] 
 filename_in_1     = 'fmsess_tp24_weekly_europe_annual_2020-01-02_2022-12-29_day1to46_0.5x0.5.nc'
-filename_in_2     = 'fbss_tp24_pval0.9_weekly_europe_annual_2020-01-02_2022-12-29.nc'
-filename_in_3     = 'fbss_tp24_pval0.1_weekly_europe_annual_2020-01-02_2022-12-29.nc'
-figname_out       = 'fig_03.pdf'
+filename_in_2     = 'fbss_tp24_pval0.9_weekly_europe_annual_2020-01-02_2022-12-29_day1to46_0.5x0.5.nc'
+filename_in_3     = 'fbss_tp24_pval0.1_weekly_europe_annual_2020-01-02_2022-12-29_day1to46_0.5x0.5.nc'
+figname_out       = 'fig_03.png'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)

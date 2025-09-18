@@ -35,7 +35,7 @@ season                   = 'annual'                 # pick forecasts in specific
 grid                     = 'day1to46_0.5x0.5'
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 number_bootstrap         = 10000                    # number of times to shuffle initialization dates for error bars
-pval                     = 0.9
+pval                     = 0.1
 dt                       = 0.05                     # interpolation for lead time gained & max skill calculation
 write2file               = True
 # -----------------------------------------------------

@@ -95,15 +95,26 @@ Convert raw 6hourly precipitation s2s forecasts and hindcasts into 6hourly accum
 
 3: Processing, verifying and plotting
 
-Figure 1: calculate daily era5 and s2s anomalies for the fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py. Calculate daily era5 binaries and s2s probabilities for the fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 1 using plot-fig-01.py.
+Figure 1: calculate daily era5 and s2s anomalies for the fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py. Calculate daily era5 binaries and s2s probabilities for the fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 1 using plot/plot-fig-01.py.
 
-Figure 2: calculate the daily spatial fields of daily fmsess and fbss using verify/calc-score-xy-s2s-forecast.py. Plot figure 2 using plot-fig-02.py. 
+Figure 2: calculate the daily spatial fields of daily fmsess and fbss using verify/calc-score-xy-s2s-forecast.py. Plot figure 2 using plot/plot-fig-02.py. 
 
-Figure 3: calculate weekly era5 and s2s anomalies for the fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py. Calculate weekly era5 binaries and s2s probabilities for the fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 3 using plot-fig-03.py.
+Figure 3: calculate weekly era5 and s2s anomalies for the fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py. Calculate weekly era5 binaries and s2s probabilities for the fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 3 using plot/plot-fig-03.py.
 
-Figure 4: calculate the	weekly spatial fields of daily fmsess and fbss using verify/calc-score-xy-s2s-forecast.py. Plot figure 4 using plot-fig-04.py.
+Figure 4: calculate the	weekly spatial fields of daily fmsess and fbss using verify/calc-score-xy-s2s-forecast.py. Plot figure 4 using plot/plot-fig-04.py.
 
-Figure 5: calculate daily era5 and s2s anomalies for the scandinavian domain fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py. Calculate daily ra5 binaries and s2s probabilities for the scandinavian domain fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 5 using plot-fig-05.py.
+Figure 5: calculate daily era5 and s2s anomalies for the scandinavian domain fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py. Calculate daily ra5 binaries and s2s probabilities for the scandinavian domain fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 5 using plot/plot-fig-05.py.
 
 Figure 6:
+
+
+Figure S1:
+
+Figure S2:
+
+Figure S3:
+
+Figure S4:
+
+Figure S5:
 
