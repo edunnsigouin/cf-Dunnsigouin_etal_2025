@@ -9,7 +9,7 @@ fig                  = proj + "fig/"
 
 raw                  = cf_space + "raw/"
 processed            = cf_space + "processed/cf-Dunnsigouin_etal_2025/"
-verify               = cf_space + "verify/"
+verify               = cf_space + "processed/cf-Dunnsigouin_etal_2025/verify/"
 
 s2s_forecast_6hourly                = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
 s2s_forecast_6hourly_student        = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly_student/"
@@ -47,9 +47,6 @@ era5_hindcast_daily_quantile         = processed + "era5/s2s-model-format/hindca
 era5_hindcast_daily_climatology      = processed + "era5/s2s-model-format/hindcast/daily/climatology/values_smooth/"
 era5_hindcast_weekly_quantile        = processed + "era5/s2s-model-format/hindcast/weekly/quantile/values_smooth/"
 era5_hindcast_weekly_climatology     = processed + "era5/s2s-model-format/hindcast/weekly/climatology/values_smooth/"
-
-
-verify_s2s_forecast_daily        = verify + "s2s/ecmwf/daily/forecast/"
 
 
 dirs = {"proj":proj,
@@ -92,5 +89,5 @@ dirs = {"proj":proj,
         "era5_hindcast_daily_climatology":era5_hindcast_daily_climatology,
         "era5_hindcast_weekly_quantile":era5_hindcast_weekly_quantile,
         "era5_hindcast_weekly_climatology":era5_hindcast_weekly_climatology,        
-        "verify_s2s_forecast_daily":verify_s2s_forecast_daily
+        "verify":verify
 }        

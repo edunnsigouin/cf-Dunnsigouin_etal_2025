@@ -56,7 +56,7 @@ elif score_flag == 'fbss':
     path_in_verification    = config.dirs['era5_forecast_' + time_flag + '_binary'] + str(pval) + '/' + domain + '/' + variable + '/'
     prefix                  = score_flag + '_' + variable + '_pval' + str(pval) + '_' + time_flag + '_' + domain + '_' + season + '_' + forecast_dates[0] + '_' + forecast_dates[-1]
 
-path_out        = config.dirs['verify_s2s_forecast_daily']
+path_out        = config.dirs['verify']
 filename_hr_out = prefix + '_0.25x0.25.nc'
 filename_lr_out = prefix + '_0.5x0.5.nc'
 

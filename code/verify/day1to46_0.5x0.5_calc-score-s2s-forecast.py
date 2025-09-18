@@ -47,7 +47,7 @@ forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,sea
 print(forecast_dates)
 
 # define paths 
-path_out = config.dirs['verify_s2s_forecast_daily']
+path_out = config.dirs['verify']
 if score_flag == 'fmsess':
     path_in_forecast        = config.dirs['s2s_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'
     path_in_verification    = config.dirs['era5_forecast_' + time_flag + '_anomaly'] + '/' + domain + '/' + variable + '/'

@@ -50,7 +50,9 @@ def regrid_hr_to_lr(forecast_hr, forecast_lr, variable):
     forecast_hr_regrid = forecast_hr_regrid.rename({'lat': 'latitude','lon': 'longitude'})
     if variable == 'tp24':
         forecast_hr_regrid = forecast_hr_regrid.assign_attrs(units="m",long_name="daily accumulated precipitation").rename(variable)
-
+    elif variable == 't2m24':
+        forecast_hr_regrid = forecast_hr_regrid.assign_attrs(units="K",long_name="daily-mean 2-meter temperature").rename(variable)
+        
     return forecast_hr_regrid
 
 

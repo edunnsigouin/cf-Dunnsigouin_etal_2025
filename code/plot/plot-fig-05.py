@@ -58,11 +58,11 @@ write2file = True
 # -----------------------------
 
 # define stuff         
-path_in           = config.dirs['verify_s2s_forecast_daily']
-path_out          = config.dirs['fig'] + 'paper/'
+path_in           = config.dirs['verify']
+path_out          = config.dirs['fig'] 
 filename_in_1     = 'fmsess_tp24_daily_scandinavia_annual_2020-01-02_2022-12-29_0.25x0.25.nc'
-#figname_out       = 'fig_05.png'
-figname_out       = 'test.png'
+figname_out       = 'fig_05.png'
+
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)

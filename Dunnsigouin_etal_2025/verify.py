@@ -244,6 +244,16 @@ def resample_daily_to_weekly(ds, time_flag, grid, variable):
                 ds.isel(time=slice(35, 42)).sum(dim='time'),
             ], "time")
             ds_resampled['time'] = np.arange(1, 7, 1)
+        elif ((grid == 'day1to46_0.5x0.5') and (variable == 't2m24')):
+            ds_resampled = xr.concat([
+                ds.isel(time=slice(0, 7)).sum(dim='time'),
+                ds.isel(time=slice(7, 14)).sum(dim='time'),
+                ds.isel(time=slice(14, 21)).sum(dim='time'),
+                ds.isel(time=slice(21, 28)).sum(dim='time'),
+                ds.isel(time=slice(28, 35)).sum(dim='time'),
+                ds.isel(time=slice(35, 42)).sum(dim='time'),
+            ], "time")
+            ds_resampled['time'] = np.arange(1, 7, 1)
             
         return ds_resampled.transpose(*original_dims)
     

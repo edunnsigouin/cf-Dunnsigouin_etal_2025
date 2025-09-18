@@ -38,8 +38,8 @@ write2file = True
 # -----------------------------
 
 # define stuff         
-path_in           = config.dirs['verify_s2s_forecast_daily']
-path_out          = config.dirs['fig'] + 'paper/'
+path_in           = config.dirs['verify']
+path_out          = config.dirs['fig'] 
 filename_in_1     = 'fmsess_xy_tp24_daily_europe_annual_boxsize_1_leadtime_5_2020-01-02_2022-12-29_0.25x0.25.nc' 
 filename_in_2     = 'fmsess_xy_tp24_daily_europe_annual_boxsize_33_leadtime_5_2020-01-02_2022-12-29_0.25x0.25.nc' 
 filename_in_3     = 'fbss_xy_tp24_pval0.9_daily_europe_annual_boxsize_1_leadtime_5_2020-01-02_2022-12-29_0.25x0.25.nc'

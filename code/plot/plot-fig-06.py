@@ -56,15 +56,14 @@ write2file           = True
 
 # define stuff
 dim              = misc.get_dim(grid,'daily')
-filename1        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-03_EFI.nc'
-filename2        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-03_EFI.nc'
-filename3        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-05_EFI.nc'
-filename4        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-05_EFI.nc'
-filename5        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
-filename6        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
-#filename7        = config.dirs['era5_forecast_' + time_flag] + '/' + variable + '/' + variable + '_' + grid + '_' + date + '.nc'
-filename7        = config.dirs['era5_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
-path_out         = config.dirs['fig'] + 'paper/'
+filename1        = config.dirs['verify'] + 'tp24_s2s_0.25x0.25_2023-08-03_EFI.nc'
+filename2        = config.dirs['verify'] + 'tp24_s2s_0.25x0.25_2023-08-03_EFI.nc'
+filename3        = config.dirs['verify'] + 'tp24_s2s_0.25x0.25_2023-08-05_EFI.nc'
+filename4        = config.dirs['verify'] + 'tp24_s2s_0.25x0.25_2023-08-05_EFI.nc'
+filename5        = config.dirs['verify'] + 'tp24_s2s_0.25x0.25_2023-08-07_EFI.nc'
+filename6        = config.dirs['verify'] + 'tp24_s2s_0.25x0.25_2023-08-07_EFI.nc'
+filename7        = config.dirs['verify'] + 'tp24_era5_0.25x0.25_2023-08-07_EFI.nc'
+path_out         = config.dirs['fig'] 
 figname_out      = 'fig_06.pdf'
 
 # read in data

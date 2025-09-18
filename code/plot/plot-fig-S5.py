@@ -54,11 +54,11 @@ write2file           = True
 
 # define stuff
 dim              = misc.get_dim(grid,'daily')
-filename1        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-01_EFI.nc'
-filename2        = config.dirs['s2s_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-01_EFI.nc'
-filename3        = config.dirs['era5_forecast_' + time_flag + '_EFI'] + domain + '/' + variable + '/' + 'tp24_0.25x0.25_2023-08-07_EFI.nc'
-path_out         = config.dirs['fig'] + 'paper/'
-figname_out      = 'fig_response_to_reviewers.pdf'
+filename1        = config.dirs['verify'] + 'tp24_s2s_0.25x0.25_2023-08-01_EFI.nc'
+filename2        = config.dirs['verify'] + 'tp24_s2s_0.25x0.25_2023-08-01_EFI.nc'
+filename3        = config.dirs['verify'] + 'tp24_era5_0.25x0.25_2023-08-07_EFI.nc'
+path_out         = config.dirs['fig'] 
+figname_out      = 'fig_S5.pdf'
 
 # read in data
 da1 = xr.open_dataset(filename1).sel(time=date).sel(box_size=1)

@@ -57,7 +57,7 @@ elif score_flag == 'fbss':
     filename_out         = score_flag + '_xy_' + variable + '_pval' + str(pval) + '_' + time_flag + '_' + domain + '_' + season + '_boxsize_' + str(box_size) + \
                            '_leadtime_' + str(lead_time) + '_' + forecast_dates[0] + '_' + forecast_dates[-1] + '_' + grid + '.nc'
 
-path_out      = config.dirs['verify_s2s_forecast_daily']
+path_out      = config.dirs['verify']
 dim           = verify.get_data_dimensions(grid, time_flag, domain)
 box_size_temp = verify.match_box_sizes_high_to_low_resolution(grid,box_size)
 
