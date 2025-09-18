@@ -47,9 +47,10 @@ Status
 ----------
 The paper was published [here](https://doi.org/10.1016/j.cliser.2025.100594) in the journal Climate Services. Comments, questions, and suggestions are appreciated. Feedback can be submitted through github [issues](https://github.com/edunnsigouin/cf-Dunnsigouin_etal_2025/issues) or via e-mail to Etienne Dunn-Sigouin (etdu@norceresearch.no).
 
+
 Data 
 ----
-We use three years (2020–2022) of sub-seasonal forecasts from the ECMWF downloaded from the [MARS archive](https://www.ecmwf.int/en/forecasts/access-forecasts/access-archive-datasets). We verify the forecasts using ERA5 reanlysis downloaded from the [Copernicus Climate Date Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview). Data used to reproduce the figures are included in the folder data/. 
+We use three years (2020–2022) of sub-seasonal forecasts and their corresponding hindcasts from the ECMWF downloaded from the [MARS archive](https://www.ecmwf.int/en/forecasts/access-forecasts/access-archive-datasets). We verify the forecasts using ERA5 reanlysis downloaded from the [Copernicus Climate Date Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview). 
 
 
 Setting up the code
@@ -79,7 +80,7 @@ Finally change the project directory in cf-Dunnsigouin_etal_2025/config.py to yo
 Reproducing the paper figures
 -------------
 
-The code is split into three steps: 1) downloading, 2) preprocessing, 3) processing, verifying and plotting
+The code is split into three steps: 1) downloading, 2) preprocessing, 3) processing, verifying and plotting. In all the script preambles, variable = tp24 should have first_forecast_date = '20200102' and number_forecast = 313 while variable = t2m24 should have first_forecast_date = '20200102' and number_forecast = 209.
 
 1: Downloading
 
@@ -91,7 +92,7 @@ Download 6hourly subseasonal forecasts and hindcasts using download-s2s-ecmwf-6h
 
 Convert daily reanalysis data into daily s2s forecast and hindcast formats using calc-daily-s2s-forecast-format.py and calc-daily-s2s-hindcast-format.py.
 
-Convert raw 6hourly precipitation s2s forecasts and hindcasts into 6hourly accumulated files using calc-6hourly-accumulated-variables.py. Then, convert the t2m and tp into daily forecast and hindcast files using calc-daily-from-6hourly.py. Finally, create a single continuous low resolution forecast/hindcast for lead-times 1 to 46 using create-daily-1to46day-low-res-forecast.py. 
+Convert raw 6hourly precipitation s2s forecasts and hindcasts into 6hourly accumulated files using calc-6hourly-accumulated-variables.py. Then, convert the t2m and tp into daily forecast and hindcast files using calc-daily-from-6hourly.py. Finally, create single continuous low resolution forecasts/hindcasts for lead-times 1 to 46 using create-daily-1to46day-low-res-forecast.py. This is because the high res forecasts are from leadday 1 to 15 and the low res forecasts are from leadtime 16 to 46. The code interpolates the highres forecasts to the lowres grid and then stiches it together with the low res forecast to make one long forecast from leadtime 1 to 46.
 
 3: Processing, verifying and plotting
 
@@ -103,18 +104,17 @@ Figure 3: calculate weekly era5 and s2s anomalies for the fmsess using process/e
 
 Figure 4: calculate the	weekly spatial fields of daily fmsess and fbss using verify/calc-score-xy-s2s-forecast.py. Plot figure 4 using plot/plot-fig-04.py.
 
-Figure 5: calculate daily era5 and s2s anomalies for the scandinavian domain fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py. Calculate daily ra5 binaries and s2s probabilities for the scandinavian domain fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 5 using plot/plot-fig-05.py.
+Figure 5: calculate daily era5 and s2s anomalies for the scandinavian domain fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py. Calculate daily era5 binaries and s2s probabilities for the scandinavian domain fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 5 using plot/plot-fig-05.py.
 
-Figure 6:
+Figure 6: calculate the daily smoothed tp and EVI for era5 data during the hans storm using process/era5/calc-EVI-from-era5-forecast-and-hindcast-for-fig-06.py. Do the same for forecasts of storm hans using process/s2s/calc-EFI-fbss-fmsess-for-figure-6.py. Plot figure 6 using plot/plot-fig-06.py
 
+Figure S1: same as fig. 1 except using season = 'ndjfm' keyword in verify/calc-score-s2s-forecast.py. Plot figure S1 using plot/plot-fig-S1.py.
 
-Figure S1:
+Figure S2: same	as fig.	1 except using season = 'mjjas' keyword in verify/calc-score-s2s-forecast.py. Plot figure S2 using plot/plot-fig-S2.py.
 
-Figure S2:
+Figure S3: same	as fig.	1 except using variable = t2m24 instead of tp24 in verify/calc-score-s2s-forecast.py. Plot figure S3 using plot/plot-fig-S3.py.
 
-Figure S3:
+Figure S4: same as fig. 3 except using variable = t2m24 instead of tp24 in verify/calc-score-s2s-forecast.py. Plot figure S4 using plot/plot-fig-S4.py.
 
-Figure S4:
-
-Figure S5:
+Figure S5: same as fig. 6 except using lead day 7 (date = 2023-08-01). Plot figure S5 using plot/plot-fig-S5.py.
 
