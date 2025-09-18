@@ -28,18 +28,18 @@ from Dunnsigouin_etal_2025  import misc,s2s,verify,config
 
 # INPUT -----------------------------------------------
 score_flag               = 'fmsess'
-time_flag                = 'weekly'                   # daily or weekly
+time_flag                = 'daily'                   # daily or weekly
 variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
 first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 313                      # number of forecasts 
+number_forecasts         = 2                      # number of forecasts 
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
 grid                     = '0.25x0.25'
 box_size                 = 1                       # smoothing box size in grid points per side. Must be odd!
-lead_time                = 2
+lead_time                = 5
 number_bootstrap         = 10000                   # number of times to shuffle initialization dates for error bars
 pval                     = 0.9
-write2file               = True
+write2file               = False
 # -----------------------------------------------------
 
 misc.tic()
@@ -59,7 +59,6 @@ elif score_flag == 'fbss':
 
 path_out      = config.dirs['verify']
 dim           = verify.get_data_dimensions(grid, time_flag, domain)
-box_size_temp = verify.match_box_sizes_high_to_low_resolution(grid,box_size)
 
 # initialize output arrays
 [score,score_bootstrap,sig] = verify.initialize_misc_xy_array(score_flag,dim,number_bootstrap)
@@ -71,7 +70,7 @@ for  i, date in enumerate(forecast_dates):
     print('forecast date: ' + date)
     filename_verification                           = path_in_verification + variable + '_' + grid + '_' + date + '.nc'
     filename_forecast                               = path_in_forecast + variable + '_' + grid + '_' + date + '.nc'
-    forecast_error[i, ...], reference_error[i, ...] = verify.calc_forecast_and_reference_error_xy(score_flag,filename_verification,filename_forecast,variable,box_size_temp,lead_time,pval)
+    forecast_error[i, ...], reference_error[i, ...] = verify.calc_forecast_and_reference_error_xy(score_flag,filename_verification,filename_forecast,variable,box_size,lead_time,pval)
 
 # calc fss with bootstraping over all forecasts  
 score[:,:], score_bootstrap[:,:,:] = verify.calc_score_bootstrap_xy(reference_error, forecast_error, number_bootstrap)
