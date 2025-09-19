@@ -32,14 +32,14 @@ time_flag                = 'daily'                   # daily or weekly
 variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
 first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 2                      # number of forecasts 
+number_forecasts         = 313                      # number of forecasts 
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
-grid                     = '0.25x0.25'
+grid                     = '0.25x0.25'             # 0.25x0.25 or day1to46_0.5x0.5  
 box_size                 = 1                       # smoothing box size in grid points per side. Must be odd!
 lead_time                = 5
 number_bootstrap         = 10000                   # number of times to shuffle initialization dates for error bars
 pval                     = 0.9
-write2file               = False
+write2file               = True
 # -----------------------------------------------------
 
 misc.tic()

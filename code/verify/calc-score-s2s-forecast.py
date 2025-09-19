@@ -24,12 +24,12 @@ from Dunnsigouin_etal_2025  import misc,s2s,verify,config
 # INPUT -----------------------------------------------
 score_flag               = 'fbss'
 time_flag                = 'weekly'                 # daily or weekly
-variable                 = 'tp24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
+variable                 = 't2m24'                   # tp24,rn24,mx24rn6,mx24tp6,mx24tpr
 domain                   = 'europe'                 # europe or norway only?
 first_forecast_date      = '20200102'               # first initialization date of forecast (either a monday or thursday)
-number_forecasts         = 313                      # number of forecasts 
+number_forecasts         = 209                      # number of forecasts 
 season                   = 'annual'                 # pick forecasts in specific season (djf,mam,jja,son,annual)
-grid                     = 'day1to46_0.5x0.5'
+grid                     = 'day1to46_0.5x0.5'       # 0.25x0.25 or day1to46_0.5x0.5
 box_sizes                = np.arange(1,61,2)        # smoothing box size in grid points per side. Must be odd!
 number_bootstrap         = 10000                    # number of times to shuffle initialization dates for error bars
 pval                     = 0.1

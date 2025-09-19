@@ -34,7 +34,7 @@ def setup_subplot_xy(flag, ax, title_text, ds, clevs, cmap, fontsize):
     return p
 
 # INPUT -----------------------
-write2file = True
+write2file = False
 # -----------------------------
 
 # define stuff         

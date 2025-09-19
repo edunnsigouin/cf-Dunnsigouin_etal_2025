@@ -68,10 +68,10 @@ write2file = True
 # define stuff         
 path_in           = config.dirs['verify']
 path_out          = config.dirs['fig'] 
-filename_in_1     = 'fmsess_t2m24_weekly_europe_annual_2020-01-02_2021-12-30.nc'
-filename_in_2     = 'fbss_t2m24_pval0.9_weekly_europe_annual_2020-01-02_2021-12-30.nc'
-filename_in_3     = 'fbss_t2m24_pval0.1_weekly_europe_annual_2020-01-02_2021-12-30.nc'
-figname_out       = 'fig_S4.png'
+filename_in_1     = 'fmsess_t2m24_weekly_europe_annual_2020-01-02_2021-12-30_day1to46_0.5x0.5.nc'
+filename_in_2     = 'fbss_t2m24_pval0.9_weekly_europe_annual_2020-01-02_2021-12-30_day1to46_0.5x0.5.nc'
+filename_in_3     = 'fbss_t2m24_pval0.1_weekly_europe_annual_2020-01-02_2021-12-30_day1to46_0.5x0.5.nc'
+figname_out       = 'fig_S4.pdf'
 
 # read in data
 ds1        = xr.open_dataset(path_in + filename_in_1)
