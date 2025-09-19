@@ -90,7 +90,7 @@ Download 6hourly subseasonal forecasts and hindcasts using download-s2s-ecmwf-6h
 
 2: Preprocessing
 
-Convert daily reanalysis data into daily s2s forecast and hindcast formats using calc-daily-s2s-forecast-format.py and calc-daily-s2s-hindcast-format.py.
+Convert daily reanalysis data into daily s2s forecast and hindcast formats using calc-daily-s2s-forecast-format.py and calc-daily-s2s-hindcast-format.py. Two resolutions are possible: 0.25x0.25 and 0.5x0.5.
 
 Convert raw 6hourly precipitation s2s forecasts and hindcasts into 6hourly accumulated files using calc-6hourly-accumulated-variables.py. Then, convert the t2m and tp into daily forecast and hindcast files using calc-daily-from-6hourly.py. Finally, create single continuous low resolution forecasts/hindcasts for lead-times 1 to 46 using create-daily-1to46day-low-res-forecast.py. This is because the high res forecasts are from leadday 1 to 15 and the low res forecasts are from leadtime 16 to 46. The code interpolates the highres forecasts to the lowres grid and then stiches it together with the low res forecast to make one long forecast from leadtime 1 to 46.
 
@@ -100,9 +100,9 @@ Figure 1: calculate daily era5 and s2s anomalies for the fmsess using process/er
 
 Figure 2: calculate the daily spatial fields of daily fmsess and fbss using verify/calc-score-xy-s2s-forecast.py. Plot figure 2 using plot/plot-fig-02.py. 
 
-Figure 3: calculate weekly era5 and s2s anomalies for the fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py. Calculate weekly era5 binaries and s2s probabilities for the fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 3 using plot/plot-fig-03.py.
+Figure 3: calculate weekly era5 and s2s anomalies for the fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py. Calculate weekly era5 binaries and s2s probabilities for the fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 3 using plot/plot-fig-03.py. Note that these use the grid = 'day1to46_0.5x0.5'. 
 
-Figure 4: calculate the	weekly spatial fields of daily fmsess and fbss using verify/calc-score-xy-s2s-forecast.py. Plot figure 4 using plot/plot-fig-04.py.
+Figure 4: calculate the	weekly spatial fields of daily fmsess and fbss using verify/calc-score-xy-s2s-forecast.py. Plot figure 4 using plot/plot-fig-04.py. Note that these use the grid 0.25x0.25.
 
 Figure 5: calculate daily era5 and s2s anomalies for the scandinavian domain fmsess using process/era5/calc-anomaly-forecast-format.py and process/s2s/calc-anomaly-forecast.py. Calculate daily era5 binaries and s2s probabilities for the scandinavian domain fbss using process/era5/calc-binary-forecast-format.py and process/s2s/calc-probability-forecast.py. Calculate the fmsess and fbss using verify/calc-score-s2s-forecast.py. Plot figure 5 using plot/plot-fig-05.py.
 
