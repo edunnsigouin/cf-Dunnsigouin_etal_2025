@@ -18,10 +18,10 @@ from Dunnsigouin_etal_2025 import config,misc,s2s
 variables           = ['tp']                  
 dtypes              = ['cf','pf']             # control & perturbed forecasts/hindcasts
 product             = 'hindcast'              # hindcast or forecast
-first_forecast_date = '20230102' # first initialization date of forecast (either a monday or thursday) 
-number_forecasts    = 51         # number of forecast initializations 
+first_forecast_date = '20230501'              # first initialization date of forecast (either a monday or thursday) 
+number_forecasts    = 70                      # number of forecast initializations 
 season              = 'annual'
-grid                = '0.5x0.5'             # '0.25x0.25' or '0.5x0.5'
+grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
 comp_lev            = 5                       # level of compression with nccopy (1-10)
 write2file          = True
 # -----------------------------------------------------            
@@ -52,6 +52,9 @@ for variable in variables:
             forcastcycle = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
             filename_in  = '%s_%s_%s_%s_%s.nc'%(variable,forcastcycle,grid,datestring,dtype)
             filename_out = '%s_%s_%s_%s_%s.nc'%(variable_out,forcastcycle,grid,datestring,dtype)
+
+            print(filename_in)
+            print(filename_out)
             
             # read data
             ds = xr.open_dataset(path_in + filename_in)
@@ -97,6 +100,8 @@ for variable in variables:
                 ds[variable_out].attrs['units']      = 'm'
                 ds[variable_out].attrs['long_name']  = '6-hourly accumulated snowfall'
 
+            print(ds)
+            
             if write2file:
                 print('writing to file..')
                 #misc.to_netcdf_pack64bit(ds[variable_out],path_out + filename_out)

@@ -213,8 +213,13 @@ def convert_grib_to_netcdf(filename1_grb, filename2_grb, dtype):
     ds1.coords['hdate'] = ('hdate', hdate_int.data)  # Use .data to get the underlying numpy array
     ds1.coords['time'] = ('time', time_as_datetime)
 
-    # 5. Convert variables to match the new data format 
-    ds1['tp']        = ds1['tp'].astype('float64')
+    # 5. Convert variables to match the new data format
+    if 'tp' in ds1.data_vars:
+        ds1['tp'] = ds1['tp'].astype('float64')
+    elif 'sf' in ds1.data_vars:
+        ds1['sf'] = ds1['sf'].astype('float64')
+        
+    #ds1['tp']        = ds1['tp'].astype('float64')
     ds1['longitude'] = ds1['longitude'].astype('float32')
     ds1['latitude']  = ds1['latitude'].astype('float32')
     

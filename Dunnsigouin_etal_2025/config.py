@@ -2,7 +2,7 @@
 hard coded paths in cf-Dunnsigouin_etal_2025
 """
 
-cf_space             = "/nird/projects/NS9873K/etdu/"
+cf_space             = "/nird/datapeak/NS9873K/etdu/"
 proj                 = "/nird/home/edu061/cf-Dunnsigouin_etal_2025/"
 data_interim         = proj + "data/interim/"
 fig                  = proj + "fig/"
@@ -23,7 +23,7 @@ s2s_forecast_daily_EFI              = processed + "s2s/ecmwf/forecast/daily/EFI_
 s2s_forecast_weekly                 = processed + "s2s/ecmwf/forecast/weekly/values/"
 s2s_forecast_weekly_anomaly         = processed + "s2s/ecmwf/forecast/weekly/anomaly_smooth/"
 s2s_forecast_weekly_probability     = processed + "s2s/ecmwf/forecast/weekly/probability_smooth/"
-s2s_hindcast_6hourly                = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/"
+s2s_hindcast_6hourly                = raw + "s2s/mars/ecmwf/hindcast/sfc/6hourly/europe/"
 s2s_hindcast_daily                  = processed + "s2s/ecmwf/hindcast/daily/values/"
 s2s_hindcast_daily_climatology      = processed + "s2s/ecmwf/hindcast/daily/climatology/values_smooth/"
 s2s_hindcast_daily_quantile         = processed + "s2s/ecmwf/hindcast/daily/quantile/values_smooth/"

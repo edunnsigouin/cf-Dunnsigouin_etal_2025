@@ -26,12 +26,12 @@ from Dunnsigouin_etal_2025       import config,misc,s2s
 
 # input -----------------------------------
 product             = 'hindcast' # hindcast/vr_hindcast
-first_forecast_date = '20231109' # first initialization date of forecast (either a monday or thursday)
-number_forecast     = 15          # number of forecast initializations      
+first_forecast_date = '20200423' # first initialization date of forecast (either a monday or thursday)
+number_forecast     = 1          # number of forecast initializations      
 nhdates             = 20 # number of hindcast years  
 grid                = '0.5/0.5' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var                 = 'tp'
+var                 = 'sf'
 comp_lev            = 5 # file compression level
 write2file          = True
 # -----------------------------------------
@@ -144,7 +144,7 @@ if write2file:
                 # create dictionary with other half of hindcast years
                 dic2             = dic1.copy()
                 dic2['hdate']    = hdate2
-            
+
                 print('downloading..')
                 server.execute(dic1, path + filename1_grb)
                 server.execute(dic2, path + filename2_grb)
@@ -161,7 +161,7 @@ if write2file:
                 os.system('rm ' + path + filename2_grb)
                 os.system('rm ' + path + filename1_grb + '*.idx')
                 os.system('rm ' + path + filename2_grb + '*.idx')
-                
+             
             elif product == 'vr_hindcast':
             
                 datestring       = date.strftime('%Y-%m-%d')
@@ -186,4 +186,5 @@ if write2file:
 
             
             misc.toc()
+
 

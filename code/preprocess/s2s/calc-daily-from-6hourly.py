@@ -13,10 +13,10 @@ from datetime   import datetime
 # INPUT ----------------------------------------------- 
 variables           = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
 product             = 'hindcast'              # hindcast or forecast ?
-first_forecast_date = '20230102' # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 51        # number of forecast initializations  
+first_forecast_date = '20231002' # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 26        # number of forecast initializations  
 season              = 'annual'
-grid                = '0.5x0.5'             # '0.25x0.25' or '0.5x0.5'
+grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------            
 
@@ -40,7 +40,8 @@ for variable in variables:
             
             forecastcycle = s2s.which_mv_for_init(datestring,model='ECMWF',fmt='%Y-%m-%d')
             basename      = '%s_%s_%s_%s'%(forecastcycle,grid,datestring,dtype)
-                
+
+        
             if variable == 'tp24': # daily accumulated precip (m)
 
                 path_in                          = config.dirs['s2s_' + product + '_6hourly'] + 'tp6/'
@@ -220,10 +221,10 @@ for variable in variables:
             ds.close()
             os.system('rm ' + path_out + filename_out_cf)
             os.system('rm ' + path_out + filename_out_pf)
-
-
+            
             
         misc.toc()
+
 
 
 
