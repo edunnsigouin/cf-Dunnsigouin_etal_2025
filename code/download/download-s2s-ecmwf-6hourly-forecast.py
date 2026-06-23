@@ -22,13 +22,13 @@ from Dunnsigouin_etal_2025       import config,misc,s2s
 
 # input -----------------------------------
 product             = 'forecast' # forecast/vr_forecast
-first_forecast_date = '20230731' # first initialization date of forecast (either a monday or thursday)
+first_forecast_date = '20230805' # first initialization date of forecast (either a monday or thursday)
 number_forecast     = 1        # number of forecast initializations   
 grid                = '0.25/0.25' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var                 = 'tp'
+var                 = 'ro'
 comp_lev            = 5 # file compression level
-write2file          = False
+write2file          = True
 # -----------------------------------------
 
 # initialize mars server
@@ -65,6 +65,16 @@ elif var == 'sf': # snowfall per 6 hours (m)
         param = '144.128'
     elif product == 'vr_forecast':
         param = '144.230' # note different variable for variable resolution
+elif var == 'ro': # runnoff per 6 hours (m)
+    if product == 'forecast':
+        param = '205.128'
+    elif product == 'vr_forecast':
+        param = '205.230' # note different variable for variable resolution
+elif var == 'sro': # surface runnoff per 6 hours (m)
+    if product == 'forecast':
+        param = '8.128'
+    elif product == 'vr_forecast':
+        param = '8.230' # note different variable for variable resolution              
 elif var == 'mx6tpr': # maximum 6-hourly precipitation rate after last post-processing (kgm-2s-1)
     param = '226.228'
 elif var =='t2m': # 2 meter temperature
@@ -93,8 +103,8 @@ dic = {
 }    
 
 # get all dates for monday and thursday forecast initializations
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast,'annual')
-#forecast_dates = pd.date_range(first_forecast_date, periods=number_forecast, freq="D")
+#forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecast,'annual')
+forecast_dates = pd.date_range(first_forecast_date, periods=number_forecast, freq="D")
 print(forecast_dates)
 
 

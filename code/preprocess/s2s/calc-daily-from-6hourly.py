@@ -11,18 +11,37 @@ from Dunnsigouin_etal_2025 import config,misc,s2s
 from datetime   import datetime
 
 # INPUT ----------------------------------------------- 
-variables           = ['tp24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-product             = 'hindcast'              # hindcast or forecast ?
-first_forecast_date = '20231002' # first initialization date of forecast (either a monday or thursday)
-number_forecasts    = 26        # number of forecast initializations  
+variables           = ['ro24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+product             = 'forecast'              # hindcast or forecast ?
+first_forecast_date = '20230805' # first initialization date of forecast (either a monday or thursday)
+number_forecasts    = 1        # number of forecast initializations  
 season              = 'annual'
 grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------            
 
+
+def fix_time_coordinate(ds, forecast_date, time_name="time"):
+    """
+    Replace the dummy sro24 or ro24 time coordinate with real valid dates.
+
+    The first daily runoff value corresponds to lead day 16
+    relative to the forecast initialization date.
+    """
+    start_time = pd.Timestamp(forecast_date) + pd.Timedelta(days=15)
+
+    new_time = pd.date_range(
+        start=start_time,
+        periods=ds.sizes[time_name],
+        freq="1D",
+    )
+
+    return ds.assign_coords({time_name: new_time})
+
+
 # get all dates for monday and thursday forecast initializations
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
-#forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts).strftime('%Y-%m-%d')
+#forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
+forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts)#.strftime('%Y-%m-%d')
 print(forecast_dates)
 
 # extended range forecast has changed format after 23-06-28.
@@ -42,14 +61,24 @@ for variable in variables:
             basename      = '%s_%s_%s_%s'%(forecastcycle,grid,datestring,dtype)
 
         
-            if variable == 'tp24': # daily accumulated precip (m)
+            if ((variable == 'tp24') or (variable == 'ro24') or (variable == 'sro24')): # daily accumulated precip (m) or daily accumulated runoff (m)
+                                                                                        # or daily acccumulated surface runoff
 
-                path_in                          = config.dirs['s2s_' + product + '_6hourly'] + 'tp6/'
-                path_out                         = config.dirs['s2s_' + product + '_daily'] + variable + '/'
-                filename_in                      = 'tp6_' + basename + '.nc'
-                filename_out                     = variable + '_' + basename + '.nc'
-                ds                               = xr.open_dataset(path_in + filename_in)
+                if variable == 'tp24':
+                    filename_in                      = 'tp6_' + basename + '.nc'
+                    path_in                          = config.dirs['s2s_' + product + '_6hourly'] + 'tp6/'
+                elif variable == 'ro24':
+                    filename_in                      = 'ro6_' + basename + '.nc'
+                    path_in                          = config.dirs['s2s_' + product + '_6hourly'] + 'ro6/'
+                elif variable == 'sro24':
+                    filename_in                      = 'sro6_' + basename + '.nc'
+                    path_in                          = config.dirs['s2s_' + product + '_6hourly'] + 'sro6/'                    
+                    
+                path_out     = config.dirs['s2s_' + product + '_daily'] + variable + '/' 
+                filename_out = variable + '_' + basename + '.nc'
+                ds           = xr.open_dataset(path_in + filename_in)
 
+                
                 # shift time back by 6 hours. This means that for data on day 0 with hours 0,6,12,18,24,
                 # hour 24 (accumulated from hour 18-24) is counted in day 0 not day 1. Basically,
                 # sum of hours 6,12,18,24 instead of 0,6,12,18 on a given day.
@@ -63,13 +92,32 @@ for variable in variables:
                     # drop first 'day' since it accumulates data when
                     # there is no data (i.e. initialization time)
                     ds = ds.isel(time=slice(1,ds.time.size))
-                    
-                # metadata    
-                ds                                  = ds.rename({'tp6':variable})    
-                ds[variable].attrs['units']         = 'm'
-                ds[variable].attrs['long_name']     = 'daily accumulated precipitation'
-                ds[variable].attrs['forecastcycle'] = forecastcycle
 
+                # FIX SRO24 or RO24 TIME AXIS (download script messed up the time variable)
+                if ((variable == 'ro24') and (grid == '0.5x0.5')):
+                    ds = fix_time_coordinate(ds, datestring)
+                elif ((variable == 'sro24') and (grid == '0.5x0.5')):
+                    ds = fix_time_coordinate(ds, datestring)
+                    
+                # metadata
+                if variable == 'tp24':
+                    ds                                  = ds.rename({'tp6':variable})    
+                    ds[variable].attrs['units']         = 'm'
+                    ds[variable].attrs['long_name']     = 'daily accumulated precipitation'
+                    ds[variable].attrs['forecastcycle'] = forecastcycle
+                elif variable == 'ro24':
+                    ds                                  = ds.rename({'ro6':variable})
+                    ds[variable].attrs['units']         = 'm'
+                    ds[variable].attrs['long_name']     = 'daily accumulated runoff'
+                    ds[variable].attrs['forecastcycle'] = forecastcycle
+                elif variable == 'sro24':
+                    ds                                  = ds.rename({'sro6':variable})
+                    ds[variable].attrs['units']         = 'm'
+                    ds[variable].attrs['long_name']     = 'daily accumulated surface runoff'
+                    ds[variable].attrs['forecastcycle'] = forecastcycle                    
+                    
+                print(ds)
+                
                 if write2file: misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
                     
                 ds.close()

@@ -11,7 +11,7 @@ raw                  = cf_space + "raw/"
 processed            = cf_space + "processed/cf-Dunnsigouin_etal_2025/"
 verify               = cf_space + "processed/cf-Dunnsigouin_etal_2025/verify/"
 
-s2s_forecast_6hourly                = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/"
+s2s_forecast_6hourly                = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly/europe/"
 s2s_forecast_6hourly_student        = raw + "s2s/mars/ecmwf/forecast/sfc/6hourly_student/"
 s2s_forecast_daily                  = processed + "s2s/ecmwf/forecast/daily/values/"
 s2s_forecast_daily_student          = processed + "s2s/ecmwf/forecast/daily/student/values/"

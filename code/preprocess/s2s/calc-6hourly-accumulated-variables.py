@@ -15,20 +15,20 @@ from datetime   import datetime
 from Dunnsigouin_etal_2025 import config,misc,s2s
 
 # INPUT ----------------------------------------------- 
-variables           = ['tp']                  
+variables           = ['ro']                  
 dtypes              = ['cf','pf']             # control & perturbed forecasts/hindcasts
-product             = 'hindcast'              # hindcast or forecast
-first_forecast_date = '20230501'              # first initialization date of forecast (either a monday or thursday) 
-number_forecasts    = 70                      # number of forecast initializations 
+product             = 'forecast'              # hindcast or forecast
+first_forecast_date = '20230805'              # first initialization date of forecast (either a monday or thursday) 
+number_forecasts    = 1                      # number of forecast initializations 
 season              = 'annual'
 grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
 comp_lev            = 5                       # level of compression with nccopy (1-10)
-write2file          = True
+write2file          = False
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
-forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
-#forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts).strftime('%Y-%m-%d') 
+#forecast_dates = s2s.get_forecast_dates(first_forecast_date,number_forecasts,season)
+forecast_dates = pd.date_range(first_forecast_date, periods=number_forecasts)#.strftime('%Y-%m-%d') 
 print(forecast_dates)
 
 # extended range forecast has changed format after 23-06-28.
@@ -59,6 +59,8 @@ for variable in variables:
             # read data
             ds = xr.open_dataset(path_in + filename_in)
 
+            print(ds)
+            
             if grid == '0.25x0.25': # first 15 days of hindcast/forecast @ high-resolution
                 
                 # to get 6 hour accumulated values do var(t) - var(t-1)
@@ -99,7 +101,13 @@ for variable in variables:
             elif variable == 'sf':
                 ds[variable_out].attrs['units']      = 'm'
                 ds[variable_out].attrs['long_name']  = '6-hourly accumulated snowfall'
-
+            elif variable == 'ro':
+                ds[variable_out].attrs['units']      = 'm'
+                ds[variable_out].attrs['long_name']  = '6-hourly accumulated runoff'
+            elif variable == 'sro':
+                ds[variable_out].attrs['units']      = 'm'
+                ds[variable_out].attrs['long_name']  = '6-hourly surface accumulated runoff'
+                
             print(ds)
             
             if write2file:
