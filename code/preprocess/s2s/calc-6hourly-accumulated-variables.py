@@ -15,15 +15,15 @@ from datetime   import datetime
 from Dunnsigouin_etal_2025 import config,misc,s2s
 
 # INPUT ----------------------------------------------- 
-variables           = ['ro']                  
+variables           = ['sf']                  
 dtypes              = ['cf','pf']             # control & perturbed forecasts/hindcasts
-product             = 'forecast'              # hindcast or forecast
-first_forecast_date = '20230805'              # first initialization date of forecast (either a monday or thursday) 
+product             = 'hindcast'              # hindcast or forecast
+first_forecast_date = '20230427'              # first initialization date of forecast (either a monday or thursday) 
 number_forecasts    = 1                      # number of forecast initializations 
 season              = 'annual'
-grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
+grid                = '0.5x0.5'             # '0.25x0.25' or '0.5x0.5'
 comp_lev            = 5                       # level of compression with nccopy (1-10)
-write2file          = False
+write2file          = True
 # -----------------------------------------------------            
 
 # get all dates for monday and thursday forecast initializations
@@ -53,14 +53,9 @@ for variable in variables:
             filename_in  = '%s_%s_%s_%s_%s.nc'%(variable,forcastcycle,grid,datestring,dtype)
             filename_out = '%s_%s_%s_%s_%s.nc'%(variable_out,forcastcycle,grid,datestring,dtype)
 
-            print(filename_in)
-            print(filename_out)
-            
             # read data
             ds = xr.open_dataset(path_in + filename_in)
 
-            print(ds)
-            
             if grid == '0.25x0.25': # first 15 days of hindcast/forecast @ high-resolution
                 
                 # to get 6 hour accumulated values do var(t) - var(t-1)

@@ -21,12 +21,12 @@ from datetime                    import datetime
 from Dunnsigouin_etal_2025       import config,misc,s2s
 
 # input -----------------------------------
-product             = 'forecast' # forecast/vr_forecast
-first_forecast_date = '20230805' # first initialization date of forecast (either a monday or thursday)
+product             = 'vr_forecast' # forecast/vr_forecast
+first_forecast_date = '20230417' # first initialization date of forecast (either a monday or thursday)
 number_forecast     = 1        # number of forecast initializations   
-grid                = '0.25/0.25' # degree lat/lon resolution
+grid                = '0.5/0.5' # degree lat/lon resolution
 area                = '73.5/-27/33/45'# ecmwf european lat-lon bounds [73.5/-27/33/45]
-var                 = 'ro'
+var                 = 'sro'
 comp_lev            = 5 # file compression level
 write2file          = True
 # -----------------------------------------

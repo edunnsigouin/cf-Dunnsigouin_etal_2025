@@ -11,12 +11,12 @@ from Dunnsigouin_etal_2025 import config,misc,s2s
 from datetime   import datetime
 
 # INPUT ----------------------------------------------- 
-variables           = ['ro24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
-product             = 'forecast'              # hindcast or forecast ?
-first_forecast_date = '20230805' # first initialization date of forecast (either a monday or thursday)
+variables           = ['rn24']                # tp24, rn24, mx24tp6, mx24rn6, mx24tpr
+product             = 'hindcast'              # hindcast or forecast ?
+first_forecast_date = '20220428' # first initialization date of forecast (either a monday or thursday)
 number_forecasts    = 1        # number of forecast initializations  
 season              = 'annual'
-grid                = '0.25x0.25'             # '0.25x0.25' or '0.5x0.5'
+grid                = '0.5x0.5'             # '0.25x0.25' or '0.5x0.5'
 write2file          = True
 # -----------------------------------------------------            
 
@@ -142,6 +142,9 @@ for variable in variables:
                 if grid == '0.25x0.25':
                     ds1 = ds1.isel(time=slice(1,ds1.time.size))
                     ds2 = ds2.isel(time=slice(1,ds2.time.size))
+
+                ds1 = fix_time_coordinate(ds1, datestring)
+                ds2 = fix_time_coordinate(ds2, datestring)
                     
                 ds1['tp6']                           = ds1['tp6'] - ds2['sf6']
                 ds1                                  = ds1.rename({'tp6':variable})
@@ -153,62 +156,6 @@ for variable in variables:
                     
                 ds1.close()
                 ds2.close()
-
-            elif variable == 'mx24tp6': # daily maximum 6 hour accumulated precip (m)
-
-                path_in                          = config.dirs['s2s_' + product + '_6hourly'] + 'tp6/'
-                path_out                         = config.dirs['s2s_' + product + '_daily'] + variable + '/'
-                filename_in                      = 'tp6' + '_' + basename + '.nc'
-                filename_out                     = variable + '_' + basename + '.nc'
-                ds                               = xr.open_dataset(path_in + filename_in)
-
-                # shift time back by 6 hours so that accumulated quantities correspond
-                # to correct day   
-                ds['time'] = ds.time - np.timedelta64(6,'h')
-                ds         = ds.resample(time='1D').max('time')
-                if grid == '0.25x0.25':
-                    ds = ds.isel(time=slice(1,ds.time.size))
-
-                ds                                  = ds.rename({'tp6':variable})
-                ds[variable].attrs['units']         = 'm'
-                ds[variable].attrs['long_name']     = 'daily maximum 6 hour accumulated precipitation'
-                ds[variable].attrs['forecastcycle'] = forecastcycle
-                
-                if write2file: misc.to_netcdf_with_packing_and_compression(ds, path_out + filename_out)
-                    
-                ds.close()
-
-            elif variable == 'mx24rn6': # daily maximum 6 hour accumulated rainfall (m)
-
-                path1_in                         = config.dirs['s2s_' + product + '_6hourly'] + 'tp6/'
-                path2_in                         = config.dirs['s2s_' + product + '_6hourly'] + 'sf6/'
-                path_out                         = config.dirs['s2s_' + product + '_daily'] + variable + '/'
-                
-                filename1_in                     = 'tp6_' + basename + '.nc'
-                filename2_in                     = 'sf6_' + basename + '.nc'
-                filename_out                     = variable + '_' + basename + '.nc'
-
-                ds1                              = xr.open_dataset(path1_in + filename1_in)
-                ds2                              = xr.open_dataset(path2_in + filename2_in)
-
-                # shift time back by 6 hours so that accumulated quantities correspond
-                # to correct day                                                                                                                                                
-                ds1['time'] = ds1.time - np.timedelta64(6,'h')
-                ds2['time'] = ds2.time - np.timedelta64(6,'h')
-                da          = (ds1['tp6'] - ds2['sf6']).resample(time='1D').max('time')
-                if grid == '0.25x0.25':
-                    da = da.isel(time=slice(1,da.time.size))
-                    
-                da.name                          = variable
-                da.attrs['units']                = 'm'
-                da.attrs['long_name']            = 'daily maximum 6 hour accumulated rainfall'
-                da.attrs['forecastcycle']        = forecastcycle
-                
-                if write2file: misc.to_netcdf_with_packing_and_compression(da, path_out + filename_out)
-                    
-                ds1.close()
-                ds2.close()
-                da.close()
 
             elif variable == 'mx24tpr': # daily maximum timestep precipitation rate (kgm-2s-1)
 
